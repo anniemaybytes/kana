@@ -1,0 +1,15 @@
+{
+  "name": "kana",
+  "version": "0.0.1",
+  "author": "AnimeBytes",
+  "dependencies": {
+    "hubot": "~2.19.0",
+    "optparse": "~1.0.5",
+    "hubot-irc": "file:./hubot-irc",
+    "hubot-scripts": "~2.4.3",
+    "htmlparser": "~1.7.6",
+    "jsdom": "~9.8.3",
+    "soupselect": "~0.2.0",
+    "request": "~2.79.0"
+  }
+}
