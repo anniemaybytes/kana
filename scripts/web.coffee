@@ -18,7 +18,6 @@ module.exports = (robot) ->
       .get(->) (err, res, body) ->
         if err || !res
           console.log "HTTP got error:", err
-          msg.send "Error loading page"
         else if res.statusCode in [301, 302, 303]
           httpResponse(res.headers.location)
         else if res.statusCode is 200
