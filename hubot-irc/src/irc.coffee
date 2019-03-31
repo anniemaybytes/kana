@@ -371,5 +371,4 @@ class IrcBot extends Adapter
 
     target
 
-exports.use = (robot) ->
-  new IrcBot robot
+module.exports = IrcBot

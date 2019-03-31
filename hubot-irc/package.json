@@ -12,7 +12,7 @@
   "bugs": {
     "url": "http://github.com/nandub/hubot-irc/issues"
   },
-  "main": "./src/irc.coffee",
+  "main": "./index.coffee",
   "engine": "node > 0.6.0",
   "scripts": {
     "test": "grunt"
