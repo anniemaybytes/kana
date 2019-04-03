@@ -1,5 +1,7 @@
 request = require 'request'
 
+parseUserInfo = require '../utils/parseUserInfo'
+
 unless process.env.SITE_API_KEY?
   throw new Error "Environment variable SITE_API_KEY must be set"
 
@@ -11,13 +13,6 @@ module.exports = (robot) ->
     robot.adapter.command 'CHGHOST', process.env.HUBOT_IRC_NICK, 'bakus.dungeon'
     for channel in process.env.AB_CHANNELS.split ','
       robot.adapter.command 'SAJOIN', process.env.HUBOT_IRC_NICK, channel
-
-  parseUserInfo = (host) ->
-    arr = host.split('.')
-    [user, rank, ab] = arr
-    if arr.length != 3 or ab != 'AnimeBytes'
-      user = rank = ''
-    {user, rank}
 
   robot.hear /[^\s]+(?:\s)+enter(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)+([^\s]+)/i, (msg) ->
     return if msg.message.room?
