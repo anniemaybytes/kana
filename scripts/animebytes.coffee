@@ -1,6 +1,6 @@
 request = require 'request'
 
-parseUserInfo = require '../utils/parseUserInfo'
+{parseUserInfo} = require '../utils/parseUserInfo'
 
 unless process.env.SITE_API_KEY?
   throw new Error "Environment variable SITE_API_KEY must be set"
