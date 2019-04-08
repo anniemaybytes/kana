@@ -13,6 +13,7 @@
     "hubot-irc": "file:./hubot-irc",
     "hubot-scripts": "~2.4.3",
     "jsdom": "~9.8.3",
+    "log": "^1.4.0",
     "optparse": "~1.0.5",
     "request": "~2.79.0",
     "soupselect": "~0.2.0"
