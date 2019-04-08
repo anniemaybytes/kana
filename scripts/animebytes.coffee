@@ -1,6 +1,9 @@
 request = require 'request'
+Log = require('log')
 
 {parseUserInfo} = require '../utils/parseUserInfo'
+
+logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
 unless process.env.SITE_API_KEY?
   throw new Error "Environment variable SITE_API_KEY must be set"
@@ -37,7 +40,8 @@ module.exports = (robot) ->
       err = 'Failed to log in' if !err && res.statusCode == 303
 
       if err
-        console.log(err)
+        if (process.env.HUBOT_IRC_DEBUG or false)
+          logger.error(err)
         msg.send 'Internal error'
         return
 
@@ -70,7 +74,8 @@ module.exports = (robot) ->
       err = 'Failed to log in' if !err && res.statusCode == 303
 
       if err
-        console.log(err)
+        if (process.env.HUBOT_IRC_DEBUG or false)
+          logger.error(err)
         msg.send 'Internal error'
         return
 
