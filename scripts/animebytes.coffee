@@ -1,7 +1,10 @@
 request = require 'request'
 Log = require('log')
 
-{parseUserInfo} = require '../utils/parseUserInfo'
+{
+  parseUserInfo
+  ParseUserInfoWrongHost
+} = require '../utils/parseUserInfo'
 
 logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
@@ -61,7 +64,11 @@ module.exports = (robot) ->
 
   robot.hear /^!user(?: (.+))?/i, (msg) ->
     room = msg.message.room
-    name = msg.match[1] || parseUserInfo(msg.message.user.original.host).user
+    try
+      name = msg.match[1] || parseUserInfo(msg.message.user.original.host).user
+    catch err
+      if err instanceof ParseUserInfoWrongHost
+        return msg.send 'Not authorized'
 
     return unless name
 

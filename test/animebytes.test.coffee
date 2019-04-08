@@ -116,3 +116,13 @@ describe 'AnimeBytes script', ->
           expect(text[0]).to.equal 'Internal error'
           done()
         @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+
+    describe 'when not authorized', ->
+      it 'should fail to retrieve user info', (done) ->
+        @user.original =
+          host: '1234@userName.something.blargh'
+        @bot.on 'say', (target, text) ->
+          expect(target).to.equal '#mocha'
+          expect(text[0]).to.equal 'Not authorized'
+          done()
+        @adapter.receive(new TextMessage(@user, '!user'))
