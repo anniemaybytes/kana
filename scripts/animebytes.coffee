@@ -63,7 +63,6 @@ module.exports = (robot) ->
           msg.send 'Access denied for ' + room
 
   robot.hear /^!user(?: (.+))?/i, (msg) ->
-    room = msg.message.room
     try
       name = msg.match[1] || parseUserInfo(msg.message.user.original.host).user
     catch err
