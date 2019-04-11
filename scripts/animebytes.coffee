@@ -64,10 +64,13 @@ module.exports = (robot) ->
 
   robot.hear /^!user(?: (.+))?/i, (msg) ->
     try
-      name = msg.match[1] || parseUserInfo(msg.message.user.original.host).user
+      name = parseUserInfo(msg.message.user.original.host).user
     catch err
       if err instanceof ParseUserInfoWrongHost
         return msg.send 'Not authorized'
+
+    if msg.match[1]
+      name = msg.match[1]
 
     return unless name
 
