@@ -7,7 +7,7 @@ MockIrc = (port, encoding, isSecure) ->
   connectionClass = net
   options = {}
 
-  @port = port or (if isSecure then 6697 else 6667)
+  @port = port or (if isSecure then 1338 else 1337)
   @encoding = encoding or 'utf-8'
   @incoming = []
   @outgoing = []
