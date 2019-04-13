@@ -11,7 +11,7 @@ sandbox = sinon.createSandbox()
 describe 'AnimeBytes script', ->
   mock = null
   beforeEach ->
-    port = 6667
+    port = process.env.HUBOT_IRC_PORT
     mock = MockIrc port, 'utf-8', undefined
 
     @robot = loadBot '', 'irc', false, 'Hubot'
