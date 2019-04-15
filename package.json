@@ -2,14 +2,26 @@
   "name": "kana",
   "version": "0.0.1",
   "author": "AnimeBytes",
+  "scripts": {
+    "test": "NODE_ENV=test mocha",
+    "test:all": "NODE_ENV=test mocha --recursive \"./test/**/*.test.coffee\""
+  },
   "dependencies": {
+    "coffee-script": "^1.12.7",
+    "htmlparser": "~1.7.6",
     "hubot": "~2.19.0",
-    "optparse": "~1.0.5",
     "hubot-irc": "file:./hubot-irc",
     "hubot-scripts": "~2.4.3",
-    "htmlparser": "~1.7.6",
     "jsdom": "~9.8.3",
-    "soupselect": "~0.2.0",
-    "request": "~2.79.0"
+    "log": "^1.4.0",
+    "optparse": "~1.0.5",
+    "request": "~2.79.0",
+    "soupselect": "~0.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "hubot-test-helper": "^1.9.0",
+    "mocha": "^6.0.2",
+    "sinon": "^7.3.1"
   }
 }

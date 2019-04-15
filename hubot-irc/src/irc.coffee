@@ -190,7 +190,11 @@ class IrcBot extends Adapter
     @robot.Response = IrcResponse
 
     @robot.name = options.nick
-    bot = new Irc.Client options.server, options.nick, client_options
+    if process.env.NODE_ENV is 'test'
+      MockIrcClient = require '../../test/mock/IrcClient'
+      bot = new MockIrcClient options.server, options.nick, client_options
+    else
+      bot = new Irc.Client options.server, options.nick, client_options
 
     next_id = 1
     user_id = {}
@@ -237,7 +241,7 @@ class IrcBot extends Adapter
 
     bot.addListener 'message', (from, to, message, original) ->
       return unless from
-      
+
       if options.nick.toLowerCase() == to.toLowerCase()
         # this is a private message, let the 'pm' listener handle it
         return
@@ -330,7 +334,7 @@ class IrcBot extends Adapter
         logger.info('Ignoring user: %s', from)
         # we'll ignore this message if it's from someone we want to ignore
         return
-      
+
       if not process.env.HUBOT_IRC_PRIVATE or process.env.HUBOT_IRC_IGNOREINVITE
         bot.join channel
 
@@ -371,5 +375,4 @@ class IrcBot extends Adapter
 
     target
 
-exports.use = (robot) ->
-  new IrcBot robot
+module.exports = IrcBot

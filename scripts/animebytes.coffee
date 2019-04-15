@@ -1,4 +1,12 @@
 request = require 'request'
+Log = require('log')
+
+{
+  parseUserInfo
+  ParseUserInfoWrongHost
+} = require '../utils/parseUserInfo'
+
+logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
 unless process.env.SITE_API_KEY?
   throw new Error "Environment variable SITE_API_KEY must be set"
@@ -11,13 +19,6 @@ module.exports = (robot) ->
     robot.adapter.command 'CHGHOST', process.env.HUBOT_IRC_NICK, 'bakus.dungeon'
     for channel in process.env.AB_CHANNELS.split ','
       robot.adapter.command 'SAJOIN', process.env.HUBOT_IRC_NICK, channel
-
-  parseUserInfo = (host) ->
-    arr = host.split('.')
-    [user, rank, ab] = arr
-    if arr.length != 3 or ab != 'AnimeBytes'
-      user = rank = ''
-    {user, rank}
 
   robot.hear /[^\s]+(?:\s)+enter(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)+([^\s]+)/i, (msg) ->
     return if msg.message.room?
@@ -42,7 +43,8 @@ module.exports = (robot) ->
       err = 'Failed to log in' if !err && res.statusCode == 303
 
       if err
-        console.log(err)
+        if (process.env.HUBOT_IRC_DEBUG or false)
+          logger.error(err)
         msg.send 'Internal error'
         return
 
@@ -61,8 +63,14 @@ module.exports = (robot) ->
           msg.send 'Access denied for ' + room
 
   robot.hear /^!user(?: (.+))?/i, (msg) ->
-    room = msg.message.room
-    name = msg.match[1] || parseUserInfo(msg.message.user.original.host).user
+    try
+      name = parseUserInfo(msg.message.user.original.host).user
+    catch err
+      if err instanceof ParseUserInfoWrongHost
+        return msg.send 'Not authorized'
+
+    if msg.match[1]
+      name = msg.match[1]
 
     return unless name
 
@@ -75,7 +83,8 @@ module.exports = (robot) ->
       err = 'Failed to log in' if !err && res.statusCode == 303
 
       if err
-        console.log(err)
+        if (process.env.HUBOT_IRC_DEBUG or false)
+          logger.error(err)
         msg.send 'Internal error'
         return
 
