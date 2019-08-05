@@ -14,6 +14,7 @@ module.exports = (robot) ->
     httpResponse = (url) ->
       HttpClient.create(url)
       .header('User-Agent', "Satsuki/1.0 (Hubot 2.19.0) Web/1.1")
+      .header('Accept-Language', 'en-US,en;q=0.7')
       .header('Cookie', "PREF=f6=42008")
       .get(->) (err, res, body) ->
         if err || !res
