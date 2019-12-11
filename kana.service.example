@@ -1,0 +1,14 @@
+Unit]
+Description=Hubot
+After=network.target
+
+[Service]
+EnvironmentFile=/opt/hubot/env
+WorkingDirectory=/opt/hubot
+ExecStart=/usr/bin/npm run hubot
+RestartSec=30s
+Restart=always
+User=hubot
+
+[Install]
+WantedBy=default.target
