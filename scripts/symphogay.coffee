@@ -20,4 +20,4 @@ module.exports = (robot) ->
     msg.send songs[Math.floor(Math.random() * songs.length)]
 
   robot.hear /^!metanoia$/i, (msg) ->
-    msg.send songs[Math.floor(9 + Math.random() * 2)]
+    msg.send songs[Math.floor(10 + Math.random() * 2)]
