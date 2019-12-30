@@ -1,8 +1,7 @@
 module.exports = (robot) ->
-  
+
   songs = [
     'FINAL COMMANDER by Mizuki Nana ~ https://radio.animebits.moe/player/hash/7c57e488c8c1 ~ https://animebytes.tv/torrents2.php?id=57720',
-    'METANOIA by Mizuki Nana ~ https://radio.animebits.moe/player/hash/4379a84c66f9 ~ https://animebytes.tv/torrents2.php?id=57062',
     'Exterminate by Mizuki Nana ~ https://radio.animebits.moe/player/hash/b92a0114958e ~ https://animebytes.tv/torrents2.php?id=49119',
     'TESTAMENT by Mizuki Nana ~ https://radio.animebits.moe/player/hash/46a2911eb456 ~ https://animebytes.tv/torrents2.php?id=46911',
     'Vitalization by Mizuki Nana ~ https://radio.animebits.moe/player/hash/691e1d8a38da ~ https://animebytes.tv/torrents2.php?id=22995',
@@ -12,6 +11,7 @@ module.exports = (robot) ->
     'Synchrogazer -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/81d7bbbacd42 ~ https://animebytes.tv/torrents2.php?id=16863',
     'https://mei.animebytes.tv/D46VG0mwINv.png',
     'UNLIMITED BEAT by Mizuki Nana ~ https://radio.animebits.moe/player/hash/18e18823107f ~ https://animebytes.tv/torrents2.php?id=43365',
+    'METANOIA by Mizuki Nana ~ https://radio.animebits.moe/player/hash/4379a84c66f9 ~ https://animebytes.tv/torrents2.php?id=57062',
     'METANOIA -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/3be87f1f3252 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
     'FINAL COMMANDER -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/9f4ab07bede1 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
   ]
@@ -20,4 +20,4 @@ module.exports = (robot) ->
     msg.send songs[Math.floor(Math.random() * songs.length)]
 
   robot.hear /^!metanoia$/i, (msg) ->
-    msg.send songs[1]
+    msg.send songs[Math.floor(9 + Math.random() * 2)]
