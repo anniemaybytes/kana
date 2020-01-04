@@ -32,26 +32,32 @@ module.exports = (robot) ->
     user.type = query.type if query.type
 
     switch type
-      when "web"
+      when "push"
         message = []
         branch = hook.ref.split("/")[2..].join("/")
-        # if the ref before the commit is 00000, this is a new branch
-        if /^0+$/.test(hook.before)
-            message.push "#{bold(hook.sender.login)} pushed a new branch: #{bold(branch)} on #{bold(hook.repository.name)} (#{underline(hook.repository.html_url)})"
-        else
-            message.push "#{bold(hook.sender.login)} pushed #{bold(hook.commits.length)} commits to #{bold(branch)} on #{bold(hook.repository.name)}: "
-            for i, commit of hook.commits
-              break unless i < 10
-              commit_message = commit.message.split("\n")[0]
-              message.push " * #{commit.author.name}: #{commit_message} (#{underline(trim_commit_url(commit.url))})"
-            if hook.commits.length > 1
-                message.push "Entire diff: #{underline(hook.compare_url)}"
+        message.push "#{bold(hook.sender.login)} pushed #{bold(hook.commits.length)} commits to #{bold(branch)} on #{bold(hook.repository.name)}: "
+        for i, commit of hook.commits
+          break unless i < 10
+          commit_message = commit.message.split("\n")[0]
+          message.push " * #{commit.author.name}: #{commit_message} (#{underline(trim_commit_url(commit.url))})"
+        if hook.commits.length > 1
+          message.push "Entire diff: #{underline(hook.compare_url)}"
         message = message.join("\n")
+      when "create"
+        message = "#{bold(hook.sender.login)} created new #{hook.ref_type} #{bold(hook.ref)} on #{bold(hook.repository.name)}"
+      when "pull"
+        message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(hook.pull_request.html_url)})"
+      when "issue"
+        link = hook.repository.html_url + "/issues/" + hook.number
+        message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(link)})"
+      when "release"
+        message = "#{bold(hook.sender.login)} #{hook.action} tag #{bold(hook.release.tag_name)} on #{bold(hook.repository.name)}"
+      when "delete"
+        message = "#{bold(hook.sender.login)} deleted #{hook.ref_type} #{bold(hook.ref)} on #{bold(hook.repository.name)}"  
 
-        user.room = gitChannel
-        robot.send user, message
+    user.room = gitChannel
+    robot.send user, message
 
-  robot.router.post "/git/web/" + process.env.GIT_WEBHOOK, (req, res) ->
-    handler "web", req, res
+  robot.router.post "/git/" + process.env.GIT_WEBHOOK + "/:type", (req, res) ->
+    handler req.params.type, req, res
     res.end ""
-
