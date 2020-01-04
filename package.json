@@ -8,7 +8,7 @@
     "test:all": "NODE_ENV=test mocha --recursive \"./test/**/*.test.coffee\""
   },
   "dependencies": {
-    "coffeescript": "^1.12.7",
+    "coffeescript": "~1.12.7",
     "htmlparser": "~1.7.6",
     "hubot": "^3.3.2",
     "hubot-irc": "file:./hubot-irc",
