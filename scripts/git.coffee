@@ -3,7 +3,6 @@ querystring = require 'querystring'
 
 module.exports = (robot) ->
   gitChannel = process.env.GIT_CHANNEL
-  debug = process.env.GIT_DEBUG?
 
   if robot.adapter.constructor.name is 'IrcBot'
     bold = (text) ->
@@ -22,10 +21,6 @@ module.exports = (robot) ->
   handler = (type, req, res) ->
     query = querystring.parse(url.parse(req.url).query)
     hook = req.body
-
-    if debug
-      console.log('query', query)
-      console.log('hook', hook)
 
     user = {}
     query.targets ||= []
