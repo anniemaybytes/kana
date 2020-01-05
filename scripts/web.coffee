@@ -6,7 +6,7 @@ HttpClient = require 'scoped-http-client'
 module.exports = (robot) ->
 
   unEntity = (str) ->
-    e = JSDom.jsdom().createElement("div")
+    e = new JSDom.JSDOM().window.document.createElement("div")
     e.innerHTML = str
     if e.childNodes.length == 0 then "" else e.childNodes[0].nodeValue
 
