@@ -28,16 +28,17 @@ module.exports = (robot) ->
 
     switch type
       when "push"
-        message = []
-        branch = hook.ref.split("/")[2..].join("/")
-        message.push "#{bold(hook.sender.login)} pushed #{bold(hook.commits.length)} commits to #{bold(branch)} on #{bold(hook.repository.name)}: "
-        for i, commit of hook.commits
-          break unless i < 10
-          commit_message = commit.message.split("\n")[0]
-          message.push " * #{commit.author.name}: #{commit_message} (#{underline(trim_commit_url(commit.url))})"
-        if hook.commits.length > 1
-          message.push "Entire diff: #{underline(hook.compare_url)}"
-        message = message.join("\n")
+        if hook.commits.length > 0
+          message = []
+          branch = hook.ref.split("/")[2..].join("/")
+          message.push "#{bold(hook.sender.login)} pushed #{bold(hook.commits.length)} commits to #{bold(branch)} on #{bold(hook.repository.name)}: "
+          for i, commit of hook.commits
+            break unless i < 10
+            commit_message = commit.message.split("\n")[0]
+            message.push " * #{commit.author.name}: #{commit_message} (#{underline(trim_commit_url(commit.url))})"
+          if hook.commits.length > 1
+            message.push "Entire diff: #{underline(hook.compare_url)}"
+          message = message.join("\n")
       when "create"
         message = "#{bold(hook.sender.login)} created new #{hook.ref_type} #{bold(hook.ref)} on #{bold(hook.repository.name)}"
       when "pull"

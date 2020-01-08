@@ -13,7 +13,7 @@ module.exports = (robot) ->
   robot.hear /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i, (msg) ->
     httpResponse = (url) ->
       HttpClient.create(url)
-      .header('User-Agent', "Satsuki/1.0 (Hubot 2.19.0) Web/1.1")
+      .header('User-Agent', "Satsuki/1.0 (Hubot) Web/1.1")
       .header('Accept-Language', 'en-US,en;q=0.7')
       .header('Cookie', "PREF=f6=42008")
       .get(->) (err, res, body) ->
