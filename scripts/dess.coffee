@@ -6,6 +6,11 @@ Log = require('log')
   ParseUserInfoWrongHost
 } = require '../utils/parseUserInfo'
 
+logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+
+unless process.env.SITE_API_KEY?
+  throw new Error "Environment variable SITE_API_KEY must be set"
+
 module.exports = (robot) ->
   robot.hear /^!dess$/i, (msg) ->
     try
