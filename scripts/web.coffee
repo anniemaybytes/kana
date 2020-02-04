@@ -12,17 +12,20 @@ module.exports = (robot) ->
 
   robot.hear /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i, (msg) ->
     httpResponse = (url) ->
+      userAgent = "Satsuki/1.0 (Hubot) Web/1.2"
+      if url.match(/https?:\/\/(.+\.)?youtube\.com/i) || url.match(/https?:\/\/(.+\.)?youtu.be/i) # special handling for youtube polymer
+        userAgent = userAgent + " (like Twitterbot/1.0)"
       size = 0
       options = {
         uri: url,
         encoding: null,
         headers: {
-          "User-Agent": "Satsuki/1.0 (Hubot) Web/1.1",
-          "Accept-Language": "en-US,en;q=0.7",
-          "Cookie": "PREF=f6=42008"
+          "User-Agent": userAgent,
+          "Accept-Language": "en-US,en;q=0.7"
         },
         jar: false
       }
+
       HttpClient options, (err, res, body) ->
         if err || !res
           console.log "HTTP got error:", err
