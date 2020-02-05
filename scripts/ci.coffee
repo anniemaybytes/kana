@@ -30,26 +30,35 @@ module.exports = (robot) ->
         link = hook.system.link + "/" + hook.repo.slug + "/" + hook.build.number
         switch hook.action
           when "created"
+            sender = hook.user.login
+            if hook.build.trigger == "@cron"
+              sender = "Cron system"
+
             message = []
-            message.push "CI: Build \##{hook.build.number} by #{bold(hook.user.login)} for #{bold(hook.repo.slug)} created (#{underline(link)})"
-            message.push "Changes staged: #{underline(hook.build.link)}"
+            message.push "CI: Build job \##{hook.build.number} by #{bold(sender)} for #{bold(hook.repo.slug)} created (#{underline(link)})"
+
+            console.log(hook)
+            if hook.build.before != "0000000000000000000000000000000000000000" && 
+               hook.build.before != "" && hook.build.trigger != "@cron" && hook.build.link != ""
+              message.push " Changes staged: #{underline(hook.build.link)}"
+
             message = message.join("\n")
           when "updated"
             switch hook.build.status
               when "success"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} completed succesfully (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} completed succesfully (#{underline(link)})"
               when "killed"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} was cancelled by user (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} was cancelled manually (#{underline(link)})"
               when "failure"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} failed (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} failed (#{underline(link)})"
               when "error"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} errored (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} errored (#{underline(link)})"
               when "skipped"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} skipped (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} skipped (#{underline(link)})"
               when "blocked"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} blocked (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} blocked (#{underline(link)})"
               when "declined"
-                message = "CI: Build \##{hook.build.number} for #{bold(hook.repo.slug)} declined (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} declined (#{underline(link)})"
 
     if message
       user.room = gitChannel
