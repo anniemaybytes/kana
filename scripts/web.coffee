@@ -13,8 +13,10 @@ module.exports = (robot) ->
   robot.hear /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/i, (msg) ->
     httpResponse = (url) ->
       userAgent = "Satsuki/1.0 (Hubot) Web/1.2"
-      if url.match(/https?:\/\/(.+\.)?youtube\.com/i) || url.match(/https?:\/\/(.+\.)?youtu.be/i) # special handling for youtube polymer
+      # special handling for youtube polymer
+      if url.match(/https?:\/\/(.+\.)?youtube\.com/i) || url.match(/https?:\/\/(.+\.)?youtu.be/i)
         userAgent = userAgent + " (like Twitterbot/1.0)"
+      
       size = 0
       options = {
         uri: url,
@@ -47,7 +49,8 @@ module.exports = (robot) ->
 
           processResult = (elem) ->
             if data = elem?.children?[0].data
-              title = unEntity(data).replace(/(\r\n|\n|\r)/gm,"").replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim()
+              title = unEntity(data).replace(/(\r\n|\n|\r)/gm, '')
+              title = title.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim()
               return unless title
 
               if title.length > 100
@@ -72,7 +75,9 @@ module.exports = (robot) ->
 
     url = msg.match[0]
 
-    if url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) || url.match(/127\.0\.0\.1/i) || url.match(/\.(png|jpg|jpeg|gif|txt|zip|tar\.bz|js|css|pdf)/)
+    if url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
+    url.match(/127\.0\.0\.1/i) ||
+    url.match(/\.(png|jpg|jpeg|gif|txt|zip|tar\.bz|js|css|pdf)/)
       return
     else
       try

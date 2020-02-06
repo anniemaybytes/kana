@@ -15,7 +15,7 @@ Following commands are accessible:
 - !metanoia
 
 Additionally:
-- Will listen on every channel it joins and resolves titles for links posted
+- Will listen on every channel it joins and resolve `<title>` for links posted
 - Will listen for raw ECHO commands and forward them to specified channels. Format is `channel1-channel2|%|hello world`
 - Will listen for Gitea/Gogs style webhook on `/git/{:key}/{:type}`. Suppported events are:
   - push (maximum of 10 commits will be echo'ed in channel)
@@ -24,6 +24,16 @@ Additionally:
   - issue
   - release
   - delete
+- Will listen for Drone CI webhook on `/ci/{:key}`. Supported events are:
+  - created
+  - updated
+    - success
+    - killed
+    - failure
+    - error
+    - skipped
+    - blocked
+    - declined
 - Sends `WHO` to `#animebytes` every 5 minutes and transmits list of users back to remote endpoint at `https://animebytes.tv/api/irc/notifier`
 
 ## Installation
@@ -31,8 +41,8 @@ Additionally:
 Satsuki requires NodeJS. Version 10 or 12 is recommended.
 
 ```
-# npm i
-# npm run hubot
+$ npm i
+$ npm run hubot
 ```
 
 Example systemd unit file:
@@ -70,7 +80,7 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `OPER_PASS` - Oper password
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
 - `GIT_WEBHOOK` - Secret key to authenticate Git webhook endpoint
-- `PORT` - Port on which Hubot will expose Express router, used by Git webhook
+- `PORT` - Port on which Hubot will expose Express router, used by Git and CI webhook
 - `ECHO_PORT` - Port on which Satsuki will listen for raw ECHO commands, there is no authentication here so use firewall
 
 Additionally, all possible variables from Hubot and Hubot IRC can be used.

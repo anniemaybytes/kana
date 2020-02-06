@@ -26,30 +26,50 @@ module.exports = (robot) ->
     query.targets ||= []
     user.type = query.type if query.type
 
+    if hook.ref.indexOf('refs/heads/') != -1 || hook.ref.indexOf('refs/tags/') != -1
+      branch = hook.ref.split("/")[2..].join("/")
+    else
+      branch = hook.ref
+
     switch type
       when "push"
         if hook.commits.length > 0
           message = []
-          branch = hook.ref.split("/")[2..].join("/")
+
+          # coffeelint: disable=max_line_length
           message.push "#{bold(hook.sender.login)} pushed #{bold(hook.commits.length)} commits to #{bold(branch)} on #{bold(hook.repository.name)}: "
+          # coffeelint: enable=max_line_length
+          
           for i, commit of hook.commits
             break unless i < 10
             commit_message = commit.message.split("\n")[0]
             message.push " * #{commit.author.name}: #{commit_message} (#{underline(trim_commit_url(commit.url))})"
+          
           if hook.commits.length > 1
             message.push "Entire diff: #{underline(hook.compare_url)}"
+          
           message = message.join("\n")
       when "create"
-        message = "#{bold(hook.sender.login)} created new #{hook.ref_type} #{bold(hook.ref)} on #{bold(hook.repository.name)}"
+        # coffeelint: disable=max_line_length
+        message = "#{bold(hook.sender.login)} created new #{hook.ref_type} #{bold(branch)} on #{bold(hook.repository.name)}"
+        # coffeelint: enable=max_line_length
       when "pull"
+        # coffeelint: disable=max_line_length
         message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(hook.pull_request.html_url)})"
+        # coffeelint: enable=max_line_length
       when "issue"
         link = hook.repository.html_url + "/issues/" + hook.number
+        # coffeelint: disable=max_line_length
         message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(link)})"
+        # coffeelint: enable=max_line_length
       when "release"
+        # coffeelint: disable=max_line_length
         message = "#{bold(hook.sender.login)} #{hook.action} tag #{bold(hook.release.tag_name)} on #{bold(hook.repository.name)}"
+        # coffeelint: enable=max_line_length
       when "delete"
-        message = "#{bold(hook.sender.login)} deleted #{hook.ref_type} #{bold(hook.ref)} on #{bold(hook.repository.name)}"  
+        # coffeelint: disable=max_line_length
+        message = "#{bold(hook.sender.login)} deleted #{hook.ref_type} #{bold(branch)} on #{bold(hook.repository.name)}"
+        # coffeelint: enable=max_line_length
 
     user.room = gitChannel
     robot.send user, message

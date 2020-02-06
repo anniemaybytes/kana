@@ -28,7 +28,7 @@ describe 'AnimeBytes script', ->
     mock.close(done)
 
   describe 'when bot is connected', ->
-    beforeEach () ->
+    beforeEach ->
       mock.server.on 'connection', ->
         mock.send ':localhost 001 Hubot :Welcome\r\n'
       @robot.run()
@@ -80,7 +80,7 @@ describe 'AnimeBytes script', ->
           done()
 
       it 'should get info without a given user', (done) ->
-        request.post.yields(null, { statusCode: 200 }, JSON.stringify
+        request.post.yields(null, {statusCode: 200}, JSON.stringify
           message: 'some_user_data'
         )
         @user.original =
@@ -92,7 +92,7 @@ describe 'AnimeBytes script', ->
         @adapter.receive(new TextMessage(@user, '!user'))
 
       it 'should get info on given user', (done) ->
-        request.post.yields(null, { statusCode: 200 }, JSON.stringify
+        request.post.yields(null, {statusCode: 200}, JSON.stringify
           message: 'some_user_data'
         )
         @bot.on 'say', (target, text) ->
@@ -102,7 +102,7 @@ describe 'AnimeBytes script', ->
         @adapter.receive(new TextMessage(@user, '!user dummyUser'))
 
       it 'should make request and handle internal error', (done) ->
-        request.post.yields('SomeError', { statusCode: 200 })
+        request.post.yields('SomeError', {statusCode: 200})
         @bot.on 'say', (target, text) ->
           expect(target).to.equal '#mocha'
           expect(text[0]).to.equal 'Internal error'
@@ -110,7 +110,7 @@ describe 'AnimeBytes script', ->
         @adapter.receive(new TextMessage(@user, '!user dummyUser'))
 
       it 'should make request and fail login', (done) ->
-        request.post.yields(null, { statusCode: 303 })
+        request.post.yields(null, {statusCode: 303})
         @bot.on 'say', (target, text) ->
           expect(target).to.equal '#mocha'
           expect(text[0]).to.equal 'Internal error'

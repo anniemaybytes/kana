@@ -11,11 +11,15 @@ steps:
         image: node:10
         commands:
             - npm i --no-save --quiet --no-optional
-            - npm run test:all
-
+            - npm run test
+    -   name: linter
+        image: node:10
+        commands:
+            - npm run lint
 trigger:
     branch:
         - master
+        - drone
 
 ---
 kind: pipeline
@@ -31,8 +35,13 @@ steps:
         image: node:12
         commands:
             - npm i --no-save --quiet --no-optional
-            - npm run test:all
+            - npm run test
+    -   name: linter
+        image: node:12
+        commands:
+            - npm run lint
 
 trigger:
     branch:
         - master
+        - drone

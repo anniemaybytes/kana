@@ -1,11 +1,11 @@
 {
   "name": "kana",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "author": "AnimeBytes",
   "scripts": {
     "hubot": "hubot -a irc",
-    "test": "NODE_ENV=test mocha",
-    "test:all": "NODE_ENV=test mocha --recursive \"./test/**/*.test.coffee\""
+    "test": "NODE_ENV=test mocha --color --recursive \"./test/**/*.test.coffee\"",
+    "lint": "coffeelint --color=always ."
   },
   "dependencies": {
     "coffeescript": "1.12.7",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
+    "coffeelint": "^2.1.0",
     "hubot-test-helper": "1.9.0",
     "mocha": "7.0.1",
     "sinon": "8.1.1"

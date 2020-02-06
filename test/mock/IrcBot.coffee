@@ -5,4 +5,6 @@ class MockIrcBot extends IrcBot
     @emit 'send', envelope, strings
     super envelope, strings
 
+
+
 module.exports = MockIrcBot

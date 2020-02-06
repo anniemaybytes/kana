@@ -1,6 +1,7 @@
 module.exports = (robot) ->
 
   songs = [
+    # coffeelint: disable=max_line_length
     'FINAL COMMANDER by Mizuki Nana ~ https://radio.animebits.moe/player/hash/7c57e488c8c1 ~ https://animebytes.tv/torrents2.php?id=57720',
     'Exterminate by Mizuki Nana ~ https://radio.animebits.moe/player/hash/b92a0114958e ~ https://animebytes.tv/torrents2.php?id=49119',
     'TESTAMENT by Mizuki Nana ~ https://radio.animebits.moe/player/hash/46a2911eb456 ~ https://animebytes.tv/torrents2.php?id=46911',
@@ -14,6 +15,7 @@ module.exports = (robot) ->
     'METANOIA by Mizuki Nana ~ https://radio.animebits.moe/player/hash/4379a84c66f9 ~ https://animebytes.tv/torrents2.php?id=57062',
     'METANOIA -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/3be87f1f3252 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
     'FINAL COMMANDER -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/9f4ab07bede1 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
+    # coffeelint: enable=max_line_length
   ]
 
   robot.hear /^!nana$/i, (msg) ->
