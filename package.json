@@ -5,7 +5,8 @@
   "scripts": {
     "hubot": "hubot -a irc",
     "test": "NODE_ENV=test mocha --color --recursive \"./test/**/*.test.coffee\"",
-    "lint": "coffeelint --color=always ."
+    "lint": "coffeelint --color=always .",
+    "check-outdated": "check-outdated --ignore-pre-releases --ignore-dev-dependencies --ignore-packages coffeescript"
   },
   "dependencies": {
     "coffeescript": "1.12.7",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
+    "check-outdated": "^1.4.2",
     "coffeelint": "2.1.0",
     "hubot-test-helper": "1.9.0",
     "mocha": "7.0.1",

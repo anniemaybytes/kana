@@ -7,10 +7,13 @@ platform:
     arch: amd64
 
 steps:
-    -   name: tests
+    -   name: install
         image: node:10
         commands:
             - npm i --no-save --quiet --no-optional
+    -   name: tests
+        image: node:10
+        commands:
             - npm run test
     -   name: linter
         image: node:10
@@ -20,6 +23,9 @@ trigger:
     branch:
         - master
         - drone
+    event:
+        exclude:
+            - cron
 
 ---
 kind: pipeline
@@ -31,10 +37,13 @@ platform:
     arch: amd64
 
 steps:
-    -   name: tests
+    -   name: install
         image: node:12
         commands:
             - npm i --no-save --quiet --no-optional
+    -   name: tests
+        image: node:12
+        commands:
             - npm run test
     -   name: linter
         image: node:12
@@ -45,3 +54,36 @@ trigger:
     branch:
         - master
         - drone
+    event:
+        exclude:
+            - cron
+
+---
+kind: pipeline
+name: deps
+type: docker
+
+platform:
+    os: linux
+    arch: amd64
+
+steps:
+    -   name: install
+        image: node:12
+        commands:
+            - npm i --no-save --quiet --no-optional
+        depends_on: [ clone ]
+    -   name: audit
+        image: node:12
+        commands:
+            - npm audit
+        depends_on: [ clone ]
+    -   name: outdated
+        image: node:12
+        commands:
+            - npm run check-outdated
+        depends_on: [ install ]
+
+trigger:
+    branch:
+        - master
