@@ -26,10 +26,14 @@ module.exports = (robot) ->
     query.targets ||= []
     user.type = query.type if query.type
 
-    if hook.ref.indexOf('refs/heads/') != -1 || hook.ref.indexOf('refs/tags/') != -1
-      branch = hook.ref.split("/")[2..].join("/")
-    else
-      branch = hook.ref
+    switch type
+      when "push", "create", "delete"
+        if hook.ref.indexOf('refs/heads/') != -1 || hook.ref.indexOf('refs/tags/') != -1
+          branch = hook.ref.split("/")[2..].join("/")
+        else
+          branch = hook.ref
+      else
+        branch = "unknown"
 
     switch type
       when "push"
