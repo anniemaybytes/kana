@@ -17,7 +17,7 @@
     "jsdom": "16.1.0",
     "log": "6.0.0",
     "optparse": "1.0.5",
-    "request": "2.88.0",
+    "request": "2.88.2",
     "soupselect": "0.2.0"
   },
   "devDependencies": {
