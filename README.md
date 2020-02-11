@@ -20,9 +20,6 @@ Additionally:
 - Will listen for Gitea/Gogs style webhook on `/git/{:key}/{:type}`. Suppported events are:
   - push (maximum of 10 commits will be echo'ed in channel)
   - create
-  - pull
-  - issue
-  - release
   - delete
 - Will listen for Drone CI webhook on `/ci/{:key}`. Supported events are:
   - created

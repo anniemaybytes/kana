@@ -57,19 +57,6 @@ module.exports = (robot) ->
         # coffeelint: disable=max_line_length
         message = "#{bold(hook.sender.login)} created new #{hook.ref_type} #{bold(branch)} on #{bold(hook.repository.name)}"
         # coffeelint: enable=max_line_length
-      when "pull"
-        # coffeelint: disable=max_line_length
-        message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(hook.pull_request.html_url)})"
-        # coffeelint: enable=max_line_length
-      when "issue"
-        link = hook.repository.html_url + "/issues/" + hook.number
-        # coffeelint: disable=max_line_length
-        message = "#{bold(hook.sender.login)} #{hook.action} \##{bold(hook.number)} on #{bold(hook.repository.name)} (#{underline(link)})"
-        # coffeelint: enable=max_line_length
-      when "release"
-        # coffeelint: disable=max_line_length
-        message = "#{bold(hook.sender.login)} #{hook.action} tag #{bold(hook.release.tag_name)} on #{bold(hook.repository.name)}"
-        # coffeelint: enable=max_line_length
       when "delete"
         # coffeelint: disable=max_line_length
         message = "#{bold(hook.sender.login)} deleted #{hook.ref_type} #{bold(branch)} on #{bold(hook.repository.name)}"

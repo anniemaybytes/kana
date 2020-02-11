@@ -10,6 +10,8 @@ steps:
     -   name: install
         image: node:10
         commands:
+            - node -v
+            - npm -v
             - npm i --no-save --quiet --no-optional
     -   name: tests
         image: node:10
@@ -40,6 +42,8 @@ steps:
     -   name: install
         image: node:12
         commands:
+            - node -v
+            - npm -v
             - npm i --no-save --quiet --no-optional
     -   name: tests
         image: node:12
@@ -71,6 +75,8 @@ steps:
     -   name: install
         image: node:12
         commands:
+            - node -v
+            - npm -v
             - npm i --no-save --quiet --no-optional
         depends_on: [ clone ]
     -   name: audit
