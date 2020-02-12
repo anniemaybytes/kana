@@ -28,9 +28,6 @@ Additionally:
     - killed
     - failure
     - error
-    - skipped
-    - blocked
-    - declined
 - Sends `WHO` to `#animebytes` every 5 minutes and transmits list of users back to remote endpoint at `https://animebytes.tv/api/irc/notifier`
 
 ## Installation

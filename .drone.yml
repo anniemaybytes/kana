@@ -11,17 +11,23 @@ steps:
     -   name: restore-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             restore: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v10'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - ./hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:10
@@ -43,17 +49,23 @@ steps:
     -   name: rebuild-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             rebuild: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v10'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - ./hubot-irc/node_modules
         depends_on: [ install ]
 
 trigger:
@@ -63,11 +75,6 @@ trigger:
     event:
         exclude:
             - cron
-
-volumes:
-    -   name: drone-cache
-        host:
-            path: /var/lib/cache
 
 ---
 kind: pipeline
@@ -82,17 +89,23 @@ steps:
     -   name: restore-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             restore: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v12'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - ./hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:12
@@ -114,17 +127,23 @@ steps:
     -   name: rebuild-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             rebuild: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v12'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - ./hubot-irc/node_modules
         depends_on: [ install ]
 
 trigger:
@@ -134,11 +153,6 @@ trigger:
     event:
         exclude:
             - cron
-
-volumes:
-    -   name: drone-cache
-        host:
-            path: /var/lib/cache
 
 ---
 kind: pipeline
@@ -153,17 +167,23 @@ steps:
     -   name: restore-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             restore: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_deps'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:12
@@ -185,17 +205,23 @@ steps:
     -   name: rebuild-cache
         image: meltwater/drone-cache
         failure: ignore
+        environment:
+            AWS_ACCESS_KEY_ID:
+                from_secret: aws_access_key_id
+            AWS_SECRET_ACCESS_KEY:
+                from_secret: aws_secret_access_key
+            PLUGIN_PATH_STYLE: true
         settings:
-            backend: "filesystem"
+            endpoint:
+                from_secret: aws_endpoint
+            region: ab-1
+            bucket: drone-cache
             rebuild: true
             cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_deps'
-            archive_format: "gzip"
+            archive_format: gzip
             mount:
-                - 'node_modules'
-                - 'hubot-irc/node_modules'
-        volumes:
-            -   name: drone-cache
-                path: /tmp/cache
+                - ./node_modules
+                - ./hubot-irc/node_modules
         depends_on: [ install ]
 
 trigger:
@@ -203,12 +229,8 @@ trigger:
         - master
         - drone
 
-volumes:
-    -   name: drone-cache
-        host:
-            path: /var/lib/cache
 ---
 kind: signature
-hmac: 68682f6ff20fe40677e214481f759a076abb0f0e97729682a0f0f63be1e9a9dd
+hmac: 92c29dc31b80844aff718f277c7163f90bd98d3b7a7b6dc029e9d7651bcf4eb4
 
 ...

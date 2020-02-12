@@ -52,7 +52,7 @@ module.exports = (robot) ->
                 # coffeelint: enable=max_line_length
               when "killed"
                 # coffeelint: disable=max_line_length
-                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} was cancelled manually (#{underline(link)})"
+                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} was cancelled (#{underline(link)})"
                 # coffeelint: enable=max_line_length
               when "failure"
                 # coffeelint: disable=max_line_length
@@ -61,18 +61,6 @@ module.exports = (robot) ->
               when "error"
                 # coffeelint: disable=max_line_length
                 message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} errored (#{underline(link)})"
-                # coffeelint: enable=max_line_length
-              when "skipped"
-                # coffeelint: disable=max_line_length
-                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} skipped (#{underline(link)})"
-                # coffeelint: enable=max_line_length
-              when "blocked"
-                # coffeelint: disable=max_line_length
-                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} blocked (#{underline(link)})"
-                # coffeelint: enable=max_line_length
-              when "declined"
-                # coffeelint: disable=max_line_length
-                message = "CI: Build job \##{hook.build.number} for #{bold(hook.repo.slug)} declined (#{underline(link)})"
                 # coffeelint: enable=max_line_length
 
     if message
