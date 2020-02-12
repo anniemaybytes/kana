@@ -44,7 +44,7 @@ module.exports = (robot) ->
 
       if err
         if (process.env.HUBOT_IRC_DEBUG or false)
-          logger.error(err)
+          logger.error err
         msg.send 'Internal error'
         return
 
@@ -84,7 +84,7 @@ module.exports = (robot) ->
 
       if err
         if (process.env.HUBOT_IRC_DEBUG or false)
-          logger.error(err)
+          logger.error err
         msg.send 'Internal error'
         return
 

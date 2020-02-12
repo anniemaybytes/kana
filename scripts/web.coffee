@@ -3,6 +3,8 @@ HtmlParser = require "htmlparser"
 JSDom = require "jsdom"
 HttpClient = require 'request'
 
+logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+
 module.exports = (robot) ->
 
   unEntity = (str) ->
@@ -30,7 +32,7 @@ module.exports = (robot) ->
 
       HttpClient options, (err, res, body) ->
         if err || !res
-          console.log "HTTP got error:", err
+          logger.warning "HTTP got error:", err
         else if res.statusCode in [301, 302, 303]
           httpResponse(res.headers.location)
         else if res.statusCode is 200

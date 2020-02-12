@@ -42,5 +42,8 @@
   },
   "eol_last": {
     "level": "error"
+  },
+  "no_debugger": {
+    "console": true
   }
 }

@@ -1,3 +1,0 @@
--r coffeescript/register
-./test/setup.coffee
---timeout 5000

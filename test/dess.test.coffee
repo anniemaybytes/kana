@@ -8,7 +8,7 @@ MockIrc = require './mock/Irc'
 
 sandbox = sinon.createSandbox()
 
-describe 'AnimeBytes script', ->
+describe 'dess script', ->
   mock = null
   beforeEach ->
     port = process.env.HUBOT_IRC_PORT
@@ -16,7 +16,7 @@ describe 'AnimeBytes script', ->
 
     @robot = loadBot '', 'irc', false, 'Hubot'
     @robot.adapter.on 'connected', =>
-      require('../scripts/animebytes')(@robot)
+      require('../scripts/dess')(@robot)
       @user = @robot.adapter.createUser('#mocha', 'dummyUser')
 
       @adapter = @robot.adapter
@@ -27,30 +27,8 @@ describe 'AnimeBytes script', ->
     @robot.adapter.bot.conn.cyclingPingTimer.stop()
     mock.close(done)
 
-  describe 'when bot is connected', ->
-    beforeEach ->
-      mock.server.on 'connection', ->
-        mock.send ':localhost 001 Hubot :Welcome\r\n'
-      @robot.run()
-      @robot.adapter.bot.on 'registered', =>
-        @robot.adapter.bot.disconnect()
 
-    it 'should register and set up bot correctly', (done) ->
-      mock.on 'end', ->
-        expect(mock.incoming).to.deep.equal [
-          'NICK Hubot'
-          'USER hubot 8 * Hubot'
-          'OPER changeme changeme'
-          'CHGIDENT Hubot Satsuki'
-          'MODE Hubot +B'
-          'CHGHOST Hubot bakus.dungeon'
-          'SAJOIN Hubot #mocha'
-          'QUIT :node-irc says goodbye'
-        ]
-        done()
-
-
-  describe 'when !user is called', ->
+  describe 'when !dess is called', ->
     beforeEach (done) ->
       @robot.run()
       @robot.adapter.bot.on 'connect', =>
@@ -63,53 +41,37 @@ describe 'AnimeBytes script', ->
 
     describe 'when authorized', ->
       it 'should make request', (done) ->
-        @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+        @user.original =
+          host: 'dummyUser.User.AnimeBytes'
+        @adapter.receive(new TextMessage(@user, '!dess'))
         mock.on 'end', ->
           expect(request.post.calledOnce).to.equal true
           done()
 
       it 'should make request with correct data', (done) ->
-        @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+        @user.original =
+          host: 'dummyUser.User.AnimeBytes'
+        @adapter.receive(new TextMessage(@user, '!dess'))
         mock.on 'end', ->
           expect(request.post.args[0]).to.deep.include.members [
-            'https://animebytes.tv/api/irc/user_info'
+            'https://animebytes.tv/api/irc/dess_tax'
             form:
               authKey: 'changeme'
               username: 'dummyUser'
           ]
           done()
-        @user.original =
-          host: 'dummyUser.User.AnimeBytes'
-        @adapter.receive(new TextMessage(@user, '!user'))
-        mock.on 'end', ->
-          expect(request.post.args[0]).to.deep.include.members [
-            'https://animebytes.tv/api/irc/user_info'
-            form:
-              authKey: 'changeme'
-              username: 'dummyUser'
-          ]
 
-      it 'should get info without a given user', (done) ->
+      it 'should print response', (done) ->
         request.post.yields(null, {statusCode: 200}, JSON.stringify
-          message: 'some_user_data'
+          message: 'some_response'
         )
         @user.original =
           host: 'dummyUser.User.AnimeBytes'
         @bot.on 'say', (target, text) ->
           expect(target).to.equal '#mocha'
-          expect(text[0]).to.equal 'some_user_data'
+          expect(text[0]).to.equal 'some_response'
           done()
-        @adapter.receive(new TextMessage(@user, '!user'))
-
-      it 'should get info on given user', (done) ->
-        request.post.yields(null, {statusCode: 200}, JSON.stringify
-          message: 'some_user_data'
-        )
-        @bot.on 'say', (target, text) ->
-          expect(target).to.equal '#mocha'
-          expect(text[0]).to.equal 'some_user_data'
-          done()
-        @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+        @adapter.receive(new TextMessage(@user, '!dess'))
 
       it 'should make request and handle internal error', (done) ->
         request.post.yields('SomeError', {statusCode: 200})
@@ -117,7 +79,7 @@ describe 'AnimeBytes script', ->
           expect(target).to.equal '#mocha'
           expect(text[0]).to.equal 'Internal error'
           done()
-        @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+        @adapter.receive(new TextMessage(@user, '!dess'))
 
       it 'should make request and fail login', (done) ->
         request.post.yields(null, {statusCode: 303})
@@ -125,7 +87,7 @@ describe 'AnimeBytes script', ->
           expect(target).to.equal '#mocha'
           expect(text[0]).to.equal 'Internal error'
           done()
-        @adapter.receive(new TextMessage(@user, '!user dummyUser'))
+        @adapter.receive(new TextMessage(@user, '!dess'))
 
     describe 'when not authorized', ->
       it 'should fail to retrieve user info', (done) ->
@@ -135,4 +97,4 @@ describe 'AnimeBytes script', ->
           expect(target).to.equal '#mocha'
           expect(text[0]).to.equal 'Not authorized'
           done()
-        @adapter.receive(new TextMessage(@user, '!user'))
+        @adapter.receive(new TextMessage(@user, '!dess'))

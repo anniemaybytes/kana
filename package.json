@@ -4,7 +4,7 @@
   "author": "AnimeBytes",
   "scripts": {
     "hubot": "hubot -a irc",
-    "test": "NODE_ENV=test mocha --color --recursive \"./test/**/*.test.coffee\"",
+    "test": "NODE_ENV=test mocha --color",
     "lint": "coffeelint --color=always .",
     "check-outdated": "check-outdated --ignore-pre-releases --ignore-dev-dependencies --ignore-packages coffeescript"
   },
@@ -13,7 +13,6 @@
     "htmlparser": "1.7.7",
     "hubot": "3.3.2",
     "hubot-irc": "file:./hubot-irc",
-    "hubot-scripts": "2.17.2",
     "jsdom": "16.1.0",
     "log": "6.0.0",
     "optparse": "1.0.5",

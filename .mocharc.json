@@ -1,0 +1,9 @@
+{
+  "timeout": 5000,
+  "extension": ["coffee"],
+  "spec": ["./test/**/*.test.coffee"],
+  "require": "coffeescript/register",
+  "file": ["./test/setup.coffee"],
+  "exit": true,
+  "recursive": true
+}

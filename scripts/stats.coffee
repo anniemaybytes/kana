@@ -1,5 +1,7 @@
 request = require 'request'
 
+logger = new Log process.env.HUBOT_LOG_LEVEL or 'info'
+
 unless process.env.SITE_API_KEY?
   throw new Error "Environment variable SITE_API_KEY must be set"
 
@@ -21,9 +23,9 @@ module.exports = (robot) ->
     req = stats: JSON.stringify(deltas), authKey: process.env.SITE_API_KEY
     request {method: 'POST', url: 'https://animebytes.tv/api/irc/notifier', form: req}, (err, res, body) ->
       if err
-        console.log 'Error saving stats:', err.toString()
+        logger.error 'Error saving stats:', err.toString()
       else if res.statusCode != 200
-        console.log 'Non-OK response saving stats: HTTP', res.statusCode
+        logger.error 'Non-OK response saving stats: HTTP', res.statusCode
 
     users = newUsers
 
