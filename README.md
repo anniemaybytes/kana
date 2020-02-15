@@ -17,7 +17,7 @@ Following commands are accessible:
 Additionally:
 - Will listen on every channel it joins and resolve `<title>` for links posted
 - Will listen for raw ECHO commands and forward them to specified channels. Format is `channel1-channel2|%|hello world`
-- Will listen for Gitea/Gogs style webhook on `/git/{:key}/{:type}`. Suppported events are:
+- Will listen for Gitea/Gogs style webhook on `/git/{:key}`. Suppported events are:
   - push (maximum of 10 commits will be echo'ed in channel)
   - create
   - delete

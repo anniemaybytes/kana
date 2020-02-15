@@ -1,11 +1,6 @@
----
 kind: pipeline
 name: node-v10
 type: docker
-
-platform:
-    os: linux
-    arch: amd64
 
 steps:
     -   name: restore-cache
@@ -23,18 +18,17 @@ steps:
             region: ab-1
             bucket: drone-cache
             restore: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v10'
+            cache_key: '{{ .Commit.Branch }}-v10'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - ./hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:10
         commands:
             - node -v
             - npm -v
-            - npm i --no-save --quiet --no-optional
+            - npm i --no-save --quiet --no-optional --no-audit
         depends_on: [ restore-cache ]
     -   name: tests
         image: node:10
@@ -61,17 +55,13 @@ steps:
             region: ab-1
             bucket: drone-cache
             rebuild: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v10'
+            cache_key: '{{ .Commit.Branch }}-v10'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - ./hubot-irc/node_modules
         depends_on: [ install ]
 
 trigger:
-    branch:
-        - master
-        - drone
     event:
         exclude:
             - cron
@@ -81,10 +71,6 @@ kind: pipeline
 name: node-v12
 type: docker
 
-platform:
-    os: linux
-    arch: amd64
-
 steps:
     -   name: restore-cache
         image: meltwater/drone-cache
@@ -101,18 +87,17 @@ steps:
             region: ab-1
             bucket: drone-cache
             restore: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v12'
+            cache_key: '{{ .Commit.Branch }}-v12'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - ./hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:12
         commands:
             - node -v
             - npm -v
-            - npm i --no-save --quiet --no-optional
+            - npm i --no-save --quiet --no-optional --no-audit
         depends_on: [ restore-cache ]
     -   name: tests
         image: node:12
@@ -139,17 +124,13 @@ steps:
             region: ab-1
             bucket: drone-cache
             rebuild: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_node-v12'
+            cache_key: '{{ .Commit.Branch }}-v12'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - ./hubot-irc/node_modules
         depends_on: [ install ]
 
 trigger:
-    branch:
-        - master
-        - drone
     event:
         exclude:
             - cron
@@ -158,10 +139,6 @@ trigger:
 kind: pipeline
 name: deps
 type: docker
-
-platform:
-    os: linux
-    arch: amd64
 
 steps:
     -   name: restore-cache
@@ -179,18 +156,17 @@ steps:
             region: ab-1
             bucket: drone-cache
             restore: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_deps'
+            cache_key: '{{ .Commit.Branch }}-deps'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - hubot-irc/node_modules
         depends_on: [ clone ]
     -   name: install
         image: node:12
         commands:
             - node -v
             - npm -v
-            - npm i --no-save --quiet --no-optional
+            - npm i --no-save --quiet --no-optional --no-audit
         depends_on: [ restore-cache ]
     -   name: audit
         image: node:12
@@ -217,20 +193,8 @@ steps:
             region: ab-1
             bucket: drone-cache
             rebuild: true
-            cache_key: '{{ checksum "package.json" }}_{{ checksum "package-lock.json" }}_deps'
+            cache_key: '{{ .Commit.Branch }}-deps'
             archive_format: gzip
             mount:
                 - ./node_modules
-                - ./hubot-irc/node_modules
         depends_on: [ install ]
-
-trigger:
-    branch:
-        - master
-        - drone
-
----
-kind: signature
-hmac: 92c29dc31b80844aff718f277c7163f90bd98d3b7a7b6dc029e9d7651bcf4eb4
-
-...

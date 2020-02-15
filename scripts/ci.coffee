@@ -30,7 +30,7 @@ module.exports = (robot) ->
         link = hook.system.link + "/" + hook.repo.slug + "/" + hook.build.number
         switch hook.action
           when "created"
-            sender = hook.user.login
+            sender = hook.build.author_login
             if hook.build.trigger == "@cron"
               sender = "Cron system"
 
@@ -69,4 +69,4 @@ module.exports = (robot) ->
 
   robot.router.post "/ci/" + process.env.GIT_WEBHOOK, (req, res) ->
     handler req, res
-    res.end ""
+    res.end "*ok*"

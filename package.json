@@ -6,7 +6,7 @@
     "hubot": "hubot -a irc",
     "test": "NODE_ENV=test mocha --color",
     "lint": "coffeelint --color=always .",
-    "check-outdated": "check-outdated --ignore-pre-releases --ignore-dev-dependencies --ignore-packages coffeescript"
+    "check-outdated": "check-outdated --ignore-pre-releases --ignore-dev-dependencies --ignore-packages coffeescript,log"
   },
   "dependencies": {
     "coffeescript": "1.12.7",
@@ -14,7 +14,7 @@
     "hubot": "3.3.2",
     "hubot-irc": "file:./hubot-irc",
     "jsdom": "16.1.0",
-    "log": "6.0.0",
+    "log": "1.4.0",
     "optparse": "1.0.5",
     "request": "2.88.2",
     "soupselect": "0.2.0"

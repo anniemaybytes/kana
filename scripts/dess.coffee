@@ -1,5 +1,5 @@
 request = require 'request'
-Log = require('log')
+Log = require 'log'
 
 {
   parseUserInfo

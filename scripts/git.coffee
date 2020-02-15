@@ -18,7 +18,7 @@ module.exports = (robot) ->
   trim_commit_url = (url) ->
     url.replace(/(\/[0-9a-f]{9})[0-9a-f]+$/, '$1')
 
-  handler = (type, req, res) ->
+  handler = (req, res) ->
     query = querystring.parse(url.parse(req.url).query)
     hook = req.body
 
@@ -26,7 +26,7 @@ module.exports = (robot) ->
     query.targets ||= []
     user.type = query.type if query.type
 
-    switch type
+    switch req.get('X-Gitea-Event')
       when "push", "create", "delete"
         if hook.ref.indexOf('refs/heads/') != -1 || hook.ref.indexOf('refs/tags/') != -1
           branch = hook.ref.split("/")[2..].join("/")
@@ -35,7 +35,7 @@ module.exports = (robot) ->
       else
         branch = "unknown"
 
-    switch type
+    switch req.get('X-Gitea-Event')
       when "push"
         if hook.commits.length > 0
           message = []
@@ -65,6 +65,6 @@ module.exports = (robot) ->
     user.room = gitChannel
     robot.send user, message
 
-  robot.router.post "/git/" + process.env.GIT_WEBHOOK + "/:type", (req, res) ->
-    handler req.params.type, req, res
-    res.end ""
+  robot.router.post "/git/" + process.env.GIT_WEBHOOK, (req, res) ->
+    handler req, res
+    res.end "*ok*"
