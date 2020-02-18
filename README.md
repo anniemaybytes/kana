@@ -32,7 +32,7 @@ Additionally:
 
 ## Installation
 
-Satsuki requires NodeJS. Version 10 or 12 is recommended.
+Satsuki requires NodeJS version 12 or later.
 
 ```
 $ npm i
