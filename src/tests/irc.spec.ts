@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { IRCClient } from '../clients/irc';
+import * as configuration from '../clients/configuration';
 
 describe('IRCClient', () => {
   let sandbox: SinonSandbox;
@@ -64,28 +65,45 @@ describe('IRCClient', () => {
       let isIgnoredStub: SinonStub;
       let isMeStub: SinonStub;
       let joinStub: SinonStub;
+      let saveChannelStub: SinonStub;
       beforeEach(() => {
         inviteHandler = IRCClient.bot.listeners('invite')[0];
         isIgnoredStub = sandbox.stub(IRCClient, 'isIgnoredUser').returns(false);
         isMeStub = sandbox.stub(IRCClient, 'isMe').returns(true);
-        joinStub = sandbox.stub(IRCClient.bot, 'join');
+        joinStub = sandbox.stub(IRCClient, 'joinRoom');
+        saveChannelStub = sandbox.stub(configuration, 'saveChannels');
       });
 
-      it('Ignores invites from ignored users', () => {
+      it('Ignores invites from ignored users', async () => {
         isIgnoredStub.returns(true);
-        inviteHandler({});
+        await inviteHandler({});
         assert.notCalled(joinStub);
       });
 
-      it('Ignores invites that are not to the bot', () => {
+      it('Ignores invites that are not to the bot', async () => {
         isMeStub.returns(false);
-        inviteHandler({});
+        await inviteHandler({});
         assert.notCalled(joinStub);
       });
 
-      it('Joins a channel on an invite', () => {
-        inviteHandler({ channel: 'channel' });
+      it('Joins a channel on an invite', async () => {
+        await inviteHandler({ channel: 'channel' });
         assert.calledWithExactly(joinStub, 'channel');
+      });
+
+      it('Saves joined channel', async () => {
+        await inviteHandler({ channel: 'channel' });
+        assert.calledWithExactly(saveChannelStub, { channel: { join: 'join', persist: false } });
+      });
+
+      it('Does not save channel if join fails', async () => {
+        joinStub.throws(new Error('bad'));
+        try {
+          await inviteHandler({ channel: 'channel' });
+        } catch (e) {
+          return assert.notCalled(saveChannelStub);
+        }
+        return expect.fail('Did not throw');
       });
     });
   });
@@ -152,30 +170,70 @@ describe('IRCClient', () => {
 
   describe('postOper', () => {
     let rawCommandStub: SinonStub;
+    let joinWithAdminRoomStub: SinonStub;
     let joinRoomStub: SinonStub;
+    let getChannelsStub: SinonStub;
+    let deleteChannelStub: SinonStub;
     beforeEach(() => {
       rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');
-      joinRoomStub = sandbox.stub(IRCClient, 'joinRoomWithAdminIfNecessary');
+      joinWithAdminRoomStub = sandbox.stub(IRCClient, 'joinRoomWithAdminIfNecessary');
+      joinRoomStub = sandbox.stub(IRCClient, 'joinRoom');
+      getChannelsStub = sandbox.stub(configuration, 'getAllChannels');
+      deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
     });
 
-    it('Sets registered to true on IRCClient', () => {
+    it('Sets registered to true on IRCClient', async () => {
       sandbox.replace(IRCClient, 'registered', false);
-      IRCClient.postOper();
+      await IRCClient.postOper();
       expect(IRCClient.registered).to.be.true;
     });
 
-    it('Performs MODE and CHGHOST', () => {
-      IRCClient.postOper();
+    it('Performs MODE and CHGHOST', async () => {
+      await IRCClient.postOper();
       assert.calledWithExactly(rawCommandStub.getCall(0), 'MODE', IRCClient.IRC_NICK, '+B');
       assert.calledWithExactly(rawCommandStub.getCall(1), 'CHGHOST', IRCClient.IRC_NICK, 'bakus.dungeon');
     });
 
-    it('Tries to join all channels in CHANNELS env var', () => {
-      process.env.CHANNELS = 'a,b,c';
-      IRCClient.postOper();
-      assert.calledWithExactly(joinRoomStub.getCall(0), 'a');
-      assert.calledWithExactly(joinRoomStub.getCall(1), 'b');
-      assert.calledWithExactly(joinRoomStub.getCall(2), 'c');
+    it('Performs SAJOIN for channels in saved config with sajoin type', async () => {
+      getChannelsStub.resolves({ channel: { persist: true, join: 'sajoin' } });
+      await IRCClient.postOper();
+      assert.calledWithExactly(rawCommandStub.getCall(2), 'SAJOIN', IRCClient.IRC_NICK, 'channel');
+    });
+
+    it('Calls joinRoomWithAdminIfNecessary for channels in saved config with auto type', async () => {
+      getChannelsStub.resolves({ channel: { persist: true, join: 'auto' } });
+      await IRCClient.postOper();
+      assert.calledWithExactly(joinWithAdminRoomStub, 'channel');
+    });
+
+    it('Calls joinRoom for channels in saved config with join type', async () => {
+      getChannelsStub.resolves({ channel: { persist: true, join: 'join' } });
+      await IRCClient.postOper();
+      assert.calledWithExactly(joinRoomStub, 'channel');
+    });
+
+    it('Calls deleteChannel for channels which failed to join with join type and persist false in saved config', async () => {
+      getChannelsStub.resolves({ channel: { persist: false, join: 'join' } });
+      joinRoomStub.throws(new Error());
+      await IRCClient.postOper();
+      assert.calledWithExactly(deleteChannelStub, 'channel');
+    });
+
+    it('Does not call deleteChannel for channels which failed to join with join type and persist true in saved config', async () => {
+      getChannelsStub.resolves({ channel: { persist: true, join: 'join' } });
+      joinRoomStub.throws(new Error());
+      await IRCClient.postOper();
+      assert.notCalled(deleteChannelStub);
+    });
+  });
+
+  describe('joinRoom', () => {
+    beforeEach(() => {
+      sandbox.stub(IRCClient, 'rawCommand');
+    });
+
+    it('Returns a promise', () => {
+      expect(IRCClient.joinRoom('channel')).to.be.instanceOf(Promise);
     });
   });
 
@@ -225,6 +283,12 @@ describe('IRCClient', () => {
       IRCClient.message('chan', 'message');
       assert.calledWithExactly(sayStub, 'chan', 'message');
     });
+
+    it('Sends multiple messages when there are newlines in the message', () => {
+      IRCClient.message('chan', 'message\nanother');
+      assert.calledWithExactly(sayStub.getCall(0), 'chan', 'message');
+      assert.calledWithExactly(sayStub.getCall(1), 'chan', 'another');
+    });
   });
 
   describe('who', () => {
@@ -243,6 +307,25 @@ describe('IRCClient', () => {
     it('Passes and returns the correct arguments to the irc framework', async () => {
       expect(await IRCClient.who('chan')).to.deep.equal(['blah']);
       assert.calledWithExactly(whoStub, 'chan');
+    });
+  });
+
+  describe('whois', () => {
+    let checkIfRegisteredStub: SinonStub;
+    let whoisStub: SinonStub;
+    beforeEach(() => {
+      checkIfRegisteredStub = sandbox.stub(IRCClient, 'checkIfRegistered');
+      whoisStub = sandbox.stub(IRCClient as any, 'bot_whois').resolves({ some: 'data' });
+    });
+
+    it('Checks if connected when performing command', async () => {
+      await IRCClient.whois('chan');
+      assert.calledOnce(checkIfRegisteredStub);
+    });
+
+    it('Passes and returns the correct arguments to the irc framework', async () => {
+      expect(await IRCClient.whois('chan')).to.deep.equal({ some: 'data' });
+      assert.calledWithExactly(whoisStub, 'chan');
     });
   });
 

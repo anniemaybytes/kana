@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2019",
     "outDir": "./dist/",
     "rootDir": "./src/",
     "moduleResolution": "node",
@@ -24,6 +24,7 @@
     "allowUnreachableCode": false,
     "resolveJsonModule": true,
     "allowJs": false,
+    "sourceMap": true,
     "types": [
       "node",
       "mocha"

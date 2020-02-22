@@ -18,8 +18,9 @@ export function rawEchoSocketHandler(socket: net.Socket) {
     const dataString = data.toString();
     logger.trace(`Echo request: ${dataString}`);
     const [channels, text] = dataString.split('|%|');
+    const message = bbcode(text);
     channels.split('-').forEach(channel => {
-      IRCClient.message(`#${channel}`, bbcode(text));
+      IRCClient.message(`#${channel}`, message);
     });
     socket.end();
   });

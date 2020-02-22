@@ -1,21 +1,7 @@
 import nodeFetch from 'node-fetch';
+import { CustomFailure } from '../errors';
 import logger from '../logger';
-
-export interface UserAuthResponse {
-  success: boolean;
-  error: string;
-  id: number;
-  host: string;
-  channels: {
-    [room: string]: boolean;
-  };
-}
-
-export interface UserTimeDeltas {
-  [userId: number]: {
-    delta_time: number;
-  };
-}
+import { UserAuthResponse, UserTimeDeltas } from '../types';
 
 export class ABClient {
   public static fetch = nodeFetch;
@@ -31,7 +17,9 @@ export class ABClient {
   }
 
   public static async getUserInfo(username: string) {
-    return (await ABClient.makeRequest('/api/irc/user_info', { username })).message as string;
+    const response = await ABClient.makeRequest('/api/irc/user_info', { username });
+    if (!response.success) throw new CustomFailure('NotFound', response.error);
+    return response.message as string;
   }
 
   public static async performDess(username: string) {
@@ -42,7 +30,7 @@ export class ABClient {
   public static async makeRequest(path: string, body: any, authenticated = true) {
     const url = `${ABClient.url}${path}`;
     if (authenticated) body.authKey = ABClient.siteApiKey;
-    logger.trace(`AnimeBytes POST ${url} -> ${body}`);
+    logger.trace(`AnimeBytes POST ${url} -> ${JSON.stringify(body)}`);
     const res = await ABClient.fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

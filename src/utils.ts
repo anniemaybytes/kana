@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { CustomFailure } from './errors';
 
 export async function sleep(ms: number) {
   return new Promise(resolve => {
@@ -12,21 +13,13 @@ export function asyncHandler(fn: any) {
   };
 }
 
-export class InvalidABUser extends Error {
-  code: 'InvalidABUser';
-  public constructor(message?: string) {
-    super(message);
-    this.code = 'InvalidABUser';
-  }
-}
-
 export function parseUserHost(host: string) {
   try {
     const [user, rank, ab] = host.split('.').filter(Boolean);
     if (!user || !rank || ab !== 'AnimeBytes') throw new Error(); // caught and re-thrown below
     return { user, rank };
   } catch {
-    throw new InvalidABUser();
+    throw new CustomFailure('InvalidABUser');
   }
 }
 

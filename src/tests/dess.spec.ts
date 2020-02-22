@@ -3,6 +3,7 @@ import { listenForDess } from '../commands/dess';
 import { IRCClient } from '../clients/irc';
 import { ABClient } from '../clients/animebytes';
 import * as utils from '../utils';
+import { CustomFailure } from '../errors';
 
 describe('Dess', () => {
   let sandbox: SinonSandbox;
@@ -43,7 +44,7 @@ describe('Dess', () => {
     });
 
     it('Replies with not authorized if not a valid AB user hostname', async () => {
-      parseUserStub.throws(new utils.InvalidABUser());
+      parseUserStub.throws(new CustomFailure('InvalidABUser'));
       await dessCallback({ privateMessage: false, hostname: 'value', reply: eventReply });
       assert.calledWithExactly(parseUserStub, 'value');
       assert.calledWithExactly(eventReply, 'Not authorized');

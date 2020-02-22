@@ -2,6 +2,8 @@ import logger from '../logger';
 import * as irc from 'irc-framework';
 import { sleep } from '../utils';
 import { promisify } from 'util';
+import { getAllChannels, saveChannels, deleteChannel } from './configuration';
+import { MessageEvent, WHOISResponse, WHOResponse } from '../types';
 
 const IGNORED_USERS: { [user: string]: boolean } = {};
 (process.env.IRC_IGNORE_USERS || '').split(',').forEach((user: string) => {
@@ -13,16 +15,11 @@ ircClient.who[promisify.custom] = (target: string) =>
     setTimeout(() => reject(new Error('WHO took too long, maybe room is empty?')), 10000); // If who call takes longer than 10 seconds, consider it a failure
     ircClient.who(target, resolve);
   });
-
-export interface MessageEvent {
-  nick: string;
-  ident: string;
-  hostname: string;
-  target: string;
-  message: string;
-  privateMessage: boolean;
-  reply: (message: string) => void;
-}
+ircClient.whois[promisify.custom] = (target: string) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error('WHOIS took too long, nick is probably offline')), 2000); // If whois call takes longer than 2 seconds, consider it a failure
+    ircClient.whois(target, resolve);
+  });
 
 export class IRCClient {
   public static IGNORED_USERS: { [user: string]: boolean } = IGNORED_USERS;
@@ -38,6 +35,7 @@ export class IRCClient {
   public static bot = ircClient;
 
   private static bot_who = promisify(ircClient.who).bind(ircClient);
+  private static bot_whois = promisify(ircClient.whois).bind(ircClient);
 
   public static isIgnoredUser(user: string) {
     return Boolean(IRCClient.IGNORED_USERS[user.toLowerCase()]);
@@ -82,23 +80,58 @@ export class IRCClient {
     IRCClient.registered = true;
     IRCClient.rawCommand('MODE', IRCClient.IRC_NICK, '+B');
     IRCClient.rawCommand('CHGHOST', IRCClient.IRC_NICK, 'bakus.dungeon');
-    process.env.CHANNELS?.split(',').forEach(channel => IRCClient.joinRoomWithAdminIfNecessary(channel));
+    const channels = await getAllChannels();
+    for (const channel in channels) {
+      logger.debug(`Attempting to join ${channel}: join mode ${channels[channel].join}`);
+      if (channels[channel].join === 'auto') {
+        IRCClient.joinRoomWithAdminIfNecessary(channel);
+      } else if (channels[channel].join === 'sajoin') {
+        IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel);
+      } else if (channels[channel].join === 'join') {
+        try {
+          await IRCClient.joinRoom(channel);
+        } catch (e) {
+          if (!channels[channel].persist) {
+            logger.warn(`Failed to join ${channel} with regular join mode, and persistence set to false. Removing channel from config.`);
+            await deleteChannel(channel);
+          }
+        }
+      } else {
+        logger.error(`Channel ${channel} in channels config has invalid join parameter '${channels[channel].join}'; Ignoring this channel`);
+      }
+    }
+  }
+
+  // Join a room with normal /join and detect/throw for failure
+  public static async joinRoom(channel: string) {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 5000); // If joining takes longer than 5 seconds, consider it a failure
+      function channelUserListHandler(event: any) {
+        if (event.channel.toLowerCase() === channel.toLowerCase()) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      }
+      IRCClient.bot.on('userlist', channelUserListHandler);
+      IRCClient.bot.join(channel);
+      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 5001); // Cleanup userlist handler
+    });
   }
 
   public static async joinRoomWithAdminIfNecessary(channel: string) {
     return new Promise((resolve, reject) => {
       const timeout1 = setTimeout(() => IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel), 2000); // Perform sajoin if regular join doesn't work within 2 seconds
       const timeout2 = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 10000); // If joining takes longer than 10 seconds, consider it a failure
-      function topicHandler(event: any) {
+      function channelUserListHandler(event: any) {
         if (event.channel.toLowerCase() === channel.toLowerCase()) {
           clearTimeout(timeout1);
           clearTimeout(timeout2);
           resolve();
         }
       }
-      IRCClient.bot.on('topic', topicHandler);
+      IRCClient.bot.on('userlist', channelUserListHandler);
       IRCClient.bot.join(channel);
-      setTimeout(() => IRCClient.bot.removeListener('topic', topicHandler), 10001); // Cleanup topic handler
+      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 10001); // Cleanup userlist handler
     });
   }
 
@@ -116,23 +149,20 @@ export class IRCClient {
     IRCClient.checkIfRegistered();
     logger.debug(`Requesting WHO at ${target}`);
     const response = await IRCClient.bot_who(target);
-    logger.trace(JSON.stringify(response));
-    return response.users as {
-      nick: string;
-      ident: string;
-      hostname: string;
-      server: string;
-      real_name: string;
-      away: boolean;
-      num_hops_away: number;
-      channel: string;
-    }[];
+    return response.users as WHOResponse[];
+  }
+
+  public static async whois(nick: string) {
+    IRCClient.checkIfRegistered();
+    logger.debug(`Requesting WHOIS at ${nick}`);
+    const response = await IRCClient.bot_whois(nick);
+    return response as WHOISResponse;
   }
 
   public static message(target: string, message: string) {
     IRCClient.checkIfRegistered();
     logger.trace(`Sending to ${target} | msg: ${message}`);
-    IRCClient.bot.say(target, message);
+    message.split('\n').forEach(msg => IRCClient.bot.say(target, msg));
   }
 
   // Used for pre-processing before passing off to user callback, such as checking for ignored users
@@ -168,11 +198,12 @@ ircClient.on('unknown command', (command: any) => {
   else if (command.command === '491') logger.error('Registering as OP has failed. Possible bad OPER user/pass?');
 });
 
-ircClient.on('invite', (event: any) => {
+ircClient.on('invite', async (event: any) => {
   if (IRCClient.isIgnoredUser(event.nick) || !IRCClient.isMe(event.invited)) return;
   logger.info(`Joining ${event.channel} due to invitation from ${event.nick}`);
-  ircClient.join(event.channel);
-  // TODO save channel to state for auto-rejoining on reboot
+  await IRCClient.joinRoom(event.channel);
+  // If we are here, we have joined the channel successfully, so save this to state
+  await saveChannels({ [event.channel]: { join: 'join', persist: false } });
 });
 
 ircClient.on('nick in use', () => {

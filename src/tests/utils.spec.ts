@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as utils from '../utils';
+import { CustomFailure } from '../errors';
 
 describe('Utils', () => {
   describe('parseUserHost', () => {
@@ -20,7 +21,8 @@ describe('Utils', () => {
         try {
           utils.parseUserHost(hostName);
         } catch (e) {
-          return expect(e).to.be.instanceOf(utils.InvalidABUser);
+          expect(e).to.be.instanceOf(CustomFailure);
+          return expect(e.code).to.equal('InvalidABUser');
         }
         return expect.fail(`Hostname ${hostName} should have failed, but didn't`);
       });

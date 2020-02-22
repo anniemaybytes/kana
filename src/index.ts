@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import logger from './logger';
 import { IRCClient } from './clients/irc';
 import { echoListen } from './listeners/echo';

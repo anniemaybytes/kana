@@ -35,7 +35,7 @@ Additionally:
 
 ## Installation
 
-Satsuki requires NodeJS version 12 or later.
+Satsuki requires NodeJS version 12 or later and [Yarn package manager](https://yarnpkg.com/)
 
 ```sh
 yarn && yarn build
@@ -52,10 +52,10 @@ After=network.target
 [Service]
 EnvironmentFile=/opt/kana/.env
 WorkingDirectory=/opt/kana
-ExecStart=/usr/bin/node /opt/kana/dist/index.js
+ExecStart=/usr/bin/node dist/index.js
 RestartSec=30s
 Restart=always
-User=hubot
+User=kana
 
 [Install]
 WantedBy=default.target
@@ -76,18 +76,30 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `IRC_SERVER` - IRC server to connect to
 - `IRC_PORT` - IRC port to connect to
 - `IRC_USE_SSL` - Set to 'true' if the irc server is using ssl
-- `IRC_VERIFY_SSL` - Set to 'false' if you wish to ignore the validity of the ssl cert on the irc server
+- `IRC_VERIFY_SSL` - Set to 'false' if you wish to ignore the validity of the SSL certificate on the IRC server
 - `IRC_NICK` - Nickname to use when connecting to IRC server
 - `IRC_REALNAME` - Realname to use when connecting to IRC server
 - `IRC_USERNAME` - Username to use when connecting to IRC server
 - `IRC_IGNORE_USERS` - List of user nicks to ignore messages from, delimited by `,`
 - `GIT_CHANNEL` - Channel used to echo messages received by Git webhook
-- `CHANNELS` - List of channels Satsuki will join
 - `OPER_USERNAME` - Oper username
 - `OPER_PASS` - Oper password
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
 - `GIT_WEBHOOK` - Secret key to authenticate Git webhook endpoint
-- `HTTP_PORT` - Port on which Hubot will expose Express router, used by Git and CI webhook
+- `HTTP_PORT` - Port on which bot will expose Express router, used by Git and CI webhook
 - `ECHO_PORT` - Port on which Satsuki will listen for raw ECHO commands, there is no authentication here so use firewall
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
 - `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
+
+There should also be provided a `channels.json` file in the working directory of the bot with the following information:
+
+```json
+{
+  "#channelName": {
+    "persist": true, // true or false (default); make it so that failure to join does not remove channel from state
+    "join": "auto" // "join", "sajoin" or "auto" (default) to have bot try JOIN and then SAJOIN
+  }
+}
+```
+
+There can be as many channels in that json file as desired. Channels will automatically get added to that file if the bot is invited.

@@ -1,6 +1,7 @@
 import { IRCClient } from '../clients/irc';
-import { ABClient, UserAuthResponse } from '../clients/animebytes';
+import { ABClient } from '../clients/animebytes';
 import logger from '../logger';
+import { UserAuthResponse } from '../types';
 
 const enterMatchRegex = /^(?:\s)*enter(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)*$/i;
 

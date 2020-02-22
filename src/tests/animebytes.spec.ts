@@ -61,7 +61,7 @@ describe('ABClient', () => {
   describe('getUserInfo', () => {
     let makeRequestStub: SinonStub;
     beforeEach(() => {
-      sandbox.stub(ABClient, 'makeRequest').resolves({ message: 'stubbedValue' });
+      sandbox.stub(ABClient, 'makeRequest').resolves({ message: 'stubbedValue', success: true });
       makeRequestStub = ABClient.makeRequest as SinonStub;
     });
 
@@ -77,6 +77,16 @@ describe('ABClient', () => {
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({
         username: 'username'
       });
+    });
+
+    it('should throw NotFound if success is false', async () => {
+      makeRequestStub.resolves({ success: false });
+      try {
+        await ABClient.getUserInfo('username');
+      } catch (e) {
+        return expect(e.code).to.equal('NotFound');
+      }
+      return expect.fail('Code did not throw');
     });
 
     it('should return the message from the result of makeRequest', async () => {

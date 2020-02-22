@@ -1,7 +1,8 @@
-import { ABClient, UserTimeDeltas } from '../clients/animebytes';
+import { ABClient } from '../clients/animebytes';
 import { IRCClient } from '../clients/irc';
 import { parseUserHost } from '../utils';
 import logger from '../logger';
+import { UserTimeDeltas } from '../types';
 
 const STATS_UPDATE_PERIOD_MS = 300000;
 const STATS_CHANNEL = '#animebytes';
