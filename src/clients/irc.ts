@@ -32,6 +32,7 @@ export class IRCClient {
   public static IRC_USE_SSL = Boolean(process.env.IRC_USE_SSL);
   public static IRC_VERIFY_SSL = process.env.IRC_VERIFY_SSL !== 'false';
   public static registered = false;
+  public static shuttingDown = false;
   public static bot = ircClient;
 
   private static bot_who = promisify(ircClient.who).bind(ircClient);
@@ -49,10 +50,10 @@ export class IRCClient {
     if (!IRCClient.registered) throw new Error('IRC Bot is not yet registered!');
   }
 
-  // This function is intended to be called without awaiting on startup, as it will never return, continually trying to reconnect to IRC when necessary
+  // This function is intended to be called without awaiting on startup, as it will never return unless shutting down,
+  // continually trying to reconnect to IRC when necessary
   public static async connect() {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (!IRCClient.shuttingDown) {
       if (!IRCClient.registered) {
         IRCClient.bot.quit();
         logger.info(
@@ -72,6 +73,11 @@ export class IRCClient {
       }
       await sleep(5000);
     }
+  }
+
+  public static shutDown() {
+    IRCClient.shuttingDown = true;
+    IRCClient.bot.quit();
   }
 
   // Stuff to do after gaining OPER priveleges
@@ -182,7 +188,7 @@ export class IRCClient {
 
 let connected = false;
 ircClient.on('close', () => {
-  if (connected) logger.error('Error! Disconnected from irc server!');
+  if (connected && !IRCClient.shuttingDown) logger.error('Error! Disconnected from irc server!');
   connected = false;
   IRCClient.registered = false;
 });

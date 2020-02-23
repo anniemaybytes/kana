@@ -168,6 +168,17 @@ describe('IRCClient', () => {
     });
   });
 
+  describe('shutDown', () => {
+    let frameworkQuitStub: SinonStub;
+    beforeEach(() => {
+      frameworkQuitStub = sandbox.stub(IRCClient.bot, 'quit');
+    });
+    it('attempts to connect to IRC with specified params', () => {
+      IRCClient.shutDown();
+      assert.calledOnce(frameworkQuitStub);
+    });
+  });
+
   describe('postOper', () => {
     let rawCommandStub: SinonStub;
     let joinWithAdminRoomStub: SinonStub;

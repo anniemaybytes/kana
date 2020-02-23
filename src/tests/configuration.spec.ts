@@ -51,23 +51,23 @@ describe('Configuration', () => {
   describe('saveChannels', () => {
     it('saves channel that was provided', async () => {
       mock({ 'channels.json': '{}' });
-      await saveChannels({ newChannel: { persist: true, join: 'auto' } });
-      expect(await readFileAsync('channels.json', 'utf8')).to.equal('{"newChannel":{"persist":true,"join":"auto"}}');
+      const newChannel = { newChannel: { persist: true, join: 'auto' } } as any;
+      await saveChannels(newChannel);
+      expect(JSON.parse(await readFileAsync('channels.json', 'utf8'))).to.deep.equal(newChannel);
     });
 
     it('merges arguments with already saved channels', async () => {
       mock({ 'channels.json': '{"channel":{"persist":true,"join":"sajoin"}}' });
       await saveChannels({ newChannel: { persist: true, join: 'auto' } });
-      expect(await readFileAsync('channels.json', 'utf8')).to.equal(
-        '{"channel":{"persist":true,"join":"sajoin"},"newChannel":{"persist":true,"join":"auto"}}'
-      );
+      const merged = { channel: { persist: true, join: 'sajoin' }, newChannel: { persist: true, join: 'auto' } };
+      expect(JSON.parse(await readFileAsync('channels.json', 'utf8'))).to.deep.equal(merged);
     });
   });
 
   describe('deleteChannel', () => {
     it('deletes the specified channel from the configuration', async () => {
       await deleteChannel('channel');
-      expect(await readFileAsync('channels.json', 'utf8')).to.equal('{}');
+      expect(JSON.parse(await readFileAsync('channels.json', 'utf8'))).to.deep.equal({});
     });
   });
 });

@@ -12,7 +12,6 @@ steps:
 trigger:
     event:
         exclude:
-            - cron
             - promote
 
 ---
@@ -28,32 +27,6 @@ steps:
             - yarn test
 
 trigger:
-    event:
-        exclude:
-            - cron
-            - promote
-
----
-kind: pipeline
-name: deps
-type: docker
-
-steps:
-    -   name: audit
-        image: node:12-alpine
-        commands:
-            - yarn audit
-        depends_on: [ clone ]
-    -   name: outdated
-        image: node:12-alpine
-        commands:
-            - yarn --frozen-lockfile --non-interactive
-            - yarn check-outdated
-        depends_on: [ clone ]
-
-trigger:
-    branch:
-        - master
     event:
         exclude:
             - promote

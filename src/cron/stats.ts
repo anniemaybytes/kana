@@ -6,6 +6,7 @@ import { UserTimeDeltas } from '../types';
 
 const STATS_UPDATE_PERIOD_MS = 300000;
 const STATS_CHANNEL = '#animebytes';
+let interval: any = undefined;
 
 // Not intended to be called directly outside of this module, only exported for testing
 export async function updateStats() {
@@ -27,6 +28,10 @@ export async function updateStats() {
 }
 
 export function scheduleStatsReporter() {
-  setInterval(updateStats, STATS_UPDATE_PERIOD_MS);
+  interval = setInterval(updateStats, STATS_UPDATE_PERIOD_MS);
   logger.info(`Now scheduled to report statistics every ${STATS_UPDATE_PERIOD_MS / 1000} seconds`);
+}
+
+export function unscheduleStatsReporter() {
+  if (interval) clearInterval(interval);
 }

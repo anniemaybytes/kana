@@ -8,7 +8,7 @@ import { sleep } from '../utils';
 const MAX_REQUEST_SIZE_BYTES = 1000000;
 const MAX_REQUEST_TIME_MS = 10000;
 
-const urlRegex = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?/i;
+const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/i;
 
 const standardRequestOptions = {
   headers: { 'Accept-Language': 'en-US,en;q=0.7' },
@@ -72,7 +72,7 @@ export function addLinkWatcher() {
     const urlMatch = event.message.match(urlRegex);
     if (!urlMatch) return;
     logger.debug(`Link found in message from ${event.hostname}`);
-    const url = urlMatch[0];
+    const url = urlMatch[2];
     if (
       url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
       url.match(/127\.0\.0\.1/i) ||

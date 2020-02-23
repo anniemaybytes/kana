@@ -27,11 +27,11 @@ export async function getChannel(channel: string) {
 // Merges channels passed in with what is already saved. Overwriting already saved channel with provided if conflict
 export async function saveChannels(channels: ChannelConfig) {
   const currentData = await getAllChannels();
-  await writeFileAsync(CHANNEL_CONFIG_JSON, JSON.stringify({ ...currentData, ...channels }));
+  await writeFileAsync(CHANNEL_CONFIG_JSON, JSON.stringify({ ...currentData, ...channels }, null, 2));
 }
 
 export async function deleteChannel(channel: string) {
   const currentData = await getAllChannels();
   delete currentData[channel];
-  await writeFileAsync(CHANNEL_CONFIG_JSON, JSON.stringify(currentData));
+  await writeFileAsync(CHANNEL_CONFIG_JSON, JSON.stringify(currentData, null, 2));
 }

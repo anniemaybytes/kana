@@ -3,6 +3,7 @@ import { IRCClient } from '../clients/irc';
 import logger from '../logger';
 
 const LISTEN_PORT = Number(process.env.ECHO_PORT) || 1234;
+let server: net.Server | undefined = undefined;
 
 function bbcode(text: string) {
   if (!text || typeof text !== 'string') return '';
@@ -26,7 +27,11 @@ export function rawEchoSocketHandler(socket: net.Socket) {
   });
 }
 
-export async function echoListen() {
-  net.createServer(rawEchoSocketHandler).listen(LISTEN_PORT);
+export function echoListen() {
+  server = net.createServer(rawEchoSocketHandler).listen(LISTEN_PORT);
   logger.info(`Listening for raw ECHO on port ${LISTEN_PORT}`);
+}
+
+export function echoShutdown() {
+  if (server) server.close();
 }

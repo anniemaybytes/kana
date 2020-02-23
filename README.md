@@ -20,11 +20,11 @@ Additionally:
 
 - Will listen on every channel it joins and resolve `<title>` for links posted
 - Will listen for raw ECHO commands and forward them to specified channels. Format is `channel1-channel2|%|hello world`
-- Will listen for Gitea style webhook on `/git/{:key}`. Suppported events are:
+- Will listen for Gitea style webhook on `/git`. Suppported events are:
   - push (maximum of 10 commits will be echo'ed in channel)
   - create
   - delete
-- Will listen for Drone CI webhook on `/ci/{:key}`. Supported events are:
+- Will listen for Drone CI webhook on `/ci`. Supported events are:
   - created
   - updated
     - success
@@ -85,7 +85,7 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `OPER_USERNAME` - Oper username
 - `OPER_PASS` - Oper password
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
-- `GIT_WEBHOOK` - Secret key to authenticate Git webhook endpoint
+- `GIT_WEBHOOK` - Secret key to authenticate Git and CI webhook endpoint
 - `HTTP_PORT` - Port on which bot will expose Express router, used by Git and CI webhook
 - `ECHO_PORT` - Port on which Satsuki will listen for raw ECHO commands, there is no authentication here so use firewall
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level

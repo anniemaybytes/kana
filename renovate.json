@@ -3,7 +3,12 @@
     "config:base"
   ],
   "ignorePaths": [
-    ".drone.yml"
+    ".drone.yml",
+    "Dockerfile"
   ],
-  "ignoreDeps": []
+  "ignoreDeps": [],
+  "postUpgradeTasks": {
+    "commands": ["yarn upgrade --latest"],
+    "fileFilters": ["yarn.lock"]
+  }
 }
