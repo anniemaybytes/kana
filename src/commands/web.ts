@@ -48,7 +48,7 @@ async function parseTitle(htmlBody: NodeJS.ReadStream) {
   }
   stringDecoder.end();
   parser.end();
-  return title;
+  return title.replace(/\s*\n\s*/g, ' ').trim();
 }
 
 function processTitle(title: string) {

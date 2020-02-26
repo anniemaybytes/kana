@@ -37,4 +37,7 @@ dist/
 .DS_Store
 desktop.ini
 .direnv
+
+# Configuration
 .env
+channels.json

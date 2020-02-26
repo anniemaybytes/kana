@@ -7,8 +7,7 @@
     "Dockerfile"
   ],
   "ignoreDeps": [],
-  "postUpgradeTasks": {
-    "commands": ["yarn upgrade --latest"],
-    "fileFilters": ["yarn.lock"]
+  "lockFileMaintenance": {
+    "enabled": true 
   }
 }

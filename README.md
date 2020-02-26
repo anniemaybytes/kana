@@ -35,7 +35,7 @@ Additionally:
 
 ## Installation
 
-Satsuki requires NodeJS version 12 or later and [Yarn package manager](https://yarnpkg.com/)
+Satsuki requires NodeJS version 12 or later and [Yarn package manager](https://classic.yarnpkg.com/)
 
 ```sh
 yarn && yarn build
