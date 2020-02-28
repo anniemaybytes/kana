@@ -20,17 +20,20 @@ async function main() {
   scheduleStatsReporter();
 }
 
-let sigIntReceived = false;
-process.on('SIGINT', () => {
-  // If spamming SIGINT, exit without caring about properly shutting down everything
-  if (sigIntReceived) process.exit(1);
-  sigIntReceived = true;
-  logger.error('\nSIGINT received. Shutting down.');
+let stopSignalReceived = false;
+function shutdown() {
+  // If spamming a stop signal, exit without caring about properly shutting down everything
+  if (stopSignalReceived) process.exit(1);
+  stopSignalReceived = true;
+  logger.error('\nSignal to stop received. Shutting down.');
   unscheduleStatsReporter();
   echoShutdown();
   webhookShutdown();
   IRCClient.shutDown();
-  process.exit(1);
-});
+  process.exit(0);
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
 main().catch(logger.error);

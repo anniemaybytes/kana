@@ -37,13 +37,8 @@ export class ABClient {
       body: JSON.stringify(body)
     });
     const responseBody = await res.text();
-    const responseLog = `AnimeBytes POST ${url} <- [${res.status}] ${responseBody}`;
-    if (!res.ok) {
-      logger.debug(responseLog);
-      throw new Error(responseLog);
-    } else {
-      logger.trace(responseLog);
-    }
+    logger.trace(`AnimeBytes POST ${url} <- [${res.status}] ${responseBody}`);
+    if (!res.ok) throw new Error(`Received HTTP ${res.status} from AB call to ${path}`);
     try {
       return JSON.parse(responseBody);
     } catch {
