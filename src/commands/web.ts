@@ -8,7 +8,7 @@ import { sleep } from '../utils';
 const MAX_REQUEST_SIZE_BYTES = 1000000;
 const MAX_REQUEST_TIME_MS = 10000;
 
-const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/i;
+const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/gi;
 
 const standardRequestOptions = {
   headers: { 'Accept-Language': 'en-US,en;q=0.7' },
@@ -67,28 +67,33 @@ function processTitle(title: string) {
 export function addLinkWatcher() {
   IRCClient.addMessageHook(urlRegex, async event => {
     if (event.privateMessage) return;
-    // Unfortunately irc-framework does not have any way to return the match from its regex check,
-    // so we must do the regex again here to actually pull the match we're looking for
-    const urlMatch = event.message.match(urlRegex);
-    if (!urlMatch) return;
-    logger.debug(`Link found in message from ${event.hostname}`);
-    const url = urlMatch[2];
-    if (
-      url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
-      url.match(/127\.0\.0\.1/i) ||
-      url.match(/\.(png|jpg|jpeg|gif|txt|zip|tar\.bz|js|css|pdf)/)
-    )
-      return;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    const urlMatches = event.message.matchAll(urlRegex); // matchAll is an ES2020 feature supported as of node 12.4.0, however TS target must be 2019, so we ignore this error
+    const urls = [];
+    for (const match of urlMatches) if (match) urls.push(match[2]);
+    if (urls.length === 0) return;
+    logger.debug(`Link(s) found in message from ${event.hostname}`);
 
-    try {
-      const response = await fetch(url, standardRequestOptions);
-      if (!response.ok || !response.headers.get('content-type')?.startsWith('text/html')) return;
-      let title = await parseTitle(response.body as NodeJS.ReadStream); // Re-casting because this will be true on nodejs versions >=8
-      title = processTitle(title);
-      if (title) event.reply(`Link title: ${title}`);
-    } catch (e) {
-      // Might be too explicit of a log...
-      logger.warn('HTTP Error', e);
-    }
+    await Promise.all(
+      urls.map(async url => {
+        if (
+          url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
+          url.match(/127\.0\.0\.1/i) ||
+          url.match(/\.(png|jpg|jpeg|gif|txt|zip|tar\.bz|js|css|pdf)/i)
+        )
+          return;
+
+        try {
+          const response = await fetch(url, standardRequestOptions);
+          if (!response.ok || !response.headers.get('content-type')?.startsWith('text/html')) return;
+          const title = processTitle(await parseTitle(response.body as NodeJS.ReadStream)); // Re-casting because this will be true on nodejs versions >=8
+          if (title) event.reply(`Link title: ${title}`);
+        } catch (e) {
+          // Might be too explicit of a log...
+          logger.warn('HTTP Error', e);
+        }
+      })
+    );
   });
 }
