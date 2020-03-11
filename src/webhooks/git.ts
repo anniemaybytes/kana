@@ -17,7 +17,7 @@ export const handleGitWebhook = asyncHandler(async (req: Request, res: Response)
   logger.debug(`Gitea event ${eventType}`);
   const messages = [];
 
-  const branch = hook.ref.replace('refs/heads/', '').replace('refs/tags/', '') || 'unknown';
+  const branch = hook.ref?.replace('refs/heads/', '')?.replace('refs/tags/', '') || 'unknown';
 
   if (eventType === 'push') {
     if (hook.commits.length > 0) {

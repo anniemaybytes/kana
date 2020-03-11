@@ -1,5 +1,5 @@
 import { addSongCommands } from './symphogay';
-import { addLinkWatcher } from './web';
+import { addLinkWatcher } from './link';
 import { listenForEnterMsg } from './enter';
 import { listenForDess } from './dess';
 import { listenForUser } from './user';

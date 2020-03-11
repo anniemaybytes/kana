@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import * as nodeFetch from 'node-fetch';
-import { addLinkWatcher } from '../commands/web';
+import { addLinkWatcher } from '../commands/link';
 import { IRCClient } from '../clients/irc';
 import streamBuffers from 'stream-buffers';
 
@@ -42,26 +42,49 @@ describe('WebLinks', () => {
       } as any);
     });
 
-    it('Does not respond if a private message', async () => {
+    it('Does not fetch or respond if a private message', async () => {
       await linkCallback({ privateMessage: true, message: 'http://duckduckgo.com', reply: eventReply });
+      assert.notCalled(fetchStub);
       assert.notCalled(eventReply);
     });
 
-    it('Does not respond if it fails to match the regex', async () => {
+    it('Does not fetch or respond if it fails to match the regex', async () => {
       await linkCallback({ privateMessage: false, message: 'no urls', reply: eventReply });
+      assert.notCalled(fetchStub);
       assert.notCalled(eventReply);
     });
 
-    it('Does not respond if the link matches ignore regexes', async () => {
+    it('Does not fetch or respond if the link matches ignore regexes', async () => {
       await linkCallback({ privateMessage: false, message: 'http://127.0.0.1', reply: eventReply });
       await linkCallback({ privateMessage: false, message: 'http://animebytes.tv', reply: eventReply });
       await linkCallback({ privateMessage: false, message: 'http://someurl.com/a.pdf', reply: eventReply });
+      assert.notCalled(fetchStub);
+      assert.notCalled(eventReply);
+    });
+
+    it('Does not fetch or respond if there are more than 3 links in the message', async () => {
+      await linkCallback({ privateMessage: false, message: 'http//a.com http//b.com http//c.com http//d.com', reply: eventReply });
+      assert.notCalled(fetchStub);
       assert.notCalled(eventReply);
     });
 
     it('Attempts to fetch the url of a good link', async () => {
       linkCallback({ privateMessage: false, message: 'https://some.cool.link', reply: eventReply });
-      assert.called(fetchStub);
+      assert.calledOnce(fetchStub);
+      expect(fetchStub.getCall(0).args[0]).to.equal('https://some.cool.link');
+    });
+
+    it('Fetches multiple links', async () => {
+      linkCallback({ privateMessage: false, message: 'https://some.cool.link https://another.cool.link', reply: eventReply });
+      assert.calledTwice(fetchStub);
+      const fetches = [fetchStub.getCall(0).args[0], fetchStub.getCall(1).args[0]];
+      expect(fetches).to.include('https://some.cool.link');
+      expect(fetches).to.include('https://another.cool.link');
+    });
+
+    it('Only fetches each good unique link once', async () => {
+      linkCallback({ privateMessage: false, message: 'https://some.cool.link https://some.cool.link', reply: eventReply });
+      assert.calledOnce(fetchStub);
       expect(fetchStub.getCall(0).args[0]).to.equal('https://some.cool.link');
     });
 
