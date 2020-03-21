@@ -9,11 +9,6 @@ steps:
             - yarn --frozen-lockfile --non-interactive
             - yarn lint
 
-trigger:
-    event:
-        exclude:
-            - promote
-
 ---
 kind: pipeline
 name: tests
@@ -25,11 +20,6 @@ steps:
         commands:
             - yarn --frozen-lockfile --non-interactive
             - yarn test
-
-trigger:
-    event:
-        exclude:
-            - promote
 
 ---
 kind: pipeline
@@ -57,45 +47,3 @@ steps:
 trigger:
     event:
         - promote
-
----
-kind: pipeline
-name: artifacts
-type: docker
-
-steps:
-    -   name: collect
-        image: node:12-alpine
-        commands:
-            - yarn --frozen-lockfile --non-interactive --production
-    -   name: upload
-        image: plugins/s3-cache
-        settings:
-            rebuild: true
-            path: artifacts/${DRONE_REPO_NAME}/${DRONE_COMMIT}/
-            mount:
-                - node_modules
-            access_key:
-                from_secret: aws_access_key_id
-            secret_key:
-                from_secret: aws_secret_access_key
-            endpoint:
-                from_secret: aws_endpoint
-    -   name: flush
-        image: plugins/s3-cache
-        settings:
-            flush: true
-            flush_age: 7
-            flush_path: artifacts/${DRONE_REPO_NAME}/
-            access_key:
-                from_secret: aws_access_key_id
-            secret_key:
-                from_secret: aws_secret_access_key
-            endpoint:
-                from_secret: aws_endpoint
-
-trigger:
-    event:
-        - promote
-    target:
-        - production
