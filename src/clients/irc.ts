@@ -68,7 +68,7 @@ export class IRCClient {
           username: IRCClient.IRC_USERNAME,
           gecos: IRCClient.IRC_REALNAME,
           ssl: IRCClient.IRC_USE_SSL,
-          rejectUnauthorized: IRCClient.IRC_VERIFY_SSL
+          rejectUnauthorized: IRCClient.IRC_VERIFY_SSL,
         });
       }
       await sleep(5000);
@@ -168,7 +168,7 @@ export class IRCClient {
   public static message(target: string, message: string) {
     IRCClient.checkIfRegistered();
     logger.trace(`Sending to ${target} | msg: ${message}`);
-    message.split('\n').forEach(msg => IRCClient.bot.say(target, msg));
+    message.split('\n').forEach((msg) => IRCClient.bot.say(target, msg));
   }
 
   // Used for pre-processing before passing off to user callback, such as checking for ignored users

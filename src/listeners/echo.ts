@@ -15,12 +15,12 @@ function bbcode(text: string) {
 
 // Not intended to be called directly outside of this module, only exported for testing
 export function rawEchoSocketHandler(socket: net.Socket) {
-  socket.on('data', data => {
+  socket.on('data', (data) => {
     const dataString = data.toString();
     logger.trace(`Echo request: ${dataString}`);
     const [channels, text] = dataString.split('|%|');
     const message = bbcode(text);
-    channels.split('-').forEach(channel => {
+    channels.split('-').forEach((channel) => {
       IRCClient.message(`#${channel}`, message);
     });
     socket.end();

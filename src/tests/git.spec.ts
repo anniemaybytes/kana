@@ -57,9 +57,9 @@ describe('Git Webhook', () => {
           ref: 'branchname',
           commits: [{ author: { name: 'gituser' }, message: 'commit message', url: 'https://git.bogus/bffeb74224043ba2feb48d137756c8a9331c449a' }],
           sender: { login: 'user' },
-          repository: { name: 'repo' }
+          repository: { name: 'repo' },
         },
-        get: () => 'push'
+        get: () => 'push',
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -81,12 +81,12 @@ describe('Git Webhook', () => {
           compare_url: 'https://git.bogus/fullcompare',
           commits: [
             { author: { name: 'gituser' }, message: 'commit message', url: 'https://git.bogus/bffeb74224043ba2feb48d137756c8a9331c449a' },
-            { author: { name: 'gituser2' }, message: 'commit message2', url: 'https://git.bogus/abfeb74224043ba2feb48d137756c8a9331c449a' }
+            { author: { name: 'gituser2' }, message: 'commit message2', url: 'https://git.bogus/abfeb74224043ba2feb48d137756c8a9331c449a' },
           ],
           sender: { login: 'user' },
-          repository: { name: 'repo' }
+          repository: { name: 'repo' },
         },
-        get: () => 'push'
+        get: () => 'push',
       } as any,
       { end: resStub } as any,
       sandbox.stub()

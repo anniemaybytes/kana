@@ -13,7 +13,7 @@ describe('Configuration', () => {
   beforeEach(() => {
     sandbox = createSandbox();
     mock({
-      'channels.json': '{"channel":{"persist":true,"join":"sajoin"}}'
+      'channels.json': '{"channel":{"persist":true,"join":"sajoin"}}',
     });
   });
 

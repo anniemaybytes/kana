@@ -32,8 +32,8 @@ describe('CI Webhook', () => {
           action: 'bogus',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123 }
-        }
+          build: { number: 123 },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -50,8 +50,8 @@ describe('CI Webhook', () => {
           action: 'updated',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, status: 'bogus' }
-        }
+          build: { number: 123, status: 'bogus' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -68,8 +68,8 @@ describe('CI Webhook', () => {
           action: 'updated',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, status: 'success' }
-        }
+          build: { number: 123, status: 'success' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -90,8 +90,8 @@ describe('CI Webhook', () => {
           action: 'updated',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, status: 'killed' }
-        }
+          build: { number: 123, status: 'killed' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -112,8 +112,8 @@ describe('CI Webhook', () => {
           action: 'updated',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, status: 'failure' }
-        }
+          build: { number: 123, status: 'failure' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -130,8 +130,8 @@ describe('CI Webhook', () => {
           action: 'updated',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, status: 'error' }
-        }
+          build: { number: 123, status: 'error' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -148,8 +148,8 @@ describe('CI Webhook', () => {
           action: 'created',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, trigger: 'whatever', author_login: 'user' }
-        }
+          build: { number: 123, trigger: 'whatever', author_login: 'user' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -170,8 +170,8 @@ describe('CI Webhook', () => {
           action: 'created',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, trigger: '@cron' }
-        }
+          build: { number: 123, trigger: '@cron' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()
@@ -192,8 +192,8 @@ describe('CI Webhook', () => {
           action: 'created',
           system: { link: 'https://git.bogus' },
           repo: { slug: 'repo' },
-          build: { number: 123, trigger: 'whatever', before: '123', author_login: 'user', link: 'https://change-stage-url.whatever' }
-        }
+          build: { number: 123, trigger: 'whatever', before: '123', author_login: 'user', link: 'https://change-stage-url.whatever' },
+        },
       } as any,
       { end: resStub } as any,
       sandbox.stub()

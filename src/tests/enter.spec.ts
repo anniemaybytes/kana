@@ -37,7 +37,7 @@ describe('Enter', () => {
         success: true,
         id: 1234,
         host: 'a.b.AnimeBytes',
-        channels: { room: true, badRoom: false }
+        channels: { room: true, badRoom: false },
       } as any);
       rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');
     });
@@ -66,7 +66,7 @@ describe('Enter', () => {
     it('Replies with error from AB call if api call success is false', async () => {
       authUser.resolves({
         success: false,
-        error: 'custom text'
+        error: 'custom text',
       });
       await enterCallback({ privateMessage: true, message: 'enter room,badRoom a key', reply: eventReply });
       assert.calledWithExactly(eventReply, 'custom text');

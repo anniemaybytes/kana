@@ -4,7 +4,7 @@ import { parseUserHost } from '../utils';
 import logger from '../logger';
 
 export function listenForDess() {
-  IRCClient.addMessageHook(/^!dess$/i, async event => {
+  IRCClient.addMessageHook(/^!dess$/i, async (event) => {
     if (event.privateMessage) return;
     logger.debug(`Dess request from ${event.hostname}`);
     try {

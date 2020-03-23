@@ -30,6 +30,6 @@ export const handleCIWebhook = asyncHandler(async (req: Request, res: Response) 
     }
   }
 
-  messages.forEach(message => IRCClient.message(REPORT_CHANNEL, message));
+  messages.forEach((message) => IRCClient.message(REPORT_CHANNEL, message));
   res.end('Success');
 });

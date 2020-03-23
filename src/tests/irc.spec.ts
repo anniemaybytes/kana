@@ -163,7 +163,7 @@ describe('IRCClient', () => {
         username: IRCClient.IRC_USERNAME,
         gecos: IRCClient.IRC_REALNAME,
         ssl: IRCClient.IRC_USE_SSL,
-        rejectUnauthorized: IRCClient.IRC_VERIFY_SSL
+        rejectUnauthorized: IRCClient.IRC_VERIFY_SSL,
       });
     });
   });

@@ -15,9 +15,9 @@ describe('Utils', () => {
         'PowerUser.AnimeBytes',
         'MyUser.PowerUser',
         '127.0.0.1',
-        'extra.user.PowerUser.AnimeBytes'
+        'extra.user.PowerUser.AnimeBytes',
       ];
-      invalidHostnames.forEach(hostName => {
+      invalidHostnames.forEach((hostName) => {
         try {
           utils.parseUserHost(hostName);
         } catch (e) {

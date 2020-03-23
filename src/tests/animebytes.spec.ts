@@ -75,7 +75,7 @@ describe('ABClient', () => {
       await ABClient.getUserInfo('username');
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({
-        username: 'username'
+        username: 'username',
       });
     });
 
@@ -111,7 +111,7 @@ describe('ABClient', () => {
       await ABClient.performDess('username');
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({
-        username: 'username'
+        username: 'username',
       });
     });
 
@@ -126,7 +126,7 @@ describe('ABClient', () => {
       sandbox.stub(ABClient, 'fetch').resolves({
         ok: true,
         status: 200,
-        text: async () => '{"stubbed":"data"}'
+        text: async () => '{"stubbed":"data"}',
       } as any);
       fetchStub = (ABClient.fetch as unknown) as SinonStub;
     });
@@ -165,7 +165,7 @@ describe('ABClient', () => {
       fetchStub.resolves({
         ok: false,
         status: 200,
-        text: async () => '{"stubbed":"data"}'
+        text: async () => '{"stubbed":"data"}',
       });
       try {
         await ABClient.makeRequest('/myPath', {});
@@ -177,7 +177,7 @@ describe('ABClient', () => {
 
     it('returns parsed json if the return body was JSON', async () => {
       expect(await ABClient.makeRequest('/myPath', {})).to.deep.equal({
-        stubbed: 'data'
+        stubbed: 'data',
       });
     });
 
@@ -185,7 +185,7 @@ describe('ABClient', () => {
       fetchStub.resolves({
         ok: true,
         status: 200,
-        text: async () => 'stubbed'
+        text: async () => 'stubbed',
       });
       expect(await ABClient.makeRequest('/myPath', {})).to.equal('stubbed');
     });

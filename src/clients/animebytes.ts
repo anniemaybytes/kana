@@ -34,7 +34,7 @@ export class ABClient {
     const res = await ABClient.fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
     const responseBody = await res.text();
     logger.trace(`AnimeBytes POST ${url} <- [${res.status}] ${responseBody}`);

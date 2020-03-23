@@ -19,7 +19,7 @@ export async function getUserInfoByIRCNick(ircNick: string) {
 }
 
 export function listenForUser() {
-  IRCClient.addMessageHook(userRegex, async event => {
+  IRCClient.addMessageHook(userRegex, async (event) => {
     if (event.privateMessage) return;
     logger.debug(`user request from ${event.hostname}`);
     try {

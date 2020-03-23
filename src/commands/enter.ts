@@ -6,7 +6,7 @@ import { UserAuthResponse } from '../types';
 const enterMatchRegex = /^(?:\s)*enter(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)*$/i;
 
 export function listenForEnterMsg() {
-  IRCClient.addMessageHook(enterMatchRegex, async event => {
+  IRCClient.addMessageHook(enterMatchRegex, async (event) => {
     if (!event.privateMessage) return;
     // Unfortunately irc-framework does not have any way to return the match from its regex check,
     // so we must do the regex again here to actually pull the match we're looking for
@@ -18,7 +18,7 @@ export function listenForEnterMsg() {
       authResponse = await ABClient.authUserForRooms(
         matches[2],
         matches[3],
-        matches[1].split(',').map(room => room.trim().toLowerCase())
+        matches[1].split(',').map((room) => room.trim().toLowerCase())
       );
     } catch (e) {
       logger.error('Error authing user', e);

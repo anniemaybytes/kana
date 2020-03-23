@@ -12,12 +12,12 @@ const songs = [
   'Synchrogazer -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/81d7bbbacd42 ~ https://animebytes.tv/torrents2.php?id=16863',
   'https://mei.animebytes.tv/D46VG0mwINv.png',
   'UNLIMITED BEAT by Mizuki Nana ~ https://radio.animebits.moe/player/hash/18e18823107f ~ https://animebytes.tv/torrents2.php?id=43365',
-  'FINAL COMMANDER -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/9f4ab07bede1 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871'
+  'FINAL COMMANDER -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/9f4ab07bede1 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
 ];
 
 const metanoiaSongs = [
   'METANOIA by Mizuki Nana ~ https://radio.animebits.moe/player/hash/4379a84c66f9 ~ https://animebytes.tv/torrents2.php?id=57062',
-  'METANOIA -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/3be87f1f3252 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871'
+  'METANOIA -Aufwachen Form- by Mizuki Nana ~ https://radio.animebits.moe/player/hash/3be87f1f3252 ~ https://animebytes.tv/torrents2.php?id=58724&torrentid=429871',
 ];
 
 songs.push(...metanoiaSongs);
@@ -27,13 +27,13 @@ function pickRandom(array: string[]) {
 }
 
 export function addSongCommands() {
-  IRCClient.addMessageHook(/^!nana$/i, event => {
+  IRCClient.addMessageHook(/^!nana$/i, (event) => {
     if (event.privateMessage) return;
     logger.debug(`nana request from ${event.hostname}`);
     event.reply(pickRandom(songs));
   });
 
-  IRCClient.addMessageHook(/^!metanoia$/i, event => {
+  IRCClient.addMessageHook(/^!metanoia$/i, (event) => {
     if (event.privateMessage) return;
     logger.debug(`metanoia request from ${event.hostname}`);
     event.reply(pickRandom(metanoiaSongs));

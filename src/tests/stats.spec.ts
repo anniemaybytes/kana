@@ -14,7 +14,7 @@ describe('StatsCollector', () => {
     sandbox = createSandbox();
     sandbox.stub(IRCClient, 'who').resolves([
       { hostname: 'a.b.AnimeBytes', ident: '1234' },
-      { hostname: 'invalid', ident: '4321' }
+      { hostname: 'invalid', ident: '4321' },
     ] as any);
     ircWhoStub = IRCClient.who as any;
     sandbox.stub(ABClient, 'postStats');

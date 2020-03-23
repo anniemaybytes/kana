@@ -13,7 +13,7 @@ const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\
 const standardRequestOptions = {
   headers: { 'Accept-Language': 'en-US,en;q=0.7' },
   timeout: MAX_REQUEST_TIME_MS,
-  size: MAX_REQUEST_SIZE_BYTES
+  size: MAX_REQUEST_SIZE_BYTES,
 };
 
 async function parseTitle(htmlBody: NodeJS.ReadStream) {
@@ -30,13 +30,13 @@ async function parseTitle(htmlBody: NodeJS.ReadStream) {
       },
       onclosetag(name) {
         if (name === 'title') titleTag = false;
-      }
+      },
     },
     { decodeEntities: true }
   );
   const stringDecoder = new StringDecoder();
   htmlBody
-    .on('data', data => {
+    .on('data', (data) => {
       parser.write(stringDecoder.write(data));
     })
     .on('close', () => (bodyClosed = true))
@@ -65,7 +65,7 @@ function processTitle(title: string) {
 }
 
 export function addLinkWatcher() {
-  IRCClient.addMessageHook(urlRegex, async event => {
+  IRCClient.addMessageHook(urlRegex, async (event) => {
     if (event.privateMessage) return;
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -76,7 +76,7 @@ export function addLinkWatcher() {
     logger.debug(`Parsing link(s) found in message from ${event.hostname}`);
 
     await Promise.all(
-      [...urlSet].map(async url => {
+      [...urlSet].map(async (url) => {
         if (
           url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
           url.match(/127\.0\.0\.1/i) ||

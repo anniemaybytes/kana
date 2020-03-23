@@ -38,7 +38,7 @@ describe('WebLinks', () => {
       fetchStub = sandbox.stub(nodeFetch, 'default').resolves({
         ok: true,
         headers: { get: () => 'text/html' },
-        body: fakeSocket
+        body: fakeSocket,
       } as any);
     });
 

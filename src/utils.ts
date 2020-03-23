@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CustomFailure } from './errors';
 
 export async function sleep(ms: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }

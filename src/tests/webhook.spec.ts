@@ -22,13 +22,13 @@ describe('WebhookServer', () => {
     beforeEach(() => {
       resStub = {
         status: sandbox.stub(),
-        send: sandbox.stub()
+        send: sandbox.stub(),
       };
       resStub.status.returns(resStub);
       reqStub = {
         // Valid signature for body '{"some":"data"}' with key 'testkey' using hmac sha256
         get: sandbox.stub().returns('0b5f35a650ba62e9d2afff873649317b5f91b47e5400fdab4e2406981c0339f4'),
-        body: Buffer.from('{"some":"data"}')
+        body: Buffer.from('{"some":"data"}'),
       };
       nextStub = sandbox.stub();
     });
@@ -78,17 +78,17 @@ describe('WebhookServer', () => {
     beforeEach(() => {
       resStub = {
         status: sandbox.stub(),
-        send: sandbox.stub()
+        send: sandbox.stub(),
       };
       resStub.status.returns(resStub);
       reqStub = sandbox.stub();
       nextStub = sandbox.stub();
       mockHttpSignature = {
         parseRequest: sandbox.stub().returns('thing'),
-        verifyHMAC: sandbox.stub().returns(true)
+        verifyHMAC: sandbox.stub().returns(true),
       };
       verifyDroneSig = proxyquire('../listeners/webhook', {
-        'http-signature': mockHttpSignature
+        'http-signature': mockHttpSignature,
       }).verifyDroneSig;
     });
 
@@ -114,10 +114,10 @@ describe('WebhookServer', () => {
       mockExpress = sandbox.stub().returns({
         use: sandbox.stub(),
         post: sandbox.stub(),
-        listen: sandbox.stub()
+        listen: sandbox.stub(),
       });
       startWebhookServer = proxyquire('../listeners/webhook', {
-        express: mockExpress
+        express: mockExpress,
       }).startWebhookServer;
     });
 

@@ -13,7 +13,7 @@ export async function updateStats() {
   logger.info('Starting stats collection');
   try {
     const onlineUsers: UserTimeDeltas = {};
-    (await IRCClient.who(STATS_CHANNEL)).forEach(whoResponse => {
+    (await IRCClient.who(STATS_CHANNEL)).forEach((whoResponse) => {
       try {
         parseUserHost(whoResponse.hostname); // Just to check if the user has a valid hostname
         onlineUsers[Number(whoResponse.ident)] = { delta_time: Math.floor(STATS_UPDATE_PERIOD_MS / 1000) };

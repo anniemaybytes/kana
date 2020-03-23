@@ -1,3 +1,4 @@
+---
 kind: pipeline
 name: compliance
 type: docker
@@ -26,6 +27,9 @@ kind: pipeline
 name: docker
 type: docker
 
+platform:
+    arch: amd64
+
 steps:
     -   name: build
         image: plugins/docker
@@ -47,3 +51,7 @@ steps:
 trigger:
     event:
         - promote
+
+depends_on:
+    - compliance
+    - tests

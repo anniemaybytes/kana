@@ -34,6 +34,6 @@ export const handleGitWebhook = asyncHandler(async (req: Request, res: Response)
     messages.push(`${bold(hook.sender.login)} deleted ${hook.ref_type} ${bold(branch)} on ${bold(hook.repository.name)}`);
   }
 
-  messages.forEach(message => IRCClient.message(REPORT_CHANNEL, message));
+  messages.forEach((message) => IRCClient.message(REPORT_CHANNEL, message));
   res.end('Success');
 });
