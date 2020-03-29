@@ -34,12 +34,17 @@ export function listenForUser() {
 
       // Call AB for the userinfo of this name
       let userInfo = '';
-      try {
-        userInfo = await ABClient.getUserInfo(name);
-      } catch (e) {
-        // Try to find specified user by their IRC nickname if they are registered and have a valid AB hostname
-        if (e.code === 'NotFound' && usernameProvided) userInfo = await getUserInfoByIRCNick(name);
-        else throw e;
+      if (name.startsWith('@')) {
+        // if prepending name with '@', explicitly lookup by irc nick
+        userInfo = await getUserInfoByIRCNick(name.substr(1));
+      } else {
+        try {
+          userInfo = await ABClient.getUserInfo(name); // try looking up provided name as AB username directly
+        } catch (e) {
+          // Try to find specified user by their IRC nickname if they are registered and have a valid AB hostname
+          if (e.code === 'NotFound' && usernameProvided) userInfo = await getUserInfoByIRCNick(name);
+          else throw e;
+        }
       }
 
       // Reply with the userinfo from AB

@@ -31,14 +31,14 @@ describe('User', () => {
     let callUser: SinonStub;
     let eventReply: SinonStub;
     let parseUserStub: SinonStub;
-    // let userInfoByNickStub: SinonStub;
+    let ircWhoisStub: SinonStub;
     beforeEach(() => {
       user.listenForUser();
       userCallback = hookStub.getCall(0).args[1];
       eventReply = sandbox.stub();
+      ircWhoisStub = sandbox.stub(IRCClient, 'whois').resolves({ hostname: 'whatever' } as any);
       parseUserStub = sandbox.stub(utils, 'parseUserHost').returns({ user: 'thing' } as any);
       callUser = sandbox.stub(ABClient, 'getUserInfo').resolves('reply');
-      // userInfoByNickStub = sandbox.stub(user, 'getUserInfoByIRCNick');
     });
 
     it('Does not respond if a private message', async () => {
@@ -74,6 +74,12 @@ describe('User', () => {
     it('Uses username from command if provided', async () => {
       await userCallback({ privateMessage: false, message: '!user whoisthat', reply: eventReply });
       assert.calledWithExactly(callUser, 'whoisthat');
+      assert.calledWithExactly(eventReply, 'reply');
+    });
+
+    it('Gets user info by irc nick if name is prepended with @', async () => {
+      await userCallback({ privateMessage: false, message: '!user @whoisthat', reply: eventReply });
+      assert.calledWithExactly(ircWhoisStub, 'whoisthat'); // check that irc handler was invoked via stubbed whois call
       assert.calledWithExactly(eventReply, 'reply');
     });
   });
