@@ -1,12 +1,13 @@
 import net from 'net';
 import { IRCClient } from '../clients/irc';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('EchoListener');
 
 const LISTEN_PORT = Number(process.env.ECHO_PORT) || 1234;
 let server: net.Server | undefined = undefined;
 
 function bbcode(text: string) {
-  if (!text || typeof text !== 'string') return '';
+  if (!text) return '';
   return text
     .replace(/\[url\](.*)\[\/url\]/gi, '$1')
     .replace(/\[url=(.*)\](.*)\[\/url\]/gi, '$1 - $2')

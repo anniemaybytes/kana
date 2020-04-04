@@ -2,7 +2,8 @@ import { IRCClient } from '../clients/irc';
 import { ABClient } from '../clients/animebytes';
 import { parseUserHost } from '../utils';
 import { CustomFailure } from '../errors';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('UserCommand');
 
 const userRegex = /^!user(?:\s([^\s]+))?/i;
 

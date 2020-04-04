@@ -1,9 +1,10 @@
-import logger from '../logger';
 import * as irc from 'irc-framework';
 import { sleep } from '../utils';
 import { promisify } from 'util';
 import { getAllChannels, saveChannels, deleteChannel } from './configuration';
 import { MessageEvent, WHOISResponse, WHOResponse } from '../types';
+import { getLogger } from '../logger';
+const logger = getLogger('IRCClient');
 
 const IGNORED_USERS: { [user: string]: boolean } = {};
 (process.env.IRC_IGNORE_USERS || '').split(',').forEach((user: string) => {
@@ -56,11 +57,7 @@ export class IRCClient {
     while (!IRCClient.shuttingDown) {
       if (!IRCClient.registered) {
         IRCClient.bot.quit();
-        logger.info(
-          `Attempting to connect to irc at ${IRCClient.IRC_SERVER}:${IRCClient.IRC_PORT} ${IRCClient.IRC_USE_SSL ? 'with' : 'without'} ${
-            IRCClient.IRC_VERIFY_SSL ? 'verified' : 'unverified'
-          } tls`
-        );
+        logger.info(`Attempting to connect to IRC at ${IRCClient.IRC_SERVER}:${IRCClient.IRC_USE_SSL ? '+' : ''}${IRCClient.IRC_PORT}`);
         IRCClient.bot.connect({
           host: IRCClient.IRC_SERVER,
           port: IRCClient.IRC_PORT,
@@ -188,20 +185,21 @@ export class IRCClient {
 
 let connected = false;
 ircClient.on('close', () => {
-  if (connected && !IRCClient.shuttingDown) logger.error('Error! Disconnected from irc server!');
+  if (connected && !IRCClient.shuttingDown) logger.error('Error! Disconnected from IRC server!');
   connected = false;
   IRCClient.registered = false;
 });
 
 ircClient.on('registered', async () => {
   connected = true;
-  logger.info('Successfully connected to irc server');
+  logger.info('Successfully connected to IRC server');
+  if (!IRCClient.IRC_VERIFY_SSL && IRCClient.IRC_USE_SSL) logger.warn(`Connection was established on secure channel without TLS peer verification`);
   IRCClient.bot.raw(IRCClient.bot.rawString('OPER', process.env.OPER_USERNAME || '', process.env.OPER_PASS || ''));
 });
 
 ircClient.on('unknown command', (command: any) => {
   if (command.command === '381') IRCClient.postOper();
-  else if (command.command === '491') logger.error('Registering as OP has failed. Possible bad OPER user/pass?');
+  else if (command.command === '491') logger.error('Registering as oper has failed. Possibly bad O:LINE password?');
 });
 
 ircClient.on('invite', async (event: any) => {

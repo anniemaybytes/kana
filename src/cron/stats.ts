@@ -1,8 +1,9 @@
 import { ABClient } from '../clients/animebytes';
 import { IRCClient } from '../clients/irc';
 import { parseUserHost } from '../utils';
-import logger from '../logger';
 import { UserTimeDeltas } from '../types';
+import { getLogger } from '../logger';
+const logger = getLogger('StatsCron');
 
 const STATS_UPDATE_PERIOD_MS = 300000;
 const STATS_CHANNEL = '#animebytes';
@@ -10,7 +11,7 @@ let interval: any = undefined;
 
 // Not intended to be called directly outside of this module, only exported for testing
 export async function updateStats() {
-  logger.info('Starting stats collection');
+  logger.debug('Starting stats collection');
   try {
     const onlineUsers: UserTimeDeltas = {};
     (await IRCClient.who(STATS_CHANNEL)).forEach((whoResponse) => {

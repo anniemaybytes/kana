@@ -97,7 +97,7 @@ describe('ABClient', () => {
   describe('performDess', () => {
     let makeRequestStub: SinonStub;
     beforeEach(() => {
-      sandbox.stub(ABClient, 'makeRequest').resolves({ message: 'stubbedValue' });
+      sandbox.stub(ABClient, 'makeRequest').resolves({ success: true, message: 'stubbedValue' });
       makeRequestStub = ABClient.makeRequest as SinonStub;
     });
 
@@ -117,6 +117,14 @@ describe('ABClient', () => {
 
     it('should return the message from the result of makeRequest', async () => {
       expect(await ABClient.performDess('username')).to.equal('stubbedValue');
+    });
+
+    it('should throw if response body success is false', async () => {
+      makeRequestStub.resolves({ success: false });
+      try {
+        await ABClient.performDess('username');
+        expect.fail('did not throw');
+      } catch (e) {} // eslint-disable-line no-empty
     });
   });
 

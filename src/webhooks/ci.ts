@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { IRCClient } from '../clients/irc';
 import { asyncHandler, bold, underline } from '../utils';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('CIWebhook');
 
 export const handleCIWebhook = asyncHandler(async (req: Request, res: Response) => {
   const REPORT_CHANNEL = process.env.GIT_CHANNEL || '';

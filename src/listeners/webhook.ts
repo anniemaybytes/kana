@@ -3,7 +3,8 @@ import * as crypto from 'crypto';
 import httpSignature from 'http-signature';
 import { handleCIWebhook } from '../webhooks/ci';
 import { handleGitWebhook } from '../webhooks/git';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('WebhookListener');
 
 const LISTEN_PORT = Number(process.env.HTTP_PORT) || 4321;
 

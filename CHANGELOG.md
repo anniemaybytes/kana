@@ -3,9 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v2.4.0
+### Added
+- Add prefix with date and level to log messages
+- Use `chalk` to color logs when possible
+- Split logger between modules
+
+### Fixed
+- Create `channels.json` if it does not exist
+- Handle and log errors in `performDess`
+- Do not start if `channels.json` is malformed to avoid overwriting it later
+
+### Changed
+- Less verbose logging for stats collection
+- Better logging of connection message
+
 ## v2.3.0
 ### Added
-- Allow to search via IRC nick exclusively by appending it with `@` in `!user`
+- Allow to search via IRC nick exclusively by prefixing it with `@` in `!user`
 
 ## v2.2.2
 ### Fixed

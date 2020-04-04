@@ -1,7 +1,9 @@
 import fs from 'fs';
 import { promisify } from 'util';
 import { CustomFailure } from '../errors';
+import { getLogger } from '../logger';
 import { ChannelConfig } from '../types';
+const logger = getLogger('Configuration');
 
 const readFileAsync = promisify(fs.readFile).bind(fs);
 const writeFileAsync = promisify(fs.writeFile).bind(fs);
@@ -9,7 +11,14 @@ const writeFileAsync = promisify(fs.writeFile).bind(fs);
 const CHANNEL_CONFIG_JSON = 'channels.json';
 
 export async function getAllChannels() {
-  const data = JSON.parse(await readFileAsync(CHANNEL_CONFIG_JSON, 'utf8'));
+  let data: any = {};
+  try {
+    data = JSON.parse(await readFileAsync(CHANNEL_CONFIG_JSON, 'utf8'));
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw new Error(`Couldn't parse ${CHANNEL_CONFIG_JSON}: ${e}`);
+    logger.warn(`Channels configuration (${CHANNEL_CONFIG_JSON}) not found. Writing and continuing with empty state`);
+    await writeFileAsync(CHANNEL_CONFIG_JSON, '{}');
+  }
   // Set defaults if they are not provided
   for (const channel in data) {
     if (data[channel].persist === undefined) data[channel].persist = false;

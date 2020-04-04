@@ -31,6 +31,24 @@ describe('Configuration', () => {
       mock({ 'channels.json': '{"channel":{}}' });
       expect(await getAllChannels()).to.deep.equal({ channel: { persist: false, join: 'auto' } });
     });
+
+    it('writes and uses default empty config if channels.json does not exist', async () => {
+      mock({});
+      expect(await getAllChannels()).to.deep.equal({});
+      expect(await readFileAsync('channels.json', 'utf8')).to.equal('{}');
+    });
+
+    it('throws on unexpected file error', async () => {
+      mock({
+        'channels.json': mock.file({
+          mode: 0o000, // For emulating permission error
+        }),
+      });
+      try {
+        await getAllChannels();
+        expect.fail('did not throw');
+      } catch (e) {} // eslint-disable-line no-empty
+    });
   });
 
   describe('getChannel', () => {

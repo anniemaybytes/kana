@@ -1,9 +1,10 @@
 import { IRCClient } from '../clients/irc';
 import { StringDecoder } from 'string_decoder';
 import fetch from 'node-fetch';
-import logger from '../logger';
 import { Parser } from 'htmlparser2';
 import { sleep } from '../utils';
+import { getLogger } from '../logger';
+const logger = getLogger('LinkCommand');
 
 const MAX_REQUEST_SIZE_BYTES = 1000000;
 const MAX_REQUEST_TIME_MS = 10000;

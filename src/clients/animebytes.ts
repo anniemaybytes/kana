@@ -1,7 +1,8 @@
 import nodeFetch from 'node-fetch';
 import { CustomFailure } from '../errors';
-import logger from '../logger';
 import { UserAuthResponse, UserTimeDeltas } from '../types';
+import { getLogger } from '../logger';
+const logger = getLogger('AnimeBytesClient');
 
 export class ABClient {
   public static fetch = nodeFetch;
@@ -23,7 +24,9 @@ export class ABClient {
   }
 
   public static async performDess(username: string) {
-    return (await ABClient.makeRequest('/api/irc/dess_tax', { username })).message as string;
+    const response = await ABClient.makeRequest('/api/irc/dess_tax', { username });
+    if (!response.success) throw new Error(`AB dess_tax call error: ${JSON.stringify(response)}`);
+    return response.message as string;
   }
 
   // Not meant to be called directly from outside the client. Public for testing purposes

@@ -65,8 +65,7 @@ Alternatively, you can also build/use a docker container instead:
 
 ```sh
 docker build . -t kana
-# Pass in any additional parameters you may need, such as env vars into the docker run command
-docker run kana
+docker run -d --restart=always --env-file=.env --user 1001:1001 -v ${PWD}/channels.json:/app/channels.json kana
 ```
 
 ## Configuration

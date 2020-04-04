@@ -1,5 +1,6 @@
 import { IRCClient } from '../clients/irc';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('SymphogayCommand');
 
 const songs = [
   'FINAL COMMANDER by Mizuki Nana ~ https://radio.animebits.moe/player/hash/7c57e488c8c1 ~ https://animebytes.tv/torrents2.php?id=57720',

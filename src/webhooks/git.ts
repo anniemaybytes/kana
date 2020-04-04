@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { IRCClient } from '../clients/irc';
 import { asyncHandler, bold, underline } from '../utils';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('GitWebhook');
 
 function trim_commit_url(url: string) {
   return url.replace(/(\/[0-9a-f]{9})[0-9a-f]+$/, '$1');

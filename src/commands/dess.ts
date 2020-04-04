@@ -1,7 +1,8 @@
 import { IRCClient } from '../clients/irc';
 import { ABClient } from '../clients/animebytes';
 import { parseUserHost } from '../utils';
-import logger from '../logger';
+import { getLogger } from '../logger';
+const logger = getLogger('DessCommand');
 
 export function listenForDess() {
   IRCClient.addMessageHook(/^!dess$/i, async (event) => {

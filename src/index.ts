@@ -1,13 +1,17 @@
 import 'source-map-support/register';
-import logger from './logger';
+import { getAllChannels } from './clients/configuration';
 import { IRCClient } from './clients/irc';
 import { echoListen, echoShutdown } from './listeners/echo';
 import { startWebhookServer, webhookShutdown } from './listeners/webhook';
 import { addCommands } from './commands';
 import { scheduleStatsReporter, unscheduleStatsReporter } from './cron/stats';
+import { getLogger } from './logger';
+const logger = getLogger('main');
 
 async function main() {
   logger.info('Starting kana');
+  // Ensure channels configuration is valid first
+  await getAllChannels();
   // Initialize and connect the actual irc bot
   addCommands();
   IRCClient.connect();
@@ -25,7 +29,7 @@ function shutdown() {
   // If spamming a stop signal, exit without caring about properly shutting down everything
   if (stopSignalReceived) process.exit(1);
   stopSignalReceived = true;
-  logger.error('\nSignal to stop received. Shutting down.');
+  logger.error('Signal to stop received. Shutting down...');
   unscheduleStatsReporter();
   echoShutdown();
   webhookShutdown();
@@ -36,4 +40,4 @@ function shutdown() {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-main().catch(logger.error);
+main().catch((e) => logger.error('Unexpected fatal error:', e));
