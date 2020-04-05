@@ -9,6 +9,7 @@ steps:
         commands:
             - yarn --frozen-lockfile --non-interactive
             - yarn lint
+            - yarn build
 
 ---
 kind: pipeline

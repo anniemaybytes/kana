@@ -1,12 +1,12 @@
-# Satsuki
+# kana
 
-Satsuki is our implementation of an IRC bot for the AnimeBytes IRC server.
+kana is our implementation of an IRC bot for the AnimeBytes IRC server.
 
 ## Usage
 
-Satsuki listens for following IRC events:
+kana listens for following IRC events:
 
-- `PRIVMSG Satsuki :enter <username> <key>`
+- `PRIVMSG {:nick} :enter <username> <key>`
 - `INVITE`
 
 Following commands are accessible:
@@ -35,7 +35,7 @@ Additionally:
 
 ## Installation
 
-Satsuki requires NodeJS version 12 or later and [Yarn package manager](https://classic.yarnpkg.com/)
+kana requires NodeJS version 12.10 or later and [Yarn package manager](https://classic.yarnpkg.com/)
 
 ```sh
 yarn && yarn build
@@ -86,7 +86,7 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
 - `GIT_WEBHOOK` - Secret key to authenticate Git and CI webhook endpoint
 - `HTTP_PORT` - Port on which bot will expose Express router, used by Git and CI webhook
-- `ECHO_PORT` - Port on which Satsuki will listen for raw ECHO commands, there is no authentication here so use firewall
+- `ECHO_PORT` - Port on which bot will listen for raw ECHO commands, there is no authentication here so use firewall
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
 - `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 
