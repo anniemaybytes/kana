@@ -17,10 +17,11 @@ export function verifyGiteaSig(req: Request, res: Response, next: NextFunction) 
     logger.trace(`Gitea signature: ${signature}\nRequest body: ${bodyStr}`);
     const signatureBuf = Buffer.from(signature, 'hex');
     const generatedHmac = crypto
-      .createHmac('sha256', process.env.GIT_WEBHOOK || 'testingkey')
+      .createHmac('sha256', process.env.GIT_WEBHOOK || '')
       .update(req.body)
       .digest();
-    if (!crypto.timingSafeEqual(signatureBuf, generatedHmac)) throw new Error('HMACs do not match'); // Caught and handled below
+    // Caught and handled below
+    if (!crypto.timingSafeEqual(signatureBuf, generatedHmac)) throw new Error('HMACs do not match');
   } catch (e) {
     logger.debug(`Bad gitea signature error: ${e}`);
     return res.status(403).send({ error: 'Bad signature provided' });
@@ -37,7 +38,8 @@ export function verifyGiteaSig(req: Request, res: Response, next: NextFunction) 
 export function verifyDroneSig(req: Request, res: Response, next: NextFunction) {
   try {
     const parsed = httpSignature.parseRequest(req);
-    if (!httpSignature.verifyHMAC(parsed, process.env.GIT_WEBHOOK || 'testingkey')) throw new Error('verifyHMAC returned false'); // Caught and handled below
+    // Caught and handled below
+    if (!httpSignature.verifyHMAC(parsed, process.env.GIT_WEBHOOK || '')) throw new Error('verifyHMAC returned false');
     return next();
   } catch (e) {
     logger.debug(`Bad auth from drone: ${e}`);

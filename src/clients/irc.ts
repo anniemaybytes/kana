@@ -13,23 +13,25 @@ const IGNORED_USERS: { [user: string]: boolean } = {};
 const ircClient = new irc.Client({ auto_reconnect: false });
 ircClient.who[promisify.custom] = (target: string) =>
   new Promise((resolve, reject) => {
-    setTimeout(() => reject(new Error('WHO took too long, maybe room is empty?')), 10000); // If who call takes longer than 10 seconds, consider it a failure
+    // If who call takes longer than 10 seconds, consider it a failure
+    setTimeout(() => reject(new Error('WHO took too long, maybe room is empty?')), 10000);
     ircClient.who(target, resolve);
   });
 ircClient.whois[promisify.custom] = (target: string) =>
   new Promise((resolve, reject) => {
-    setTimeout(() => reject(new Error('WHOIS took too long, nick is probably offline')), 2000); // If whois call takes longer than 2 seconds, consider it a failure
+    // If whois call takes longer than 2 seconds, consider it a failure
+    setTimeout(() => reject(new Error('WHOIS took too long, nick is probably offline')), 2000);
     ircClient.whois(target, resolve);
   });
 
 export class IRCClient {
   public static IGNORED_USERS: { [user: string]: boolean } = IGNORED_USERS;
-  public static IRC_NICK = process.env.IRC_NICK || 'testbot';
+  public static IRC_NICK = process.env.IRC_NICK || 'kana';
   public static IRC_NICK_LOWER = IRCClient.IRC_NICK.toLowerCase();
   public static IRC_SERVER = process.env.IRC_SERVER || 'localhost';
   public static IRC_PORT = Number(process.env.IRC_PORT) || 6667;
-  public static IRC_USERNAME = process.env.IRC_USERNAME || 'testbot';
-  public static IRC_REALNAME = process.env.IRC_REALNAME || 'testbot';
+  public static IRC_USERNAME = process.env.IRC_USERNAME || 'kana';
+  public static IRC_REALNAME = process.env.IRC_REALNAME || 'kana';
   public static IRC_USE_SSL = Boolean(process.env.IRC_USE_SSL);
   public static IRC_VERIFY_SSL = process.env.IRC_VERIFY_SSL !== 'false';
   public static registered = false;
@@ -95,12 +97,12 @@ export class IRCClient {
           await IRCClient.joinRoom(channel);
         } catch (e) {
           if (!channels[channel].persist) {
-            logger.warn(`Failed to join ${channel} with regular join mode, and persistence set to false. Removing channel from config.`);
+            logger.warn(`Failed to join ${channel} with regular join mode, and persistence set to false; removing channel from config.`);
             await deleteChannel(channel);
           }
         }
       } else {
-        logger.error(`Channel ${channel} in channels config has invalid join parameter '${channels[channel].join}'; Ignoring this channel`);
+        logger.error(`Channel ${channel} in channels config has invalid join parameter '${channels[channel].join}'; ignoring this channel`);
       }
     }
   }
@@ -108,7 +110,8 @@ export class IRCClient {
   // Join a room with normal /join and detect/throw for failure
   public static async joinRoom(channel: string) {
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 5000); // If joining takes longer than 5 seconds, consider it a failure
+      // If joining takes longer than 5 seconds, consider it a failure
+      const timeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 5000);
       function channelUserListHandler(event: any) {
         if (event.channel.toLowerCase() === channel.toLowerCase()) {
           clearTimeout(timeout);
@@ -117,24 +120,28 @@ export class IRCClient {
       }
       IRCClient.bot.on('userlist', channelUserListHandler);
       IRCClient.bot.join(channel);
-      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 5001); // Cleanup userlist handler
+      // Cleanup userlist handler
+      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 5001);
     });
   }
 
   public static async joinRoomWithAdminIfNecessary(channel: string) {
     return new Promise((resolve, reject) => {
-      const timeout1 = setTimeout(() => IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel), 2000); // Perform sajoin if regular join doesn't work within 2 seconds
-      const timeout2 = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 10000); // If joining takes longer than 10 seconds, consider it a failure
+      // Perform sajoin if regular join doesn't work within 2 seconds
+      const sajoinTimeout = setTimeout(() => IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel), 2000);
+      // If joining takes longer than 10 seconds, consider it a failure
+      const joinTimeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 10000);
       function channelUserListHandler(event: any) {
         if (event.channel.toLowerCase() === channel.toLowerCase()) {
-          clearTimeout(timeout1);
-          clearTimeout(timeout2);
+          clearTimeout(sajoinTimeout);
+          clearTimeout(joinTimeout);
           resolve();
         }
       }
       IRCClient.bot.on('userlist', channelUserListHandler);
       IRCClient.bot.join(channel);
-      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 10001); // Cleanup userlist handler
+      // Cleanup userlist handler
+      setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 10001);
     });
   }
 
@@ -185,7 +192,7 @@ export class IRCClient {
 
 let connected = false;
 ircClient.on('close', () => {
-  if (connected && !IRCClient.shuttingDown) logger.error('Error! Disconnected from IRC server!');
+  if (connected && !IRCClient.shuttingDown) logger.error('Disconnected from IRC server!');
   connected = false;
   IRCClient.registered = false;
 });
@@ -193,13 +200,15 @@ ircClient.on('close', () => {
 ircClient.on('registered', async () => {
   connected = true;
   logger.info('Successfully connected to IRC server');
-  if (!IRCClient.IRC_VERIFY_SSL && IRCClient.IRC_USE_SSL) logger.warn(`Connection was established on secure channel without TLS peer verification`);
+  if (!IRCClient.IRC_VERIFY_SSL && IRCClient.IRC_USE_SSL) {
+    logger.warn(`Connection was established on secure channel without TLS peer verification`);
+  }
   IRCClient.bot.raw(IRCClient.bot.rawString('OPER', process.env.OPER_USERNAME || '', process.env.OPER_PASS || ''));
 });
 
 ircClient.on('unknown command', (command: any) => {
   if (command.command === '381') IRCClient.postOper();
-  else if (command.command === '491') logger.error('Registering as oper has failed. Possibly bad O:LINE password?');
+  else if (command.command === '491') logger.error('Registering as oper has failed; possibly bad O:LINE password?');
 });
 
 ircClient.on('invite', async (event: any) => {
@@ -211,7 +220,7 @@ ircClient.on('invite', async (event: any) => {
 });
 
 ircClient.on('nick in use', () => {
-  logger.error(`Error: Attempted nickname ${IRCClient.IRC_NICK} is currently in use. Will retry`);
+  logger.error(`Attempted nickname ${IRCClient.IRC_NICK} is currently in use; will retry`);
 });
 
 ircClient.on('debug', (event: string) => {

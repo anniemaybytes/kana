@@ -7,7 +7,7 @@ const logger = getLogger('AnimeBytesClient');
 export class ABClient {
   public static fetch = nodeFetch;
   public static url = 'https://animebytes.tv';
-  public static siteApiKey = process.env.SITE_API_KEY || 'testingKey';
+  public static siteApiKey = process.env.SITE_API_KEY || '';
 
   public static async postStats(userTimeDeltas: UserTimeDeltas) {
     await ABClient.makeRequest('/api/irc/notifier', { stats: userTimeDeltas });

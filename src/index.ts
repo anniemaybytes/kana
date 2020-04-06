@@ -29,7 +29,7 @@ function shutdown() {
   // If spamming a stop signal, exit without caring about properly shutting down everything
   if (stopSignalReceived) process.exit(1);
   stopSignalReceived = true;
-  logger.error('Signal to stop received. Shutting down...');
+  logger.error('Signal to stop received, shutting down');
   unscheduleStatsReporter();
   echoShutdown();
   webhookShutdown();

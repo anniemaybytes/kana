@@ -26,11 +26,13 @@ describe('WebhookServer', () => {
       };
       resStub.status.returns(resStub);
       reqStub = {
-        // Valid signature for body '{"some":"data"}' with key 'testkey' using hmac sha256
-        get: sandbox.stub().returns('0b5f35a650ba62e9d2afff873649317b5f91b47e5400fdab4e2406981c0339f4'),
+        // Valid signature for body '{"some":"data"}' with key 'testingKey' using hmac sha256
+        get: sandbox.stub().returns('4fd74acb4a18e709e5ee0b92566ca63b96013f6399f164e10bc0a4d6c7df810f'),
         body: Buffer.from('{"some":"data"}'),
       };
       nextStub = sandbox.stub();
+
+      process.env.GIT_WEBHOOK = 'testingKey';
     });
 
     it('returns 403 no signature provided if missing X-Gitea-Signature header', () => {
@@ -60,7 +62,7 @@ describe('WebhookServer', () => {
 
     it('returns 400 Invalid JSON when body is invalid JSON', () => {
       reqStub.body = Buffer.from('not json');
-      reqStub.get.returns('7cf99092f1a3e9e9ee871c6d56f638a33c6cb606dfe98297dc1dcf5b6c61e9a9');
+      reqStub.get.returns('589a2ddddabcec9bc5e31256e80bd523a5be1dd91518b632a2ad4544e0818874');
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(resStub.status, 400);
       assert.calledWithExactly(resStub.send, 'Invalid JSON');
@@ -90,6 +92,8 @@ describe('WebhookServer', () => {
       verifyDroneSig = proxyquire('../listeners/webhook', {
         'http-signature': mockHttpSignature,
       }).verifyDroneSig;
+
+      process.env.GIT_WEBHOOK = 'testingKey';
     });
 
     it('Calls next function with valid signature', () => {
