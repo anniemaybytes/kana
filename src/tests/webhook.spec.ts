@@ -40,7 +40,7 @@ describe('WebhookServer', () => {
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(reqStub.get, 'X-Gitea-Signature');
       assert.calledWithExactly(resStub.status, 403);
-      assert.calledWithExactly(resStub.send, { error: 'No signature provided' });
+      assert.calledWithExactly(resStub.send, { success: false, error: 'no signature provided' });
       assert.notCalled(nextStub);
     });
 
@@ -48,7 +48,7 @@ describe('WebhookServer', () => {
       reqStub.get.returns('deadbeefbadf4bcc6965cd0f46a0fd39f69e5cdb97206723e0ae5b3b74d8edbf');
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(resStub.status, 403);
-      assert.calledWithExactly(resStub.send, { error: 'Bad signature provided' });
+      assert.calledWithExactly(resStub.send, { success: false, error: 'bad signature provided' });
       assert.notCalled(nextStub);
     });
 
@@ -65,7 +65,7 @@ describe('WebhookServer', () => {
       reqStub.get.returns('589a2ddddabcec9bc5e31256e80bd523a5be1dd91518b632a2ad4544e0818874');
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(resStub.status, 400);
-      assert.calledWithExactly(resStub.send, 'Invalid JSON');
+      assert.calledWithExactly(resStub.send, { success: false, error: 'invalid json' });
       assert.notCalled(nextStub);
     });
   });
@@ -105,7 +105,7 @@ describe('WebhookServer', () => {
       mockHttpSignature.verifyHMAC.returns(false);
       verifyDroneSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(resStub.status, 403);
-      assert.calledWithExactly(resStub.send, { error: 'Bad signature provided' });
+      assert.calledWithExactly(resStub.send, { success: false, error: 'bad signature provided' });
       assert.notCalled(nextStub);
     });
   });

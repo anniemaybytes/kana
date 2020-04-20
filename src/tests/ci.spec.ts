@@ -157,7 +157,7 @@ describe('CI Webhook', () => {
     assert.calledWithExactly(
       stubSendMessage,
       'testchannel',
-      'CI: Build job #123 by \x02user\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
+      'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
     );
     assert.calledOnce(resStub);
   });
@@ -201,7 +201,7 @@ describe('CI Webhook', () => {
     assert.calledWithExactly(
       stubSendMessage.getCall(0),
       'testchannel',
-      'CI: Build job #123 by \x02user\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
+      'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
     );
     assert.calledWithExactly(stubSendMessage.getCall(1), 'testchannel', ' Changes staged: \x1fhttps://change-stage-url.whatever\x1f');
     assert.calledOnce(resStub);

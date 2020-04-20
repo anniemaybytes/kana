@@ -30,3 +30,11 @@ export function bold(ircString: string) {
 export function underline(ircString: string) {
   return '\x1f' + ircString + '\x1f';
 }
+
+export function spaceNick(ircString: string) {
+  return ircString.split('').join('\u200B');
+}
+
+export function trimCommitUrl(url: string) {
+  return url.replace(/([0-9a-f]{9})[0-9a-f]+/, '$1');
+}

@@ -13,7 +13,7 @@ export function verifyGiteaSig(req: Request, res: Response, next: NextFunction) 
   const bodyStr = req.body.toString('utf8');
   try {
     const signature = req.get('X-Gitea-Signature');
-    if (!signature) return res.status(403).send({ error: 'No signature provided' });
+    if (!signature) return res.status(403).send({ success: false, error: 'no signature provided' });
     logger.trace(`Gitea signature: ${signature}\nRequest body: ${bodyStr}`);
     const signatureBuf = Buffer.from(signature, 'hex');
     const generatedHmac = crypto
@@ -23,14 +23,14 @@ export function verifyGiteaSig(req: Request, res: Response, next: NextFunction) 
     // Caught and handled below
     if (!crypto.timingSafeEqual(signatureBuf, generatedHmac)) throw new Error('HMACs do not match');
   } catch (e) {
-    logger.debug(`Bad gitea signature error: ${e}`);
-    return res.status(403).send({ error: 'Bad signature provided' });
+    logger.debug(`Bad Gitea signature error: ${e}`);
+    return res.status(403).send({ success: false, error: 'bad signature provided' });
   }
   try {
     req.body = JSON.parse(bodyStr);
   } catch (e) {
-    logger.debug(`Invalid JSON from gitea: ${e}`);
-    return res.status(400).send('Invalid JSON');
+    logger.debug(`Invalid JSON from Gitea: ${e}`);
+    return res.status(400).send({ success: false, error: 'invalid json' });
   }
   return next();
 }
@@ -42,8 +42,8 @@ export function verifyDroneSig(req: Request, res: Response, next: NextFunction) 
     if (!httpSignature.verifyHMAC(parsed, process.env.GIT_WEBHOOK || '')) throw new Error('verifyHMAC returned false');
     return next();
   } catch (e) {
-    logger.debug(`Bad auth from drone: ${e}`);
-    return res.status(403).send({ error: 'Bad signature provided' });
+    logger.debug(`Bad auth from Drone: ${e}`);
+    return res.status(403).send({ success: false, error: 'bad signature provided' });
   }
 }
 
