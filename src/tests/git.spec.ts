@@ -19,13 +19,13 @@ describe('Git Webhook', () => {
   });
 
   it('Does not send a message for events that are not push, create, or delete', async () => {
-    await handleGitWebhook({ body: { ref: 'branchname' }, get: () => 'bogus' } as any, { end: resStub } as any, sandbox.stub());
+    await handleGitWebhook({ body: { ref: 'branchname' }, get: () => 'bogus' } as any, { send: resStub } as any, sandbox.stub());
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
   });
 
   it('Does not send a message for push events where there are no commits', async () => {
-    await handleGitWebhook({ body: { ref: 'branchname', commits: [] }, get: () => 'push' } as any, { end: resStub } as any, sandbox.stub());
+    await handleGitWebhook({ body: { ref: 'branchname', commits: [] }, get: () => 'push' } as any, { send: resStub } as any, sandbox.stub());
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
   });
@@ -33,7 +33,7 @@ describe('Git Webhook', () => {
   it('Sends correct message for delete event', async () => {
     await handleGitWebhook(
       { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'delete' } as any,
-      { end: resStub } as any,
+      { send: resStub } as any,
       sandbox.stub()
     );
     assert.calledWithExactly(
@@ -47,7 +47,7 @@ describe('Git Webhook', () => {
   it('Sends correct message for create event', async () => {
     await handleGitWebhook(
       { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'create' } as any,
-      { end: resStub } as any,
+      { send: resStub } as any,
       sandbox.stub()
     );
     assert.calledWithExactly(
@@ -69,7 +69,7 @@ describe('Git Webhook', () => {
         },
         get: () => 'push',
       } as any,
-      { end: resStub } as any,
+      { send: resStub } as any,
       sandbox.stub()
     );
     assert.calledWithExactly(
@@ -100,7 +100,7 @@ describe('Git Webhook', () => {
         },
         get: () => 'push',
       } as any,
-      { end: resStub } as any,
+      { send: resStub } as any,
       sandbox.stub()
     );
     assert.calledWithExactly(

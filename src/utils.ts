@@ -36,5 +36,5 @@ export function spaceNick(ircString: string) {
 }
 
 export function trimCommitUrl(url: string) {
-  return url.replace(/([0-9a-f]{9})[0-9a-f]+/, '$1');
+  return url.replace(/([0-9a-f]{9})[0-9a-f]+/g, '$1');
 }

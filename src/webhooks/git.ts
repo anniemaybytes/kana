@@ -35,5 +35,5 @@ export const handleGitWebhook = asyncHandler(async (req: Request, res: Response)
   }
 
   messages.forEach((message) => IRCClient.message(REPORT_CHANNEL, message));
-  res.end({ success: true });
+  res.send({ success: true });
 });

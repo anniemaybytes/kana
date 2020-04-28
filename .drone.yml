@@ -11,6 +11,11 @@ steps:
             - yarn lint
             - yarn build
 
+trigger:
+    ref:
+        - refs/heads/master
+        - refs/pull/**
+        - refs/tags/**
 ---
 kind: pipeline
 name: tests
@@ -23,6 +28,11 @@ steps:
             - yarn --frozen-lockfile --non-interactive
             - yarn test
 
+trigger:
+    ref:
+        - refs/heads/master
+        - refs/pull/**
+        - refs/tags/**
 ---
 kind: pipeline
 name: docker
