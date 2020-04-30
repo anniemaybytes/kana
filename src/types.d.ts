@@ -45,9 +45,11 @@ export interface WHOISResponse {
   channels: string;
 }
 
+export interface ChannelConfigOptions {
+  persist: boolean;
+  join: 'join' | 'sajoin' | 'auto';
+}
+
 export interface ChannelConfig {
-  [channel: string]: {
-    persist: boolean;
-    join: 'join' | 'sajoin' | 'auto';
-  };
+  [channel: string]: ChannelConfigOptions;
 }

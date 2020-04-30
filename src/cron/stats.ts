@@ -23,6 +23,7 @@ export async function updateStats() {
       }
     });
     await ABClient.postStats(onlineUsers);
+    logger.debug('Stats reporting complete');
   } catch (e) {
     logger.error('Unexpected error gathering/saving stats:', e);
   }

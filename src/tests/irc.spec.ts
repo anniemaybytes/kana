@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
+import { CustomFailure } from '../errors';
 import { IRCClient } from '../clients/irc';
 import * as configuration from '../clients/configuration';
 
@@ -60,17 +61,51 @@ describe('IRCClient', () => {
       });
     });
 
+    describe('kick/part handler', () => {
+      let kickHandler: any;
+      let partHandler: any;
+      let isMeStub: SinonStub;
+      let channelLeaveStub: SinonStub;
+      beforeEach(() => {
+        kickHandler = IRCClient.bot.listeners('kick')[0];
+        partHandler = IRCClient.bot.listeners('part')[0];
+        isMeStub = sandbox.stub(IRCClient, 'isMe').returns(true);
+        channelLeaveStub = sandbox.stub(IRCClient, 'handleChannelLeave');
+      });
+
+      it('ignores kick/part if not for self', async () => {
+        isMeStub.returns(false);
+        await kickHandler({});
+        await partHandler({});
+        assert.notCalled(channelLeaveStub);
+      });
+
+      it('calls handleChannelLeave if kick is for self', async () => {
+        await kickHandler({ kicked: 'me', channel: 'chan' });
+        assert.calledWithExactly(isMeStub, 'me');
+        assert.calledWithExactly(channelLeaveStub, 'chan');
+      });
+
+      it('calls handleChannelLeave if part is for self', async () => {
+        await partHandler({ nick: 'me', channel: 'chan' });
+        assert.calledWithExactly(isMeStub, 'me');
+        assert.calledWithExactly(channelLeaveStub, 'chan');
+      });
+    });
+
     describe('Invite Handler', () => {
       let inviteHandler: any;
       let isIgnoredStub: SinonStub;
       let isMeStub: SinonStub;
       let joinStub: SinonStub;
+      let getChannelStub: SinonStub;
       let saveChannelStub: SinonStub;
       beforeEach(() => {
         inviteHandler = IRCClient.bot.listeners('invite')[0];
         isIgnoredStub = sandbox.stub(IRCClient, 'isIgnoredUser').returns(false);
         isMeStub = sandbox.stub(IRCClient, 'isMe').returns(true);
         joinStub = sandbox.stub(IRCClient, 'joinRoom');
+        getChannelStub = sandbox.stub(configuration, 'getChannel').throws(new CustomFailure('NotFound', 'err'));
         saveChannelStub = sandbox.stub(configuration, 'saveChannels');
       });
 
@@ -94,6 +129,12 @@ describe('IRCClient', () => {
       it('Saves joined channel', async () => {
         await inviteHandler({ channel: 'channel' });
         assert.calledWithExactly(saveChannelStub, { channel: { join: 'join', persist: false } });
+      });
+
+      it('Does not save if channel already exists in config', async () => {
+        getChannelStub.returns({});
+        await inviteHandler({ channel: 'channel' });
+        assert.notCalled(saveChannelStub);
       });
 
       it('Does not save channel if join fails', async () => {
@@ -179,18 +220,84 @@ describe('IRCClient', () => {
     });
   });
 
-  describe('postOper', () => {
-    let rawCommandStub: SinonStub;
-    let joinWithAdminRoomStub: SinonStub;
-    let joinRoomStub: SinonStub;
-    let getChannelsStub: SinonStub;
+  describe('handleChannelLeave', () => {
+    let getChannelStub: SinonStub;
+    let joinConfigChannelStub: SinonStub;
     let deleteChannelStub: SinonStub;
     beforeEach(() => {
-      rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');
+      getChannelStub = sandbox.stub(configuration, 'getChannel');
+      joinConfigChannelStub = sandbox.stub(IRCClient, 'joinConfigChannel');
+      deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
+    });
+
+    it('does not throw on exception', async () => {
+      getChannelStub.throws(new CustomFailure('NotFound'));
+      await IRCClient.handleChannelLeave('chan');
+      getChannelStub.throws(new CustomFailure('random'));
+      await IRCClient.handleChannelLeave('chan');
+    });
+
+    it('attempts to rejoin channel if persist is true', async () => {
+      getChannelStub.resolves({ persist: true, join: 'auto' });
+      await IRCClient.handleChannelLeave('chan');
+      assert.notCalled(deleteChannelStub);
+      assert.calledWithExactly(joinConfigChannelStub, 'chan', { persist: true, join: 'auto' });
+    });
+
+    it('deletes channel from config if persist is false', async () => {
+      getChannelStub.resolves({ persist: false, join: 'auto' });
+      await IRCClient.handleChannelLeave('chan');
+      assert.notCalled(joinConfigChannelStub);
+      assert.calledWithExactly(deleteChannelStub, 'chan');
+    });
+  });
+
+  describe('joinConfigChannel', () => {
+    let joinWithAdminRoomStub: SinonStub;
+    let joinRoomStub: SinonStub;
+    let deleteChannelStub: SinonStub;
+    beforeEach(() => {
       joinWithAdminRoomStub = sandbox.stub(IRCClient, 'joinRoomWithAdminIfNecessary');
       joinRoomStub = sandbox.stub(IRCClient, 'joinRoom');
-      getChannelsStub = sandbox.stub(configuration, 'getAllChannels');
       deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
+    });
+
+    it('Calls joinRoom (with sajoin) for channels in saved config with join type', async () => {
+      await IRCClient.joinConfigChannel('channel', { persist: true, join: 'sajoin' });
+      assert.calledWithExactly(joinRoomStub, 'channel', true);
+    });
+
+    it('Calls joinRoomWithAdminIfNecessary for channels in saved config with auto type', async () => {
+      await IRCClient.joinConfigChannel('channel', { persist: true, join: 'auto' });
+      assert.calledWithExactly(joinWithAdminRoomStub, 'channel');
+    });
+
+    it('Calls joinRoom (no sajoin) for channels in saved config with join type', async () => {
+      await IRCClient.joinConfigChannel('channel', { persist: true, join: 'join' });
+      assert.calledWithExactly(joinRoomStub, 'channel', false);
+    });
+
+    it('Calls deleteChannel for channels which failed to join with join type and persist false in saved config', async () => {
+      joinRoomStub.throws(new Error());
+      await IRCClient.joinConfigChannel('channel', { persist: false, join: 'join' });
+      assert.calledWithExactly(deleteChannelStub, 'channel');
+    });
+
+    it('Does not call deleteChannel for channels which failed to join with join type and persist true in saved config', async () => {
+      joinRoomStub.throws(new Error());
+      await IRCClient.joinConfigChannel('channel', { persist: true, join: 'join' });
+      assert.notCalled(deleteChannelStub);
+    });
+  });
+
+  describe('postOper', () => {
+    let rawCommandStub: SinonStub;
+    let getChannelsStub: SinonStub;
+    let joinConfigChannelStub: SinonStub;
+    beforeEach(() => {
+      rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');
+      getChannelsStub = sandbox.stub(configuration, 'getAllChannels');
+      joinConfigChannelStub = sandbox.stub(IRCClient, 'joinConfigChannel');
     });
 
     it('Sets registered to true on IRCClient', async () => {
@@ -205,36 +312,10 @@ describe('IRCClient', () => {
       assert.calledWithExactly(rawCommandStub.getCall(1), 'CHGHOST', IRCClient.IRC_NICK, 'bakus.dungeon');
     });
 
-    it('Performs SAJOIN for channels in saved config with sajoin type', async () => {
+    it('Calls joinConfigChannel for config channels', async () => {
       getChannelsStub.resolves({ channel: { persist: true, join: 'sajoin' } });
       await IRCClient.postOper();
-      assert.calledWithExactly(rawCommandStub.getCall(2), 'SAJOIN', IRCClient.IRC_NICK, 'channel');
-    });
-
-    it('Calls joinRoomWithAdminIfNecessary for channels in saved config with auto type', async () => {
-      getChannelsStub.resolves({ channel: { persist: true, join: 'auto' } });
-      await IRCClient.postOper();
-      assert.calledWithExactly(joinWithAdminRoomStub, 'channel');
-    });
-
-    it('Calls joinRoom for channels in saved config with join type', async () => {
-      getChannelsStub.resolves({ channel: { persist: true, join: 'join' } });
-      await IRCClient.postOper();
-      assert.calledWithExactly(joinRoomStub, 'channel');
-    });
-
-    it('Calls deleteChannel for channels which failed to join with join type and persist false in saved config', async () => {
-      getChannelsStub.resolves({ channel: { persist: false, join: 'join' } });
-      joinRoomStub.throws(new Error());
-      await IRCClient.postOper();
-      assert.calledWithExactly(deleteChannelStub, 'channel');
-    });
-
-    it('Does not call deleteChannel for channels which failed to join with join type and persist true in saved config', async () => {
-      getChannelsStub.resolves({ channel: { persist: true, join: 'join' } });
-      joinRoomStub.throws(new Error());
-      await IRCClient.postOper();
-      assert.notCalled(deleteChannelStub);
+      assert.calledWithExactly(joinConfigChannelStub, 'channel', { persist: true, join: 'sajoin' });
     });
   });
 

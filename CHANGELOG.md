@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v2.5.0
+### Added
+- Trim commit SHA1 hash in compare URLs from webhooks
+- Space usernames and git branch from webhooks with `\u200B` to avoid 
+higlighting users on IRC
+- Automatically rejoin persistent channels on IRC
+- Remove non-persistent channel from configuration when bot parts from it
+
+### Changed
+- Do not set default key for GIT_WEBHOOK on runtime, only for tests
+- Do not set default key for SITE_API_KEY on runtime
+- Default bot name to `kana` instead of `testbot`
+- Always return JSON object as reply to webhook
+
 ## v2.4.0
 ### Added
 - Add prefix with date and level to log messages

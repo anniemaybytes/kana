@@ -1,8 +1,8 @@
 import * as irc from 'irc-framework';
 import { sleep } from '../utils';
 import { promisify } from 'util';
-import { getAllChannels, saveChannels, deleteChannel } from './configuration';
-import { MessageEvent, WHOISResponse, WHOResponse } from '../types';
+import { getAllChannels, getChannel, saveChannels, deleteChannel } from './configuration';
+import { MessageEvent, WHOISResponse, WHOResponse, ChannelConfigOptions } from '../types';
 import { getLogger } from '../logger';
 const logger = getLogger('IRCClient');
 
@@ -87,28 +87,12 @@ export class IRCClient {
     IRCClient.rawCommand('CHGHOST', IRCClient.IRC_NICK, 'bakus.dungeon');
     const channels = await getAllChannels();
     for (const channel in channels) {
-      logger.debug(`Attempting to join ${channel}: join mode ${channels[channel].join}`);
-      if (channels[channel].join === 'auto') {
-        IRCClient.joinRoomWithAdminIfNecessary(channel);
-      } else if (channels[channel].join === 'sajoin') {
-        IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel);
-      } else if (channels[channel].join === 'join') {
-        try {
-          await IRCClient.joinRoom(channel);
-        } catch (e) {
-          if (!channels[channel].persist) {
-            logger.warn(`Failed to join ${channel} with regular join mode, and persistence set to false; removing channel from config.`);
-            await deleteChannel(channel);
-          }
-        }
-      } else {
-        logger.error(`Channel ${channel} in channels config has invalid join parameter '${channels[channel].join}'; ignoring this channel`);
-      }
+      await IRCClient.joinConfigChannel(channel, channels[channel]);
     }
   }
 
-  // Join a room with normal /join and detect/throw for failure
-  public static async joinRoom(channel: string) {
+  // Join a room and detect/throw for failure
+  public static async joinRoom(channel: string, sajoin = false) {
     return new Promise((resolve, reject) => {
       // If joining takes longer than 5 seconds, consider it a failure
       const timeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 5000);
@@ -119,7 +103,11 @@ export class IRCClient {
         }
       }
       IRCClient.bot.on('userlist', channelUserListHandler);
-      IRCClient.bot.join(channel);
+      if (sajoin) {
+        IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel);
+      } else {
+        IRCClient.bot.join(channel);
+      }
       // Cleanup userlist handler
       setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 5001);
     });
@@ -143,6 +131,44 @@ export class IRCClient {
       // Cleanup userlist handler
       setTimeout(() => IRCClient.bot.removeListener('userlist', channelUserListHandler), 10001);
     });
+  }
+
+  public static async joinConfigChannel(channel: string, configOpts: ChannelConfigOptions) {
+    logger.debug(`Attempting to join ${channel}: mode ${configOpts.join}`);
+    try {
+      if (configOpts.join === 'auto') {
+        await IRCClient.joinRoomWithAdminIfNecessary(channel);
+      } else if (configOpts.join === 'sajoin') {
+        await IRCClient.joinRoom(channel, true);
+      } else if (configOpts.join === 'join') {
+        await IRCClient.joinRoom(channel, false);
+      } else {
+        logger.error(`Channel ${channel} in channels config has invalid join parameter '${configOpts.join}'; ignoring this channel`);
+      }
+    } catch (e) {
+      if (!configOpts.persist) {
+        logger.warn(`Failed to join ${channel} with persistence set to false; removing from config`);
+        await deleteChannel(channel);
+      } else {
+        logger.warn(`Failed to join ${channel} with persistence set to true; will not attempt again till reconnection`);
+      }
+    }
+  }
+
+  public static async handleChannelLeave(channel: string) {
+    logger.info(`Left channel ${channel}`);
+    try {
+      const chanOpts = await getChannel(channel);
+      if (chanOpts.persist) {
+        await IRCClient.joinConfigChannel(channel, chanOpts);
+      } else {
+        logger.debug(`Removing channel ${channel} from config.`);
+        await deleteChannel(channel);
+      }
+    } catch (e) {
+      if (e.code === 'NotFoud') logger.warn(`Unexpected channel leave from unconfigured channel ${channel}`);
+      else logger.warn(`Unexpected exception handling channel leave for ${channel}`, e);
+    }
   }
 
   public static async waitUntilRegistered() {
@@ -211,12 +237,25 @@ ircClient.on('unknown command', (command: any) => {
   else if (command.command === '491') logger.error('Registering as oper has failed; possibly bad O:LINE password?');
 });
 
+ircClient.on('kick', async (event: any) => {
+  if (IRCClient.isMe(event.kicked)) await IRCClient.handleChannelLeave(event.channel);
+});
+
+ircClient.on('part', async (event: any) => {
+  if (IRCClient.isMe(event.nick)) await IRCClient.handleChannelLeave(event.channel);
+});
+
 ircClient.on('invite', async (event: any) => {
   if (IRCClient.isIgnoredUser(event.nick) || !IRCClient.isMe(event.invited)) return;
   logger.info(`Joining ${event.channel} due to invitation from ${event.nick}`);
   await IRCClient.joinRoom(event.channel);
-  // If we are here, we have joined the channel successfully, so save this to state
-  await saveChannels({ [event.channel]: { join: 'join', persist: false } });
+  // If we are here, we have joined the channel successfully, so save this to state (if it doesn't already exist)
+  try {
+    await getChannel(event.channel);
+  } catch (e) {
+    if (e.code === 'NotFound') return saveChannels({ [event.channel]: { join: 'join', persist: false } });
+    logger.error(`Unexpected error fetching channel ${event.channel} from config`, e);
+  }
 });
 
 ircClient.on('nick in use', () => {

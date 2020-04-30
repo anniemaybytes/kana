@@ -1,6 +1,6 @@
 {
   "name": "kana",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "author": "AnimeBytes",
   "engines": {
     "node": ">=12.10.0"
