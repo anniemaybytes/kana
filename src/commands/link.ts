@@ -12,7 +12,7 @@ const MAX_REQUEST_TIME_MS = 10000;
 const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/gi;
 
 const standardRequestOptions = {
-  headers: { 'Accept-Language': 'en-US,en;q=0.7' },
+  headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (node-fetch) like Twitterbot/1.0' },
   timeout: MAX_REQUEST_TIME_MS,
   size: MAX_REQUEST_SIZE_BYTES,
 };
@@ -68,7 +68,7 @@ function processTitle(title: string) {
 export function addLinkWatcher() {
   IRCClient.addMessageHook(urlRegex, async (event) => {
     if (event.privateMessage) return;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const urlMatches = event.message.matchAll(urlRegex); // matchAll is an ES2020 feature supported as of node 12.4.0, however TS target must be 2019, so we ignore this error
     const urlSet = new Set<string>();
@@ -81,7 +81,7 @@ export function addLinkWatcher() {
         if (
           url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
           url.match(/127\.0\.0\.1/i) ||
-          url.match(/\.(png|jpg|jpeg|gif|txt|zip|tar\.bz|js|css|pdf)/i)
+          url.match(/\.(png|jpg|jpeg|gif|bmp|webp|webm|mp4|mkv|txt|zip|rar|7z|tar|tar\.gz|tar\.bz|exe|js|css|pdf)/i)
         )
           return;
 

@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v2.6.0
+### Changed
+- Ignore more binary extensions from link title resolving
+- Use Twitterbot-like User-Agent for link title resolving (`kana/2.0 (node-fetch) like Twitterbot/1.0`)
+
 ## v2.5.0
 ### Added
 - Trim commit SHA1 hash in compare URLs from webhooks
