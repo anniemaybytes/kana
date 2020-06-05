@@ -112,6 +112,7 @@ describe('WebLinks', () => {
     it('Will parse the fetch body socket for an html title tag', async () => {
       const promise = linkCallback({ privateMessage: false, message: 'https://some.cool.link', reply: eventReply });
       fakeSocket.put('<title>a title</title>');
+      fakeSocket.stop();
       await promise;
       assert.calledWithExactly(eventReply, 'Link title: a title');
     });
@@ -129,6 +130,7 @@ describe('WebLinks', () => {
       fakeSocket.put(
         '<title>this is a veeery long title. Why would you put such a long title into your html? no one may ever know. Please do not do this</title>'
       );
+      fakeSocket.stop();
       await promise;
       assert.calledWithExactly(
         eventReply,

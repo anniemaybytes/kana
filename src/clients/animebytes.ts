@@ -2,7 +2,10 @@ import nodeFetch from 'node-fetch';
 import { CustomFailure } from '../errors';
 import { UserAuthResponse, UserTimeDeltas } from '../types';
 import { getLogger } from '../logger';
+import { fetchTimeout } from '../utils';
 const logger = getLogger('AnimeBytesClient');
+
+const REQUEST_TIMEOUT_MS = 30000;
 
 export class ABClient {
   public static fetch = nodeFetch;
@@ -38,6 +41,7 @@ export class ABClient {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      signal: fetchTimeout(REQUEST_TIMEOUT_MS),
     });
     const responseBody = await res.text();
     logger.trace(`AnimeBytes POST ${url} <- [${res.status}] ${responseBody}`);

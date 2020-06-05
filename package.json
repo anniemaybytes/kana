@@ -1,6 +1,6 @@
 {
   "name": "kana",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "author": "AnimeBytes",
   "engines": {
     "node": ">=12.10.0"
@@ -17,6 +17,7 @@
     "check-outdated": "check-outdated --ignore-pre-releases --ignore-dev-dependencies"
   },
   "dependencies": {
+    "abort-controller": "3.0.0",
     "chalk": "4.0.0",
     "express": "4.17.1",
     "htmlparser2": "4.1.0",

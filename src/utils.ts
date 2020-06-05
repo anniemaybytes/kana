@@ -1,10 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
+import { AbortController } from 'abort-controller';
 import { CustomFailure } from './errors';
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+export function fetchTimeout(ms: number) {
+  const controller = new AbortController();
+  setTimeout(controller.abort.bind(controller), ms);
+  return controller.signal;
 }
 
 export function asyncHandler(fn: any) {

@@ -1,6 +1,7 @@
 import { IRCClient } from '../clients/irc';
 import { StringDecoder } from 'string_decoder';
 import fetch from 'node-fetch';
+import { AbortController } from 'abort-controller';
 import { Parser } from 'htmlparser2';
 import { sleep } from '../utils';
 import { getLogger } from '../logger';
@@ -13,11 +14,9 @@ const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\
 
 const standardRequestOptions = {
   headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (node-fetch) like Twitterbot/1.0' },
-  timeout: MAX_REQUEST_TIME_MS,
-  size: MAX_REQUEST_SIZE_BYTES,
 };
 
-async function parseTitle(htmlBody: NodeJS.ReadStream) {
+async function parseTitle(htmlBody: NodeJS.ReadStream, abortController: AbortController) {
   let titleTag = false;
   let title = '';
   let bodyClosed = false;
@@ -36,15 +35,19 @@ async function parseTitle(htmlBody: NodeJS.ReadStream) {
     { decodeEntities: true }
   );
   const stringDecoder = new StringDecoder();
+  let size = 0;
   htmlBody
-    .on('data', (data) => {
-      parser.write(stringDecoder.write(data));
-    })
     .on('close', () => (bodyClosed = true))
-    .on('end', () => (bodyClosed = true));
+    .on('end', () => (bodyClosed = true))
+    .on('error', () => (bodyClosed = true))
+    .on('data', (data) => {
+      size += data.length;
+      if (size > MAX_REQUEST_SIZE_BYTES) abortController.abort();
+      else parser.write(stringDecoder.write(data));
+    });
   // Spinlock waiting for body to be finished reading, or until we've found and parsed a title tag
   while (!bodyClosed) {
-    if (title && !titleTag) htmlBody.destroy();
+    if (title && !titleTag) abortController.abort();
     await sleep(0.1);
   }
   stringDecoder.end();
@@ -85,15 +88,22 @@ export function addLinkWatcher() {
         )
           return;
 
+        const controller = new AbortController();
+        const timeout = setTimeout(controller.abort.bind(controller), MAX_REQUEST_TIME_MS);
         try {
-          const response = await fetch(url, standardRequestOptions);
-          if (!response.ok || !response.headers.get('content-type')?.startsWith('text/html')) return;
-          const title = processTitle(await parseTitle(response.body as NodeJS.ReadStream)); // Re-casting because this will be true on nodejs versions >=8
-          if (title) event.reply(`Link title: ${title}`);
+          const response = await fetch(url, { ...standardRequestOptions, signal: controller.signal });
+          if (response.ok && response.headers.get('content-type')?.startsWith('text/html')) {
+            const title = processTitle(await parseTitle(response.body as NodeJS.ReadStream, controller)); // Re-casting because this will be true on nodejs versions >=8
+            if (title) event.reply(`Link title: ${title}`);
+          } else {
+            controller.abort();
+          }
         } catch (e) {
+          controller.abort();
           // Might be too explicit of a log...
           logger.warn('HTTP Error', e);
         }
+        clearTimeout(timeout);
       })
     );
   });
