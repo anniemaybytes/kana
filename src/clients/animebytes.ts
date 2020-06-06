@@ -1,14 +1,13 @@
-import nodeFetch from 'node-fetch';
+import got from 'got';
 import { CustomFailure } from '../errors';
 import { UserAuthResponse, UserTimeDeltas } from '../types';
 import { getLogger } from '../logger';
-import { fetchTimeout } from '../utils';
 const logger = getLogger('AnimeBytesClient');
 
 const REQUEST_TIMEOUT_MS = 30000;
 
 export class ABClient {
-  public static fetch = nodeFetch;
+  public static got = got;
   public static url = 'https://animebytes.tv';
   public static siteApiKey = process.env.SITE_API_KEY || '';
 
@@ -37,19 +36,18 @@ export class ABClient {
     const url = `${ABClient.url}${path}`;
     if (authenticated) body.authKey = ABClient.siteApiKey;
     logger.trace(`AnimeBytes POST ${url} -> ${JSON.stringify(body)}`);
-    const res = await ABClient.fetch(url, {
+    const res = await ABClient.got(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: fetchTimeout(REQUEST_TIMEOUT_MS),
+      json: body,
+      responseType: 'text',
+      timeout: REQUEST_TIMEOUT_MS,
     });
-    const responseBody = await res.text();
-    logger.trace(`AnimeBytes POST ${url} <- [${res.status}] ${responseBody}`);
-    if (!res.ok) throw new Error(`Received HTTP ${res.status} from AB call to ${path}`);
+    logger.trace(`AnimeBytes POST ${url} <- [${res.statusCode}] ${res.body}`);
+    if (Math.floor(res.statusCode / 100) !== 2) throw new Error(`Received HTTP ${res.statusCode} from AB call to ${path}`);
     try {
-      return JSON.parse(responseBody);
+      return JSON.parse(res.body);
     } catch {
-      return responseBody;
+      return res.body;
     }
   }
 }

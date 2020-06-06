@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v2.7.0
+### Changed
+- Switched from `node-fetch` to `got`
+
 ## v2.6.1
 ### Fixed
 - Work around `node-fetch` issues to avoid leaking memory on aborted link fetching

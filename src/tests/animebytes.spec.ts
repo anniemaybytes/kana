@@ -129,51 +129,47 @@ describe('ABClient', () => {
   });
 
   describe('makeRequest', () => {
-    let fetchStub: SinonStub;
+    let gotStub: SinonStub;
     beforeEach(() => {
-      sandbox.stub(ABClient, 'fetch').resolves({
-        ok: true,
-        status: 200,
-        text: async () => '{"stubbed":"data"}',
+      sandbox.stub(ABClient, 'got').resolves({
+        statusCode: 200,
+        body: '{"stubbed":"data"}',
       } as any);
-      fetchStub = (ABClient.fetch as unknown) as SinonStub;
+      gotStub = (ABClient.got as unknown) as SinonStub;
     });
 
     it('creates and calls fetch with correct url combining host and path', async () => {
       await ABClient.makeRequest('/myPath', {});
-      assert.calledOnce(fetchStub);
-      expect(fetchStub.getCall(0).args[0]).to.equal(`${ABClient.url}/myPath`);
+      assert.calledOnce(gotStub);
+      expect(gotStub.getCall(0).args[0]).to.equal(`${ABClient.url}/myPath`);
     });
 
     it('adds authKey to body when authenticated is true', async () => {
       const myBody: any = { testing: 'true' };
       await ABClient.makeRequest('/myPath', myBody);
-      expect(myBody.authKey).to.equal(ABClient.siteApiKey);
-      assert.calledOnce(fetchStub);
-      expect(fetchStub.getCall(0).args[1].body).to.equal(JSON.stringify(myBody));
+      assert.calledOnce(gotStub);
+      expect(gotStub.getCall(0).args[1].json.authKey).to.equal(ABClient.siteApiKey);
     });
 
     it('does not add authKey to body when authenticated is false', async () => {
       const myBody: any = { testing: 'true' };
       await ABClient.makeRequest('/myPath', myBody, false);
-      expect(myBody.authKey).to.be.undefined;
-      assert.calledOnce(fetchStub);
-      expect(fetchStub.getCall(0).args[1].body).to.equal(JSON.stringify(myBody));
+      assert.calledOnce(gotStub);
+      expect(gotStub.getCall(0).args[1].json.authKey).to.be.undefined;
     });
 
     it('calls fetch with the correct options', async () => {
       await ABClient.makeRequest('/myPath', {});
-      assert.calledOnce(fetchStub);
-      expect(fetchStub.getCall(0).args[1].method).to.equal('POST');
-      expect(fetchStub.getCall(0).args[1].headers).to.deep.equal({ 'Content-Type': 'application/json' });
-      expect(fetchStub.getCall(0).args[1].body).to.not.be.undefined;
+      assert.calledOnce(gotStub);
+      expect(gotStub.getCall(0).args[1].method).to.equal('POST');
+      expect(gotStub.getCall(0).args[1].json).to.not.be.undefined;
+      expect(gotStub.getCall(0).args[1].timeout).to.not.be.undefined;
     });
 
     it('throws an exception if resulting status is not ok', async () => {
-      fetchStub.resolves({
-        ok: false,
-        status: 200,
-        text: async () => '{"stubbed":"data"}',
+      gotStub.resolves({
+        statusCode: 500,
+        body: '{"stubbed":"data"}',
       });
       try {
         await ABClient.makeRequest('/myPath', {});
@@ -190,10 +186,9 @@ describe('ABClient', () => {
     });
 
     it('returns the raw body string if the return body was not JSON', async () => {
-      fetchStub.resolves({
-        ok: true,
-        status: 200,
-        text: async () => 'stubbed',
+      gotStub.resolves({
+        statusCode: 200,
+        body: 'stubbed',
       });
       expect(await ABClient.makeRequest('/myPath', {})).to.equal('stubbed');
     });

@@ -1,9 +1,7 @@
 import { IRCClient } from '../clients/irc';
 import { StringDecoder } from 'string_decoder';
-import fetch from 'node-fetch';
-import { AbortController } from 'abort-controller';
+import got, { Response } from 'got';
 import { Parser } from 'htmlparser2';
-import { sleep } from '../utils';
 import { getLogger } from '../logger';
 const logger = getLogger('LinkCommand');
 
@@ -13,46 +11,51 @@ const MAX_REQUEST_TIME_MS = 10000;
 const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/gi;
 
 const standardRequestOptions = {
-  headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (node-fetch) like Twitterbot/1.0' },
+  headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (got) like Twitterbot/1.0' },
+  timeout: MAX_REQUEST_TIME_MS,
+  retry: 0,
 };
 
-async function parseTitle(htmlBody: NodeJS.ReadStream, abortController: AbortController) {
-  let titleTag = false;
-  let title = '';
-  let bodyClosed = false;
-  const parser = new Parser(
-    {
-      onopentagname(name) {
-        if (name === 'title' && !title) titleTag = true;
+async function parseTitle(res: Response) {
+  return new Promise<string>((resolve) => {
+    let titleTag = false;
+    let title = '';
+    const parser = new Parser(
+      {
+        onopentagname(name) {
+          if (name === 'title' && !title) titleTag = true;
+        },
+        ontext(text) {
+          if (titleTag) title += text;
+        },
+        onclosetag(name) {
+          if (name === 'title') {
+            titleTag = false;
+            if (title) end();
+          }
+        },
       },
-      ontext(text) {
-        if (titleTag) title += text;
-      },
-      onclosetag(name) {
-        if (name === 'title') titleTag = false;
-      },
-    },
-    { decodeEntities: true }
-  );
-  const stringDecoder = new StringDecoder();
-  let size = 0;
-  htmlBody
-    .on('close', () => (bodyClosed = true))
-    .on('end', () => (bodyClosed = true))
-    .on('error', () => (bodyClosed = true))
-    .on('data', (data) => {
-      size += data.length;
-      if (size > MAX_REQUEST_SIZE_BYTES) abortController.abort();
-      else parser.write(stringDecoder.write(data));
-    });
-  // Spinlock waiting for body to be finished reading, or until we've found and parsed a title tag
-  while (!bodyClosed) {
-    if (title && !titleTag) abortController.abort();
-    await sleep(0.1);
-  }
-  stringDecoder.end();
-  parser.end();
-  return title.replace(/\s*\n\s*/g, ' ').trim();
+      { decodeEntities: true }
+    );
+    const stringDecoder = new StringDecoder();
+    const end = () => {
+      if (titleTag) resolve(''); // was still parsing title while end was called. Don't resolve half-parsed title
+      resolve(title.replace(/\s*\n\s*/g, ' ').trim());
+      res.request.destroy();
+      stringDecoder.end();
+      parser.end();
+    };
+    let size = 0;
+    res.request
+      .once('close', end)
+      .once('end', end)
+      .once('error', end)
+      .on('data', (data) => {
+        size += data.length;
+        if (size > MAX_REQUEST_SIZE_BYTES) end();
+        else parser.write(stringDecoder.write(data));
+      });
+  });
 }
 
 function processTitle(title: string) {
@@ -88,22 +91,23 @@ export function addLinkWatcher() {
         )
           return;
 
-        const controller = new AbortController();
-        const timeout = setTimeout(controller.abort.bind(controller), MAX_REQUEST_TIME_MS);
-        try {
-          const response = await fetch(url, { ...standardRequestOptions, signal: controller.signal });
-          if (response.ok && response.headers.get('content-type')?.startsWith('text/html')) {
-            const title = processTitle(await parseTitle(response.body as NodeJS.ReadStream, controller)); // Re-casting because this will be true on nodejs versions >=8
-            if (title) event.reply(`Link title: ${title}`);
-          } else {
-            controller.abort();
-          }
-        } catch (e) {
-          controller.abort();
-          // Might be too explicit of a log...
-          logger.warn('HTTP Error', e);
-        }
-        clearTimeout(timeout);
+        return new Promise<void>((resolve) => {
+          got
+            .stream(url, standardRequestOptions)
+            .on('error', (err) => {
+              logger.debug(`HTTP Error fetching link ${err}`);
+              resolve();
+            })
+            .once('response', async (res) => {
+              if (Math.floor(res.statusCode / 100) === 2 && res.headers['content-type']?.startsWith('text/html')) {
+                const title = processTitle(await parseTitle(res));
+                if (title) event.reply(`Link title: ${title}`);
+              } else {
+                res.request.destroy();
+              }
+              resolve();
+            });
+        });
       })
     );
   });
