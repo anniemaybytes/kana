@@ -1,6 +1,6 @@
 import { IRCClient } from '../clients/irc';
 import { StringDecoder } from 'string_decoder';
-import got, { Response } from 'got';
+import gotClient, { Response } from 'got';
 import { Parser } from 'htmlparser2';
 import { getLogger } from '../logger';
 const logger = getLogger('LinkCommand');
@@ -10,11 +10,13 @@ const MAX_REQUEST_TIME_MS = 10000;
 
 const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/gi;
 
-const standardRequestOptions = {
+// Only exported for testing purposes
+export const got = gotClient.extend({
   headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (got) like Twitterbot/1.0' },
+  throwHttpErrors: false,
   timeout: MAX_REQUEST_TIME_MS,
   retry: 0,
-};
+});
 
 async function parseTitle(res: Response) {
   return new Promise<string>((resolve) => {
@@ -93,7 +95,7 @@ export function addLinkWatcher() {
 
         return new Promise<void>((resolve) => {
           got
-            .stream(url, standardRequestOptions)
+            .stream(url)
             .on('error', (err) => {
               logger.debug(`HTTP Error fetching link ${err}`);
               resolve();

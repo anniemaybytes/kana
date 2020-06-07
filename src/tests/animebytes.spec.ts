@@ -163,7 +163,6 @@ describe('ABClient', () => {
       assert.calledOnce(gotStub);
       expect(gotStub.getCall(0).args[1].method).to.equal('POST');
       expect(gotStub.getCall(0).args[1].json).to.not.be.undefined;
-      expect(gotStub.getCall(0).args[1].timeout).to.not.be.undefined;
     });
 
     it('throws an exception if resulting status is not ok', async () => {

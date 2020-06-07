@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import got from 'got';
-import { addLinkWatcher } from '../commands/link';
+import * as link from '../commands/link';
 import { IRCClient } from '../clients/irc';
 import streamBuffers from 'stream-buffers';
 
@@ -20,7 +19,7 @@ describe('WebLinks', () => {
 
   describe('addLinkWatcher', () => {
     it('Calls addMessageHook on the IRC bot', () => {
-      addLinkWatcher();
+      link.addLinkWatcher();
       assert.calledOnce(hookStub);
     });
   });
@@ -31,11 +30,11 @@ describe('WebLinks', () => {
     let gotStub: SinonStub;
     let fakeSocket: streamBuffers.ReadableStreamBuffer;
     beforeEach(() => {
-      addLinkWatcher();
+      link.addLinkWatcher();
       linkCallback = hookStub.getCall(0).args[1];
       eventReply = sandbox.stub();
       fakeSocket = new streamBuffers.ReadableStreamBuffer();
-      gotStub = sandbox.stub(got, 'stream').returns(fakeSocket as any);
+      gotStub = sandbox.stub(link.got, 'stream').returns(fakeSocket as any);
     });
 
     it('Does not fetch or respond if a private message', async () => {

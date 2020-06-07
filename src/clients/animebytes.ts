@@ -7,7 +7,11 @@ const logger = getLogger('AnimeBytesClient');
 const REQUEST_TIMEOUT_MS = 30000;
 
 export class ABClient {
-  public static got = got;
+  public static got = got.extend({
+    followRedirect: false,
+    throwHttpErrors: false,
+    timeout: REQUEST_TIMEOUT_MS,
+  });
   public static url = 'https://animebytes.tv';
   public static siteApiKey = process.env.SITE_API_KEY || '';
 
@@ -40,7 +44,6 @@ export class ABClient {
       method: 'POST',
       json: body,
       responseType: 'text',
-      timeout: REQUEST_TIMEOUT_MS,
     });
     logger.trace(`AnimeBytes POST ${url} <- [${res.statusCode}] ${res.body}`);
     if (Math.floor(res.statusCode / 100) !== 2) throw new Error(`Received HTTP ${res.statusCode} from AB call to ${path}`);
