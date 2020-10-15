@@ -138,5 +138,14 @@ describe('WebLinks', () => {
         'Link title: this is a veeery long title. Why would you put such a long title into your html? no one may ever...'
       );
     });
+
+    it('Will decode HTML entities inside title tag', async () => {
+      const promise = linkCallback({ privateMessage: false, message: 'https://some.cool.link', reply: eventReply });
+      fakeSocket.emit('response', { statusCode: 200, headers: { 'content-type': 'text/html' }, request: fakeSocket });
+      fakeSocket.put('<title>my &quot;title&quot;</title>');
+      fakeSocket.stop();
+      await promise;
+      assert.calledWithExactly(eventReply, 'Link title: my "title"');
+    });
   });
 });
