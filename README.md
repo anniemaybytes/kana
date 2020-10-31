@@ -35,7 +35,7 @@ Additionally:
 
 ## Installation
 
-kana requires NodeJS version 12.10 or later and [Yarn package manager](https://classic.yarnpkg.com/)
+kana requires NodeJS version 14.15 or later and [Yarn package manager](https://classic.yarnpkg.com/)
 
 ```sh
 yarn && yarn build

@@ -76,9 +76,7 @@ function processTitle(title: string) {
 export function addLinkWatcher() {
   IRCClient.addMessageHook(urlRegex, async (event) => {
     if (event.privateMessage) return;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const urlMatches = event.message.matchAll(urlRegex); // matchAll is an ES2020 feature supported as of node 12.4.0, however TS target must be 2019, so we ignore this error
+    const urlMatches = event.message.matchAll(urlRegex);
     const urlSet = new Set<string>();
     for (const match of urlMatches) if (match) urlSet.add(match[2]);
     if (urlSet.size === 0 || urlSet.size > 3) return;

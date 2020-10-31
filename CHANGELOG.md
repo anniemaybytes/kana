@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v3.0.0
+### Changed
+- Bumped minimum supported Node version to v14.15.0
+- Bumped TypeScript target to ES2020
+
 ## v2.7.3
 ### Fixed
 - Reverted `htmlparser2` to `4.1.0` to fix HTML entity decoding in `<title>`
