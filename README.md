@@ -12,9 +12,6 @@ kana listens for following IRC events:
 Following commands are accessible:
 
 - !user [username]
-- !nana
-- !dess
-- !metanoia
 
 Additionally:
 

@@ -29,12 +29,6 @@ export class ABClient {
     return response.message as string;
   }
 
-  public static async performDess(username: string) {
-    const response = await ABClient.makeRequest('/api/irc/dess_tax', { username });
-    if (!response.success) throw new Error(`AB dess_tax call error: ${JSON.stringify(response)}`);
-    return response.message as string;
-  }
-
   // Not meant to be called directly from outside the client. Public for testing purposes
   public static async makeRequest(path: string, body: any, authenticated = true) {
     const url = `${ABClient.url}${path}`;
