@@ -93,7 +93,7 @@ export class IRCClient {
 
   // Join a room and detect/throw for failure
   public static async joinRoom(channel: string, sajoin = false) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       // If joining takes longer than 5 seconds, consider it a failure
       const timeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 5000);
       function channelUserListHandler(event: any) {
@@ -114,7 +114,7 @@ export class IRCClient {
   }
 
   public static async joinRoomWithAdminIfNecessary(channel: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       // Perform sajoin if regular join doesn't work within 2 seconds
       const sajoinTimeout = setTimeout(() => IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel), 2000);
       // If joining takes longer than 10 seconds, consider it a failure
