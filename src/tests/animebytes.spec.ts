@@ -110,11 +110,11 @@ describe('ABClient', () => {
       expect(gotStub.getCall(0).args[0]).to.equal(`${ABClient.url}/myPath`);
     });
 
-    it('adds authKey to body when authenticated is true', async () => {
+    it('adds authKey to query string when authenticated is true', async () => {
       const myBody: any = { testing: 'true' };
       await ABClient.makeRequest('/myPath', myBody);
       assert.calledOnce(gotStub);
-      expect(gotStub.getCall(0).args[1].json.authKey).to.equal(ABClient.siteApiKey);
+      expect(gotStub.getCall(0).args[1].searchParams.authKey).to.equal(ABClient.siteApiKey);
     });
 
     it('does not add authKey to body when authenticated is false', async () => {

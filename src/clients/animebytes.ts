@@ -32,12 +32,12 @@ export class ABClient {
   // Not meant to be called directly from outside the client. Public for testing purposes
   public static async makeRequest(path: string, body: any, authenticated = true) {
     const url = `${ABClient.url}${path}`;
-    if (authenticated) body.authKey = ABClient.siteApiKey;
     logger.trace(`AnimeBytes POST ${url} -> ${JSON.stringify(body)}`);
     const res = await ABClient.got(url, {
       method: 'POST',
       json: body,
       responseType: 'text',
+      searchParams: authenticated ? { authKey: ABClient.siteApiKey } : undefined,
     });
     logger.trace(`AnimeBytes POST ${url} <- [${res.statusCode}] ${res.body}`);
     if (Math.floor(res.statusCode / 100) !== 2) throw new Error(`Received HTTP ${res.statusCode} from AB call to ${path}`);
