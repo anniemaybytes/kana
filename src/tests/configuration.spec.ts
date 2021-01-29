@@ -23,22 +23,22 @@ describe('Configuration', () => {
   });
 
   describe('getAllChannels', () => {
-    it('returns parsed data from filesystem read', async () => {
+    it('Returns parsed data from filesystem read', async () => {
       expect(await getAllChannels()).to.deep.equal({ channel: { persist: true, join: 'sajoin' } });
     });
 
-    it('sets default values for channels if not provided', async () => {
+    it('Sets default values for channels if not provided', async () => {
       mock({ 'channels.json': '{"channel":{}}' });
       expect(await getAllChannels()).to.deep.equal({ channel: { persist: false, join: 'auto' } });
     });
 
-    it('writes and uses default empty config if channels.json does not exist', async () => {
+    it('Writes and uses default empty config if channels.json does not exist', async () => {
       mock({});
       expect(await getAllChannels()).to.deep.equal({});
       expect(await readFileAsync('channels.json', 'utf8')).to.equal('{}');
     });
 
-    it('throws on unexpected file error', async () => {
+    it('Throws on unexpected file error', async () => {
       mock({
         'channels.json': mock.file({
           mode: 0o000, // For emulating permission error
@@ -52,11 +52,11 @@ describe('Configuration', () => {
   });
 
   describe('getChannel', () => {
-    it('returns valid data from channel config', async () => {
+    it('Returns valid data from channel config', async () => {
       expect(await getChannel('channel')).to.deep.equal({ persist: true, join: 'sajoin' });
     });
 
-    it('throws NotFound error if channel is not in config', async () => {
+    it('Throws NotFound error if channel is not in config', async () => {
       try {
         await getChannel('dne');
       } catch (e) {
@@ -67,14 +67,14 @@ describe('Configuration', () => {
   });
 
   describe('saveChannels', () => {
-    it('saves channel that was provided', async () => {
+    it('Saves channel that was provided', async () => {
       mock({ 'channels.json': '{}' });
       const newChannel = { newChannel: { persist: true, join: 'auto' } } as any;
       await saveChannels(newChannel);
       expect(JSON.parse(await readFileAsync('channels.json', 'utf8'))).to.deep.equal(newChannel);
     });
 
-    it('merges arguments with already saved channels', async () => {
+    it('Merges arguments with already saved channels', async () => {
       mock({ 'channels.json': '{"channel":{"persist":true,"join":"sajoin"}}' });
       await saveChannels({ newChannel: { persist: true, join: 'auto' } });
       const merged = { channel: { persist: true, join: 'sajoin' }, newChannel: { persist: true, join: 'auto' } };
@@ -83,7 +83,7 @@ describe('Configuration', () => {
   });
 
   describe('deleteChannel', () => {
-    it('deletes the specified channel from the configuration', async () => {
+    it('Deletes the specified channel from the configuration', async () => {
       await deleteChannel('channel');
       expect(JSON.parse(await readFileAsync('channels.json', 'utf8'))).to.deep.equal({});
     });

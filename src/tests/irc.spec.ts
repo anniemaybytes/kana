@@ -16,15 +16,15 @@ describe('IRCClient', () => {
   });
 
   describe('Handlers', () => {
-    it('has a registered close handler', () => {
+    it('Has a registered close handler', () => {
       expect(IRCClient.bot.listeners('close').length).to.equal(1);
     });
 
-    it('has a registered registered handler', () => {
+    it('Has a registered registered handler', () => {
       expect(IRCClient.bot.listeners('registered').length).to.equal(1);
     });
 
-    it('has a registered invite handler', () => {
+    it('Has a registered invite handler', () => {
       expect(IRCClient.bot.listeners('invite').length).to.equal(1);
     });
 
@@ -61,7 +61,7 @@ describe('IRCClient', () => {
       });
     });
 
-    describe('kick/part handler', () => {
+    describe('Kick/part handler', () => {
       let kickHandler: any;
       let partHandler: any;
       let isMeStub: SinonStub;
@@ -73,20 +73,20 @@ describe('IRCClient', () => {
         channelLeaveStub = sandbox.stub(IRCClient, 'handleChannelLeave');
       });
 
-      it('ignores kick/part if not for self', async () => {
+      it('Ignores kick/part if not for self', async () => {
         isMeStub.returns(false);
         await kickHandler({});
         await partHandler({});
         assert.notCalled(channelLeaveStub);
       });
 
-      it('calls handleChannelLeave if kick is for self', async () => {
+      it('Calls handleChannelLeave if kick is for self', async () => {
         await kickHandler({ kicked: 'me', channel: 'chan' });
         assert.calledWithExactly(isMeStub, 'me');
         assert.calledWithExactly(channelLeaveStub, 'chan');
       });
 
-      it('calls handleChannelLeave if part is for self', async () => {
+      it('Calls handleChannelLeave if part is for self', async () => {
         await partHandler({ nick: 'me', channel: 'chan' });
         assert.calledWithExactly(isMeStub, 'me');
         assert.calledWithExactly(channelLeaveStub, 'chan');
@@ -150,24 +150,24 @@ describe('IRCClient', () => {
   });
 
   describe('isIgnoredUser', () => {
-    it('returns true if user should be ignored', () => {
+    it('Returns true if user should be ignored', () => {
       sandbox.replace(IRCClient, 'IGNORED_USERS', { ignorethem: true });
       expect(IRCClient.isIgnoredUser('ignoreThem')).to.be.true;
     });
 
-    it('returns false if user should not be ignored', () => {
+    it('Returns false if user should not be ignored', () => {
       sandbox.replace(IRCClient, 'IGNORED_USERS', { ignoreThem: true });
       expect(IRCClient.isIgnoredUser('isAllowed')).to.be.false;
     });
   });
 
   describe('isMe', () => {
-    it('returns true if user is the bot', () => {
+    it('Returns true if user is the bot', () => {
       sandbox.replace(IRCClient, 'IRC_NICK_LOWER', 'me');
       expect(IRCClient.isMe('Me')).to.be.true;
     });
 
-    it('returns false if user is not the bot', () => {
+    it('Returns false if user is not the bot', () => {
       sandbox.replace(IRCClient, 'IRC_NICK_LOWER', 'me');
       expect(IRCClient.isMe('notMe')).to.be.false;
     });
@@ -195,7 +195,7 @@ describe('IRCClient', () => {
     beforeEach(() => {
       frameworkConnectStub = sandbox.stub(IRCClient.bot, 'connect');
     });
-    it('attempts to connect to IRC with specified params', () => {
+    it('Attempts to connect to IRC with specified params', () => {
       IRCClient.connect();
       assert.calledWith(frameworkConnectStub, {
         host: IRCClient.IRC_SERVER,
@@ -214,7 +214,7 @@ describe('IRCClient', () => {
     beforeEach(() => {
       frameworkQuitStub = sandbox.stub(IRCClient.bot, 'quit');
     });
-    it('attempts to connect to IRC with specified params', () => {
+    it('Attempts to connect to IRC with specified params', () => {
       IRCClient.shutDown();
       assert.calledOnce(frameworkQuitStub);
     });
@@ -230,21 +230,21 @@ describe('IRCClient', () => {
       deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
     });
 
-    it('does not throw on exception', async () => {
+    it('Does not throw on exception', async () => {
       getChannelStub.throws(new CustomFailure('NotFound'));
       await IRCClient.handleChannelLeave('chan');
       getChannelStub.throws(new CustomFailure('random'));
       await IRCClient.handleChannelLeave('chan');
     });
 
-    it('attempts to rejoin channel if persist is true', async () => {
+    it('Attempts to rejoin channel if persist is true', async () => {
       getChannelStub.resolves({ persist: true, join: 'auto' });
       await IRCClient.handleChannelLeave('chan');
       assert.notCalled(deleteChannelStub);
       assert.calledWithExactly(joinConfigChannelStub, 'chan', { persist: true, join: 'auto' });
     });
 
-    it('deletes channel from config if persist is false', async () => {
+    it('Deletes channel from config if persist is false', async () => {
       getChannelStub.resolves({ persist: false, join: 'auto' });
       await IRCClient.handleChannelLeave('chan');
       assert.notCalled(joinConfigChannelStub);

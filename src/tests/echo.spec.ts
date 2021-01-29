@@ -19,21 +19,21 @@ describe('NetworkEcho', () => {
   });
 
   describe('rawEchoSocketHandler', () => {
-    it('will parse a raw echo over a network socket, and send to the appropriate channel', () => {
+    it('Will parse a raw echo over a network socket, and send to the appropriate channel', () => {
       const socket = new net.Socket({});
       rawEchoSocketHandler(socket);
       socket.emit('data', 'channel1|%|mytext');
       assert.calledWithExactly(ircMessageStub, '#channel1', 'mytext');
     });
 
-    it('will send an emtpy message if not provided with a message', () => {
+    it('Will send an emtpy message if not provided with a message', () => {
       const socket = new net.Socket({});
       rawEchoSocketHandler(socket);
       socket.emit('data', 'channel1|%|');
       assert.calledWithExactly(ircMessageStub, '#channel1', '');
     });
 
-    it('will send the message to multiple channels if provided', () => {
+    it('Will send the message to multiple channels if provided', () => {
       const socket = new net.Socket({});
       rawEchoSocketHandler(socket);
       socket.emit('data', 'channel1-channel2-channel3|%|hi');
@@ -50,7 +50,7 @@ describe('NetworkEcho', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       mockCreateServer = sandbox.stub(net, 'createServer').returns({ listen: () => {} } as any);
     });
-    it('calls createServer with to start listening on the raw socket', () => {
+    it('Calls createServer with to start listening on the raw socket', () => {
       echoListen();
       assert.calledOnce(mockCreateServer);
     });

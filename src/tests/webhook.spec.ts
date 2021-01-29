@@ -35,7 +35,7 @@ describe('WebhookServer', () => {
       process.env.GIT_WEBHOOK = 'testingKey';
     });
 
-    it('returns 403 no signature provided if missing X-Gitea-Signature header', () => {
+    it('Returns 403 no signature provided if missing X-Gitea-Signature header', () => {
       reqStub.get.returns(undefined);
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(reqStub.get, 'X-Gitea-Signature');
@@ -44,7 +44,7 @@ describe('WebhookServer', () => {
       assert.notCalled(nextStub);
     });
 
-    it('returns 403 bad signature provided when calculated hmacs mismatch', () => {
+    it('Returns 403 bad signature provided when calculated hmacs mismatch', () => {
       reqStub.get.returns('deadbeefbadf4bcc6965cd0f46a0fd39f69e5cdb97206723e0ae5b3b74d8edbf');
       verifyGiteaSig(reqStub, resStub, nextStub);
       assert.calledWithExactly(resStub.status, 403);
@@ -52,7 +52,7 @@ describe('WebhookServer', () => {
       assert.notCalled(nextStub);
     });
 
-    it('parses body and calls next when valid signature', () => {
+    it('Parses body and calls next when valid signature', () => {
       verifyGiteaSig(reqStub, resStub, nextStub);
       expect(reqStub.body).to.deep.equal({ some: 'data' });
       assert.notCalled(resStub.status);
@@ -60,7 +60,7 @@ describe('WebhookServer', () => {
       assert.calledOnce(nextStub);
     });
 
-    it('returns 400 Invalid JSON when body is invalid JSON', () => {
+    it('Returns 400 Invalid JSON when body is invalid JSON', () => {
       reqStub.body = Buffer.from('not json');
       reqStub.get.returns('589a2ddddabcec9bc5e31256e80bd523a5be1dd91518b632a2ad4544e0818874');
       verifyGiteaSig(reqStub, resStub, nextStub);
@@ -125,7 +125,7 @@ describe('WebhookServer', () => {
       }).startWebhookServer;
     });
 
-    it('creates and starts an express app when called', () => {
+    it('Creates and starts an express app when called', () => {
       startWebhookServer();
       assert.calledOnce(mockExpress);
       assert.calledOnce(mockExpress.returnValues[0].listen);

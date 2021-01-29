@@ -20,13 +20,13 @@ describe('ABClient', () => {
       makeRequestStub = ABClient.makeRequest as SinonStub;
     });
 
-    it('should call makeRequest with the correct path', async () => {
+    it('Should call makeRequest with the correct path', async () => {
       await ABClient.postStats({});
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/notifier');
     });
 
-    it('should call makeRequest with the correct converted body', async () => {
+    it('Should call makeRequest with the correct converted body', async () => {
       const params = { testUser: { delta_time: 123 } };
       await ABClient.postStats(params);
       assert.calledOnce(makeRequestStub);
@@ -41,19 +41,19 @@ describe('ABClient', () => {
       makeRequestStub = ABClient.makeRequest as SinonStub;
     });
 
-    it('should call makeRequest with the correct path', async () => {
+    it('Should call makeRequest with the correct path', async () => {
       await ABClient.authUserForRooms('username', 'key', ['room1', 'room2']);
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/auth_user');
     });
 
-    it('should call makeRequest with the correct converted body', async () => {
+    it('Should call makeRequest with the correct converted body', async () => {
       await ABClient.authUserForRooms('username', 'key', ['room1', 'room2']);
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({ username: 'username', key: 'key', channels: ['room1', 'room2'] });
     });
 
-    it('should return the result of makeRequest', async () => {
+    it('Should return the result of makeRequest', async () => {
       expect(await ABClient.authUserForRooms('username', 'key', ['room1', 'room2'])).to.equal('stubbedValue');
     });
   });
@@ -65,13 +65,13 @@ describe('ABClient', () => {
       makeRequestStub = ABClient.makeRequest as SinonStub;
     });
 
-    it('should call makeRequest with the correct path', async () => {
+    it('Should call makeRequest with the correct path', async () => {
       await ABClient.getUserInfo('username');
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/user_info');
     });
 
-    it('should call makeRequest with the correct converted body', async () => {
+    it('Should call makeRequest with the correct converted body', async () => {
       await ABClient.getUserInfo('username');
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({
@@ -79,7 +79,7 @@ describe('ABClient', () => {
       });
     });
 
-    it('should throw NotFound if success is false', async () => {
+    it('Should throw NotFound if success is false', async () => {
       makeRequestStub.resolves({ success: false });
       try {
         await ABClient.getUserInfo('username');
@@ -89,7 +89,7 @@ describe('ABClient', () => {
       return expect.fail('Code did not throw');
     });
 
-    it('should return the message from the result of makeRequest', async () => {
+    it('Should return the message from the result of makeRequest', async () => {
       expect(await ABClient.getUserInfo('username')).to.equal('stubbedValue');
     });
   });
@@ -104,34 +104,34 @@ describe('ABClient', () => {
       gotStub = (ABClient.got as unknown) as SinonStub;
     });
 
-    it('creates and calls fetch with correct url combining host and path', async () => {
+    it('Creates and calls fetch with correct url combining host and path', async () => {
       await ABClient.makeRequest('/myPath', {});
       assert.calledOnce(gotStub);
       expect(gotStub.getCall(0).args[0]).to.equal(`${ABClient.url}/myPath`);
     });
 
-    it('adds authKey to query string when authenticated is true', async () => {
+    it('Adds authKey to query string when authenticated is true', async () => {
       const myBody: any = { testing: 'true' };
       await ABClient.makeRequest('/myPath', myBody);
       assert.calledOnce(gotStub);
       expect(gotStub.getCall(0).args[1].searchParams.authKey).to.equal(ABClient.siteApiKey);
     });
 
-    it('does not add authKey to body when authenticated is false', async () => {
+    it('Does not add authKey to body when authenticated is false', async () => {
       const myBody: any = { testing: 'true' };
       await ABClient.makeRequest('/myPath', myBody, false);
       assert.calledOnce(gotStub);
       expect(gotStub.getCall(0).args[1].json.authKey).to.be.undefined;
     });
 
-    it('calls fetch with the correct options', async () => {
+    it('Calls fetch with the correct options', async () => {
       await ABClient.makeRequest('/myPath', {});
       assert.calledOnce(gotStub);
       expect(gotStub.getCall(0).args[1].method).to.equal('POST');
       expect(gotStub.getCall(0).args[1].json).to.not.be.undefined;
     });
 
-    it('throws an exception if resulting status is not ok', async () => {
+    it('Throws an exception if resulting status is not ok', async () => {
       gotStub.resolves({
         statusCode: 500,
         body: '{"stubbed":"data"}',
@@ -144,13 +144,13 @@ describe('ABClient', () => {
       expect.fail('Did not throw');
     });
 
-    it('returns parsed json if the return body was JSON', async () => {
+    it('Returns parsed json if the return body was JSON', async () => {
       expect(await ABClient.makeRequest('/myPath', {})).to.deep.equal({
         stubbed: 'data',
       });
     });
 
-    it('returns the raw body string if the return body was not JSON', async () => {
+    it('Returns the raw body string if the return body was not JSON', async () => {
       gotStub.resolves({
         statusCode: 200,
         body: 'stubbed',

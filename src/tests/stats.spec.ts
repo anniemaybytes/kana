@@ -27,14 +27,14 @@ describe('StatsCollector', () => {
   });
 
   describe('updateStats', async () => {
-    it('sets valid users time delta to 300 seconds', async () => {
+    it('Sets valid users time delta to 300 seconds', async () => {
       await updateStats();
       assert.calledOnce(ircWhoStub);
       assert.calledOnce(ABStub);
       expect(ABStub.getCall(0).args[0]['1234']?.delta_time).to.be.equal(300);
     });
 
-    it('does not post stats if an error occurred', async () => {
+    it('Does not post stats if an error occurred', async () => {
       ircWhoStub.throws('error');
       await updateStats();
       assert.notCalled(ABStub);
@@ -42,7 +42,7 @@ describe('StatsCollector', () => {
   });
 
   describe('scheduleStatsReporter', () => {
-    it('calls setInterval with updateStats to schedule repeated execution', () => {
+    it('Calls setInterval with updateStats to schedule repeated execution', () => {
       scheduleStatsReporter();
       clock.tick(300001);
       assert.calledOnce(ircWhoStub);
