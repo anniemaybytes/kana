@@ -6,7 +6,8 @@ kana is our implementation of an IRC bot for the AnimeBytes IRC server.
 
 kana listens for following IRC events:
 
-- `PRIVMSG {:nick} :enter <username> <key>`
+- `PRIVMSG {:nick} :enter <channels> <username> <key>`
+- `PRIVMSG {:nick} :identify <username> <key>`
 - `INVITE`
 
 Following commands are accessible:

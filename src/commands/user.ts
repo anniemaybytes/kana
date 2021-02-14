@@ -22,7 +22,7 @@ export async function getUserInfoByIRCNick(ircNick: string) {
 export function listenForUser() {
   IRCClient.addMessageHook(userRegex, async (event) => {
     if (event.privateMessage) return;
-    logger.debug(`user request from ${event.hostname}`);
+    logger.debug(`!user request from ${event.hostname}`);
     try {
       // Get the name we need to check
       let name = parseUserHost(event.hostname).user;

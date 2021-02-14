@@ -53,7 +53,7 @@ describe('User', () => {
       assert.calledWithExactly(eventReply, 'Not authorized');
     });
 
-    it('Replies with internal error if the call to AB fails', async () => {
+    it('Replies with error if the call to AB fails', async () => {
       callUser.throws(new Error());
       await userCallback({ privateMessage: false, message: '!user', reply: eventReply });
       assert.calledWithExactly(eventReply, 'Internal error');

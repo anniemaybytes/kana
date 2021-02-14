@@ -262,7 +262,7 @@ describe('IRCClient', () => {
       deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
     });
 
-    it('Calls joinRoom (with sajoin) for channels in saved config with join type', async () => {
+    it('Calls joinRoom (with SAJOIN) for channels in saved config with join type', async () => {
       await IRCClient.joinConfigChannel('channel', { persist: true, join: 'sajoin' });
       assert.calledWithExactly(joinRoomStub, 'channel', true);
     });
@@ -272,7 +272,7 @@ describe('IRCClient', () => {
       assert.calledWithExactly(joinWithAdminRoomStub, 'channel');
     });
 
-    it('Calls joinRoom (no sajoin) for channels in saved config with join type', async () => {
+    it('Calls joinRoom (no SAJOIN) for channels in saved config with join type', async () => {
       await IRCClient.joinConfigChannel('channel', { persist: true, join: 'join' });
       assert.calledWithExactly(joinRoomStub, 'channel', false);
     });
@@ -371,7 +371,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes the correct arguments to the irc framework', () => {
+    it('Passes the correct arguments to the IRC framework', () => {
       IRCClient.message('chan', 'message');
       assert.calledWithExactly(sayStub, 'chan', 'message');
     });
@@ -396,7 +396,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes and returns the correct arguments to the irc framework', async () => {
+    it('Passes and returns the correct arguments to the IRC framework', async () => {
       expect(await IRCClient.who('chan')).to.deep.equal(['blah']);
       assert.calledWithExactly(whoStub, 'chan');
     });
@@ -415,7 +415,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes and returns the correct arguments to the irc framework', async () => {
+    it('Passes and returns the correct arguments to the IRC framework', async () => {
       expect(await IRCClient.whois('chan')).to.deep.equal({ some: 'data' });
       assert.calledWithExactly(whoisStub, 'chan');
     });
