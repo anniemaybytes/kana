@@ -23,7 +23,7 @@ export function listenForEnterMsg() {
       );
     } catch (e) {
       logger.error('Error authing user', e);
-      return event.reply('Internal error');
+      return event.reply('Unable to identify you at the moment, please try again later');
     }
     if (!authResponse.success) return event.reply(authResponse.error);
 

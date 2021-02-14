@@ -59,7 +59,7 @@ describe('Enter', () => {
     it('Replies with error if calling AB fails', async () => {
       authUser.throws(new Error());
       await enterCallback({ privateMessage: true, message: 'enter room,badRoom user key', reply: eventReply });
-      assert.calledWithExactly(eventReply, 'Internal error');
+      assert.calledWithExactly(eventReply, 'Unable to identify you at the moment, please try again later');
       assert.notCalled(rawCommandStub);
     });
 

@@ -17,11 +17,12 @@ export function listenForIdentifyMsg() {
       authResponse = await ABClient.authUserForRooms(matches[1], matches[2], []);
     } catch (e) {
       logger.error('Error authing user', e);
-      return event.reply('Internal error');
+      return event.reply('Unable to identify you at the moment, please try again later');
     }
     if (!authResponse.success) return event.reply(authResponse.error);
 
     IRCClient.rawCommand('CHGIDENT', event.nick, authResponse.id.toString());
     IRCClient.rawCommand('CHGHOST', event.nick, authResponse.host);
+    event.reply(`Successfully identified as ${matches[1]}`);
   });
 }

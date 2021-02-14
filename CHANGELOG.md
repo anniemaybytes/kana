@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v4.2.0
+### Changed
+- Print command on succesful execution of `IDENTIFY` command
+- Customize error messages
+
 ## v4.1.0
 ### Added
 - Special `IDENTIFY <username> <key>` command to set ident/host without joining any channel

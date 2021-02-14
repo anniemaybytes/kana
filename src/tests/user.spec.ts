@@ -56,7 +56,7 @@ describe('User', () => {
     it('Replies with error if the call to AB fails', async () => {
       callUser.throws(new Error());
       await userCallback({ privateMessage: false, message: '!user', reply: eventReply });
-      assert.calledWithExactly(eventReply, 'Internal error');
+      assert.calledWithExactly(eventReply, 'An error has occured, please try again later');
     });
 
     it('Replies with user not found if NotFound error (404) from AB', async () => {

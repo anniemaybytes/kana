@@ -54,7 +54,7 @@ export function listenForUser() {
       if (e.code === 'InvalidABUser') return event.reply('Not authorized');
       if (e.code === 'NotFound') return event.reply('User not found');
       logger.error('Unexpected error processing !user', e);
-      return event.reply('Internal error');
+      return event.reply('An error has occured, please try again later');
     }
   });
 }

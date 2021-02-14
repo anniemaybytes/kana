@@ -59,7 +59,7 @@ describe('Identify', () => {
     it('Replies with error if calling AB fails', async () => {
       authUser.throws(new Error());
       await identifyCallback({ privateMessage: true, message: 'identify user key', reply: eventReply });
-      assert.calledWithExactly(eventReply, 'Internal error');
+      assert.calledWithExactly(eventReply, 'Unable to identify you at the moment, please try again later');
       assert.notCalled(rawCommandStub);
     });
 
@@ -79,6 +79,7 @@ describe('Identify', () => {
       assert.called(rawCommandStub);
       expect(rawCommandStub.getCall(0).args).to.deep.equal(['CHGIDENT', 'eventNick', '1234']);
       expect(rawCommandStub.getCall(1).args).to.deep.equal(['CHGHOST', 'eventNick', 'user.class.AnimeBytes']);
+      assert.calledWithExactly(eventReply, 'Successfully identified as user');
     });
   });
 });
