@@ -19,13 +19,13 @@ describe('Git Webhook', () => {
   });
 
   it('Does not send a message for events that are not push, create, or delete', async () => {
-    await handleGitWebhook({ body: { ref: 'branchname' }, get: () => 'bogus' } as any, { send: resStub } as any, sandbox.stub());
+    await handleGitWebhook({ body: { ref: 'branchname' }, get: () => 'bogus' } as any, { send: resStub } as any, sandbox.stub() as any);
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
   });
 
   it('Does not send a message for push events where there are no commits', async () => {
-    await handleGitWebhook({ body: { ref: 'branchname', commits: [] }, get: () => 'push' } as any, { send: resStub } as any, sandbox.stub());
+    await handleGitWebhook({ body: { ref: 'branchname', commits: [] }, get: () => 'push' } as any, { send: resStub } as any, sandbox.stub() as any);
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
   });
@@ -34,7 +34,7 @@ describe('Git Webhook', () => {
     await handleGitWebhook(
       { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'delete' } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -48,7 +48,7 @@ describe('Git Webhook', () => {
     await handleGitWebhook(
       { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'create' } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -70,7 +70,7 @@ describe('Git Webhook', () => {
         get: () => 'push',
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage.getCall(0),
@@ -101,7 +101,7 @@ describe('Git Webhook', () => {
         get: () => 'push',
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage.getCall(0),

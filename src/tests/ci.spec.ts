@@ -19,7 +19,7 @@ describe('CI Webhook', () => {
   });
 
   it('Does not send a message for non-build events', async () => {
-    await handleCIWebhook({ body: { event: 'notABuild' } } as any, { send: resStub } as any, sandbox.stub());
+    await handleCIWebhook({ body: { event: 'notABuild' } } as any, { send: resStub } as any, sandbox.stub() as any);
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
   });
@@ -36,7 +36,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
@@ -54,7 +54,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.notCalled(stubSendMessage);
     assert.calledOnce(resStub);
@@ -72,7 +72,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -94,7 +94,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -116,7 +116,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(stubSendMessage, 'testchannel', 'CI: Build job #123 for \x02repo\x02 failed (\x1fhttps://git.bogus/repo/123\x1f)');
     assert.calledOnce(resStub);
@@ -134,7 +134,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(stubSendMessage, 'testchannel', 'CI: Build job #123 for \x02repo\x02 errored (\x1fhttps://git.bogus/repo/123\x1f)');
     assert.calledOnce(resStub);
@@ -152,7 +152,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -174,7 +174,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage,
@@ -196,7 +196,7 @@ describe('CI Webhook', () => {
         },
       } as any,
       { send: resStub } as any,
-      sandbox.stub()
+      sandbox.stub() as any
     );
     assert.calledWithExactly(
       stubSendMessage.getCall(0),

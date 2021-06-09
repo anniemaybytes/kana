@@ -101,7 +101,7 @@ describe('ABClient', () => {
         statusCode: 200,
         body: '{"stubbed":"data"}',
       } as any);
-      gotStub = (ABClient.got as unknown) as SinonStub;
+      gotStub = ABClient.got as unknown as SinonStub;
     });
 
     it('Creates and calls fetch with correct url combining host and path', async () => {
