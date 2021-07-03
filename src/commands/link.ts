@@ -8,7 +8,7 @@ const logger = getLogger('LinkCommand');
 const MAX_REQUEST_SIZE_BYTES = 1000000;
 const MAX_REQUEST_TIME_MS = 10000;
 
-const urlRegex = /(^|[^a-zA-Z0-9])((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&amp;:/~+#]*[\w\-@?^=%&amp;/~+#])?)/gi;
+const urlRegex = /https?:\/\/[^#\s]+/gi;
 
 // Only exported for testing purposes
 export const got = gotClient.extend({
@@ -78,15 +78,14 @@ export function addLinkWatcher() {
     if (event.privateMessage) return;
     const urlMatches = event.message.matchAll(urlRegex);
     const urlSet = new Set<string>();
-    for (const match of urlMatches) if (match) urlSet.add(match[2]);
+    for (const match of urlMatches) if (match) urlSet.add(match[0]);
     if (urlSet.size === 0 || urlSet.size > 3) return;
     logger.debug(`Parsing link(s) found in message from ${event.hostname}`);
 
     await Promise.all(
       [...urlSet].map(async (url) => {
         if (
-          url.match(/https?:\/\/(.+\.)?animebyt(\.es|es\.tv)/i) ||
-          url.match(/127\.0\.0\.1/i) ||
+          url.match(/https?:\/\/(.+\.)?animebytes\.tv/i) ||
           url.match(/\.(png|jpg|jpeg|gif|bmp|webp|webm|mp4|mkv|txt|zip|rar|7z|tar|tar\.gz|tar\.bz|exe|js|css|pdf)/i)
         )
           return;

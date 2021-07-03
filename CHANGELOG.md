@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v4.3.0
+### Changed
+- Simplify URL regex for matching links (this fixes some edge cases where link would be 
+  only partially parsed)
+- Remove `127.0.0.1` and `animebyt.es` from disallowed links
+
+### Fixed
+- Fixed broken test "Does not fetch or respond if there are more than 3 links in the message"
+which would always pass due to typo
+
 ## v4.2.0
 ### Changed
 - Print command on succesful execution of `IDENTIFY` command

@@ -50,15 +50,14 @@ describe('WebLinks', () => {
     });
 
     it('Does not fetch or respond if the link matches ignore regexes', async () => {
-      await linkCallback({ privateMessage: false, message: 'http://127.0.0.1', reply: eventReply });
-      await linkCallback({ privateMessage: false, message: 'http://animebytes.tv', reply: eventReply });
+      await linkCallback({ privateMessage: false, message: 'https://animebytes.tv', reply: eventReply });
       await linkCallback({ privateMessage: false, message: 'http://someurl.com/a.pdf', reply: eventReply });
       assert.notCalled(gotStub);
       assert.notCalled(eventReply);
     });
 
     it('Does not fetch or respond if there are more than 3 links in the message', async () => {
-      await linkCallback({ privateMessage: false, message: 'http//a.com http//b.com http//c.com http//d.com', reply: eventReply });
+      await linkCallback({ privateMessage: false, message: 'http://a.com http://b.com http://c.com http://d.com', reply: eventReply });
       assert.notCalled(gotStub);
       assert.notCalled(eventReply);
     });
