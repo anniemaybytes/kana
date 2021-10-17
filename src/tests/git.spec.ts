@@ -2,7 +2,7 @@ import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { IRCClient } from '../clients/irc';
 import { handleGitWebhook } from '../webhooks/git';
 
-describe('Git Webhook', () => {
+describe('GitHook', () => {
   let sandbox: SinonSandbox;
   let stubSendMessage: SinonStub;
   let resStub: SinonStub;

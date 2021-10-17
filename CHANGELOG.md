@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v4.3.1
+### Changed
+- Force usage of Alpine 3.13 in Dockerfile
+
 ## v4.3.0
 ### Changed
 - Simplify URL regex for matching links (this fixes some edge cases where link would be 

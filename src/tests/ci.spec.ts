@@ -2,7 +2,7 @@ import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { IRCClient } from '../clients/irc';
 import { handleCIWebhook } from '../webhooks/ci';
 
-describe('CI Webhook', () => {
+describe('CIHook', () => {
   let sandbox: SinonSandbox;
   let stubSendMessage: SinonStub;
   let resStub: SinonStub;
@@ -140,7 +140,7 @@ describe('CI Webhook', () => {
     assert.calledOnce(resStub);
   });
 
-  it('Sends a created message with username on build create via user', async () => {
+  it('Sends a created message with username on build created by user', async () => {
     await handleCIWebhook(
       {
         body: {
@@ -162,7 +162,7 @@ describe('CI Webhook', () => {
     assert.calledOnce(resStub);
   });
 
-  it('Sends a created message with cron system on build create via cron', async () => {
+  it('Sends a created message with cron system on build created via cron', async () => {
     await handleCIWebhook(
       {
         body: {
@@ -184,7 +184,7 @@ describe('CI Webhook', () => {
     assert.calledOnce(resStub);
   });
 
-  it('Sends a created message with changes staged on build create by user with link and before', async () => {
+  it('Sends a created message with changes staged on build created by user with link and before', async () => {
     await handleCIWebhook(
       {
         body: {

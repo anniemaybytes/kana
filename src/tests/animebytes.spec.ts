@@ -131,7 +131,7 @@ describe('ABClient', () => {
       expect(gotStub.getCall(0).args[1].json).to.not.be.undefined;
     });
 
-    it('Throws an exception if resulting status is not ok', async () => {
+    it('Throws an exception if resulting status is not OK', async () => {
       gotStub.resolves({
         statusCode: 500,
         body: '{"stubbed":"data"}',

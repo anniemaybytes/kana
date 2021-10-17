@@ -28,7 +28,7 @@ describe('IRCClient', () => {
       expect(IRCClient.bot.listeners('invite').length).to.equal(1);
     });
 
-    describe('Close Handler', () => {
+    describe('Close handler', () => {
       let closeHandler: any;
       beforeEach(() => {
         closeHandler = IRCClient.bot.listeners('close')[0];
@@ -93,7 +93,7 @@ describe('IRCClient', () => {
       });
     });
 
-    describe('Invite Handler', () => {
+    describe('Invite handler', () => {
       let inviteHandler: any;
       let isIgnoredStub: SinonStub;
       let isMeStub: SinonStub;
@@ -195,7 +195,7 @@ describe('IRCClient', () => {
     beforeEach(() => {
       frameworkConnectStub = sandbox.stub(IRCClient.bot, 'connect');
     });
-    it('Attempts to connect to IRC with specified params', () => {
+    it('Attempts to connect to IRC with specified parameters', () => {
       IRCClient.connect();
       assert.calledWith(frameworkConnectStub, {
         host: IRCClient.IRC_SERVER,
@@ -214,7 +214,7 @@ describe('IRCClient', () => {
     beforeEach(() => {
       frameworkQuitStub = sandbox.stub(IRCClient.bot, 'quit');
     });
-    it('Attempts to connect to IRC with specified params', () => {
+    it('Attempts to connect to IRC with specified parameters', () => {
       IRCClient.shutDown();
       assert.calledOnce(frameworkQuitStub);
     });
@@ -371,7 +371,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes the correct arguments to the IRC framework', () => {
+    it('Passes the correct arguments to the IRCClient', () => {
       IRCClient.message('chan', 'message');
       assert.calledWithExactly(sayStub, 'chan', 'message');
     });
@@ -396,7 +396,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes and returns the correct arguments to the IRC framework', async () => {
+    it('Passes and returns the correct arguments to the IRCClient', async () => {
       expect(await IRCClient.who('chan')).to.deep.equal(['blah']);
       assert.calledWithExactly(whoStub, 'chan');
     });
@@ -415,7 +415,7 @@ describe('IRCClient', () => {
       assert.calledOnce(checkIfRegisteredStub);
     });
 
-    it('Passes and returns the correct arguments to the IRC framework', async () => {
+    it('Passes and returns the correct arguments to the IRCClient', async () => {
       expect(await IRCClient.whois('chan')).to.deep.equal({ some: 'data' });
       assert.calledWithExactly(whoisStub, 'chan');
     });
@@ -429,7 +429,7 @@ describe('IRCClient', () => {
       callbackWrapperStub = sandbox.stub(IRCClient, 'callbackWrapper').returns('ok' as any);
     });
 
-    it('Adds the messagehook to the irc-framework with the correct params', () => {
+    it('Adds the message hook to the IRCClient with the correct parameters', () => {
       const myRegex = /.*/;
       const myCallback = () => 'whatever';
       IRCClient.addMessageHook(myRegex, myCallback);
