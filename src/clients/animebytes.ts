@@ -4,10 +4,11 @@ import { UserAuthResponse, UserTimeDeltas } from '../types';
 import { getLogger } from '../logger';
 const logger = getLogger('AnimeBytesClient');
 
-const REQUEST_TIMEOUT_MS = 30000;
+const REQUEST_TIMEOUT_MS = 1000 * 30; // 30 seconds
 
 export class ABClient {
   public static got = got.extend({
+    headers: { 'User-Agent': 'kana/2.0 (got [ABClient])' },
     followRedirect: false,
     throwHttpErrors: false,
     timeout: REQUEST_TIMEOUT_MS,

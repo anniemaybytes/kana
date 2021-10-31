@@ -12,7 +12,7 @@ const urlRegex = /https?:\/\/[^#\s]+/gi;
 
 // Only exported for testing purposes
 export const got = gotClient.extend({
-  headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (got) like Twitterbot/1.0' },
+  headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (got [Link]) like Twitterbot/1.0' },
   throwHttpErrors: false,
   timeout: MAX_REQUEST_TIME_MS,
   retry: 0,

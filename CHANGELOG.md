@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v5.1.0
+### Changed
+- Use specific User-Agent; link fetcher now uses 
+`kana/2.0 (got [Link]) like Twitterbot/1.0` while `ABClient` uses `kana/2.0 (got [ABClient])`
+
 ## v5.0.0
 ### Changed
 - Bumped minimum supported Node version to v16.13.0
