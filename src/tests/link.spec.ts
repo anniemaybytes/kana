@@ -56,6 +56,13 @@ describe('WebLinks', () => {
       assert.notCalled(eventReply);
     });
 
+    it('Does not fetch or respond if link is an invalid URL', async () => {
+      const promise = linkCallback({ privateMessage: false, message: 'https://<url>', reply: eventReply });
+      await promise;
+      assert.notCalled(gotStub);
+      assert.notCalled(eventReply);
+    });
+
     it('Does not fetch or respond if there are more than 3 links in the message', async () => {
       await linkCallback({ privateMessage: false, message: 'http://a.com http://b.com http://c.com http://d.com', reply: eventReply });
       assert.notCalled(gotStub);
@@ -65,21 +72,21 @@ describe('WebLinks', () => {
     it('Attempts to fetch the url of a good link', async () => {
       linkCallback({ privateMessage: false, message: 'https://some.cool.link', reply: eventReply });
       assert.calledOnce(gotStub);
-      expect(gotStub.getCall(0).args[0]).to.equal('https://some.cool.link');
+      expect(gotStub.getCall(0).args[0].toString()).to.equal('https://some.cool.link/');
     });
 
     it('Fetches multiple links', async () => {
-      linkCallback({ privateMessage: false, message: 'https://some.cool.link https://another.cool.link', reply: eventReply });
+      linkCallback({ privateMessage: false, message: 'https://some.cool.link https://another.cool.link/', reply: eventReply });
       assert.calledTwice(gotStub);
-      const fetches = [gotStub.getCall(0).args[0], gotStub.getCall(1).args[0]];
-      expect(fetches).to.include('https://some.cool.link');
-      expect(fetches).to.include('https://another.cool.link');
+      const fetches = [gotStub.getCall(0).args[0].toString(), gotStub.getCall(1).args[0].toString()];
+      expect(fetches).to.include('https://some.cool.link/');
+      expect(fetches).to.include('https://another.cool.link/');
     });
 
     it('Only fetches each good unique link once', async () => {
       linkCallback({ privateMessage: false, message: 'https://some.cool.link https://some.cool.link', reply: eventReply });
       assert.calledOnce(gotStub);
-      expect(gotStub.getCall(0).args[0]).to.equal('https://some.cool.link');
+      expect(gotStub.getCall(0).args[0].toString()).to.equal('https://some.cool.link/');
     });
 
     it('Will not reply when response body stream emits an error', async () => {

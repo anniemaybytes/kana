@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v5.2.0
+### Fixed
+- Validate URLs before attempting to fetch link title
+### Changed
+- Remove Alpine >= 3.13 restriction
+
 ## v5.1.0
 ### Changed
 - Use specific User-Agent; link fetcher now uses 

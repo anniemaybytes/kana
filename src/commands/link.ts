@@ -1,4 +1,5 @@
 import { IRCClient } from '../clients/irc';
+import { URL } from 'url';
 import { StringDecoder } from 'string_decoder';
 import gotClient, { Response } from 'got';
 import { Parser } from 'htmlparser2';
@@ -83,12 +84,20 @@ export function addLinkWatcher() {
     logger.debug(`Parsing link(s) found in message from ${event.hostname}`);
 
     await Promise.all(
-      [...urlSet].map(async (url) => {
+      [...urlSet].map(async (urlStr) => {
         if (
-          url.match(/https?:\/\/(.+\.)?animebytes\.tv/i) ||
-          url.match(/\.(png|jpg|jpeg|gif|bmp|webp|webm|mp4|mkv|txt|zip|rar|7z|tar|tar\.gz|tar\.bz|exe|js|css|pdf)/i)
+          urlStr.match(/https?:\/\/(.+\.)?animebytes\.tv/i) ||
+          urlStr.match(/\.(png|jpg|jpeg|gif|bmp|webp|webm|mp4|mkv|txt|zip|rar|7z|tar|tar\.gz|tar\.bz|exe|js|css|pdf)/i)
         )
           return;
+
+        // ensure valid URL
+        let url: URL;
+        try {
+          url = new URL(urlStr);
+        } catch (e) {
+          return;
+        }
 
         return new Promise<void>((resolve) => {
           got
