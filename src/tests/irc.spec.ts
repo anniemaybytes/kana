@@ -21,7 +21,8 @@ describe('IRCClient', () => {
     });
 
     it('Has a registered registered handler', () => {
-      expect(IRCClient.bot.listeners('registered').length).to.equal(1);
+      // irc-framework registers one internal handler itself
+      expect(IRCClient.bot.listeners('registered').length).to.equal(2);
     });
 
     it('Has a registered invite handler', () => {
