@@ -1,60 +1,62 @@
-import { IRCClient } from '../clients/irc';
-import { ABClient } from '../clients/animebytes';
-import { parseUserHost } from '../utils';
-import { CustomFailure } from '../errors';
-import { getLogger } from '../logger';
-const logger = getLogger('UserCommand');
+import { IRCClient } from '../clients/irc.js';
+import { ABClient } from '../clients/animebytes.js';
+import { Utils } from '../utils.js';
+import { CustomFailure } from '../errors.js';
 
-const userRegex = /^!user(?:\s([^\s]+))?/i;
+import { Logger } from '../logger.js';
+const logger = Logger.get('UserCommand');
 
-// Not meant to be used externally. Exported for testing reasons
-export async function getUserInfoByIRCNick(ircNick: string) {
-  let ABUsername: string;
-  try {
-    const ircUserHostname = (await IRCClient.whois(ircNick)).hostname;
-    ABUsername = parseUserHost(ircUserHostname).user;
-  } catch (e) {
-    throw new CustomFailure('NotFound'); // Any failure here should be considered as not found
-  }
-  return ABClient.getUserInfo(ABUsername);
-}
+export class UserCommand {
+  private static regex = /^!user(?:\s([^\s]+))?/i;
 
-export function listenForUser() {
-  IRCClient.addMessageHook(userRegex, async (event) => {
-    if (event.privateMessage) return;
-    logger.debug(`!user request from ${event.hostname}`);
+  public static async getUserInfoByIRCNick(ircNick: string) {
+    let ABUsername: string;
     try {
-      // Get the name we need to check
-      let name = parseUserHost(event.hostname).user;
-      const matches = event.message.match(userRegex);
-      let usernameProvided = false;
-      if (matches && matches[1]) {
-        name = matches[1];
-        usernameProvided = true;
-      }
-
-      // Call AB for the userinfo of this name
-      let userInfo = '';
-      if (name.startsWith('@')) {
-        // if prepending name with '@', explicitly lookup by irc nick
-        userInfo = await getUserInfoByIRCNick(name.substring(1));
-      } else {
-        try {
-          userInfo = await ABClient.getUserInfo(name); // try looking up provided name as AB username directly
-        } catch (e) {
-          // Try to find specified user by their IRC nickname if they are registered and have a valid AB hostname
-          if (e.code === 'NotFound' && usernameProvided) userInfo = await getUserInfoByIRCNick(name);
-          else throw e;
-        }
-      }
-
-      // Reply with the userinfo from AB
-      event.reply(userInfo);
+      const ircUserHostname = (await IRCClient.whois(ircNick)).hostname;
+      ABUsername = Utils.parseUserHost(ircUserHostname).user;
     } catch (e) {
-      if (e.code === 'InvalidABUser') return event.reply('Not authorized');
-      if (e.code === 'NotFound') return event.reply('User not found');
-      logger.error('Unexpected error processing !user', e);
-      return event.reply('An error has occured, please try again later');
+      throw new CustomFailure('NotFound'); // Any failure here should be considered as not found
     }
-  });
+    return ABClient.getUserInfo(ABUsername);
+  }
+
+  public static register() {
+    IRCClient.addMessageHook(UserCommand.regex, async (event) => {
+      if (event.privateMessage) return;
+      logger.debug(`!user request from ${event.hostname}`);
+      try {
+        // Get the name we need to check
+        let name = Utils.parseUserHost(event.hostname).user;
+        const matches = event.message.match(UserCommand.regex);
+        let usernameProvided = false;
+        if (matches && matches[1]) {
+          name = matches[1];
+          usernameProvided = true;
+        }
+
+        // Call AB for the userinfo of this name
+        let userInfo = '';
+        if (name.startsWith('@')) {
+          // if prepending name with '@', explicitly lookup by irc nick
+          userInfo = await UserCommand.getUserInfoByIRCNick(name.substring(1));
+        } else {
+          try {
+            userInfo = await ABClient.getUserInfo(name); // try looking up provided name as AB username directly
+          } catch (e) {
+            // Try to find specified user by their IRC nickname if they are registered and have a valid AB hostname
+            if (e.code === 'NotFound' && usernameProvided) userInfo = await UserCommand.getUserInfoByIRCNick(name);
+            else throw e;
+          }
+        }
+
+        // Reply with the userinfo from AB
+        event.reply(userInfo);
+      } catch (e) {
+        if (e.code === 'InvalidABUser') return event.reply('Not authorized');
+        if (e.code === 'NotFound') return event.reply('User not found');
+        logger.error('Unexpected error processing !user', e);
+        return event.reply('An error has occured, please try again later');
+      }
+    });
+  }
 }

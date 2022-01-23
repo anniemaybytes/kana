@@ -1,28 +1,31 @@
-import { IRCClient } from '../clients/irc';
-import { ABClient } from '../clients/animebytes';
-import { UserAuthResponse } from '../types';
-import { getLogger } from '../logger';
-const logger = getLogger('EnterCommand');
+import { IRCClient } from '../clients/irc.js';
+import { ABClient } from '../clients/animebytes.js';
+import { UserAuthResponse } from '../types.js';
 
-const enterMatchRegex = /^\s*IDENTIFY\s+([^\s]+)\s+([^\s]+)\s*$/i;
+import { Logger } from '../logger.js';
+const logger = Logger.get('IdentifyCommand');
 
-export function listenForIdentifyMsg() {
-  IRCClient.addMessageHook(enterMatchRegex, async (event) => {
-    if (!event.privateMessage) return;
-    const matches = event.message.match(enterMatchRegex);
-    if (!matches) return;
-    logger.debug(`IDENTIFY request from nick ${event.nick}`);
-    let authResponse: UserAuthResponse;
-    try {
-      authResponse = await ABClient.authUserForRooms(matches[1], matches[2], []);
-    } catch (e) {
-      logger.error('Error authing user', e);
-      return event.reply('Unable to identify you at the moment, please try again later');
-    }
-    if (!authResponse.success) return event.reply(authResponse.error);
+export class IdentifyCommand {
+  private static regex = /^\s*IDENTIFY\s+([^\s]+)\s+([^\s]+)\s*$/i;
 
-    IRCClient.rawCommand('CHGIDENT', event.nick, authResponse.id.toString());
-    IRCClient.rawCommand('CHGHOST', event.nick, authResponse.host);
-    event.reply(`Successfully identified as ${matches[1]}`);
-  });
+  public static register() {
+    IRCClient.addMessageHook(IdentifyCommand.regex, async (event) => {
+      if (!event.privateMessage) return;
+      const matches = event.message.match(IdentifyCommand.regex);
+      if (!matches) return;
+      logger.debug(`IDENTIFY request from nick ${event.nick}`);
+      let authResponse: UserAuthResponse;
+      try {
+        authResponse = await ABClient.authUserForRooms(matches[1], matches[2], []);
+      } catch (e) {
+        logger.error('Error authing user', e);
+        return event.reply('Unable to identify you at the moment, please try again later');
+      }
+      if (!authResponse.success) return event.reply(authResponse.error);
+
+      IRCClient.rawCommand('CHGIDENT', event.nick, authResponse.id.toString());
+      IRCClient.rawCommand('CHGHOST', event.nick, authResponse.host);
+      event.reply(`Successfully identified as ${matches[1]}`);
+    });
+  }
 }

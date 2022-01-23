@@ -1,8 +1,9 @@
-import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import { updateStats, scheduleStatsReporter } from '../cron/stats';
-import { IRCClient } from '../clients/irc';
-import { ABClient } from '../clients/animebytes';
+import { expect } from 'chai';
+
+import { Stats } from '../cron/stats.js';
+import { IRCClient } from '../clients/irc.js';
+import { ABClient } from '../clients/animebytes.js';
 
 describe('StatsCollector', () => {
   let sandbox: SinonSandbox;
@@ -12,13 +13,16 @@ describe('StatsCollector', () => {
 
   beforeEach(() => {
     sandbox = createSandbox();
+
     sandbox.stub(IRCClient, 'who').resolves([
       { hostname: 'user.class.AnimeBytes', ident: '1234' },
       { hostname: 'invalid', ident: '4321' },
     ] as any);
     ircWhoStub = IRCClient.who as any;
+
     sandbox.stub(ABClient, 'postStats');
     ABStub = ABClient.postStats as any;
+
     clock = sandbox.useFakeTimers(new Date('2020-02-19T00:00:00.000Z'));
   });
 
@@ -26,9 +30,9 @@ describe('StatsCollector', () => {
     sandbox.restore();
   });
 
-  describe('updateStats', async () => {
+  describe('update', async () => {
     it('Sets valid users time delta to 300 seconds', async () => {
-      await updateStats();
+      await Stats.update();
       assert.calledOnce(ircWhoStub);
       assert.calledOnce(ABStub);
       expect(ABStub.getCall(0).args[0]['1234']?.delta_time).to.be.equal(300);
@@ -36,14 +40,14 @@ describe('StatsCollector', () => {
 
     it('Does not post stats if an error occurred', async () => {
       ircWhoStub.throws('error');
-      await updateStats();
+      await Stats.update();
       assert.notCalled(ABStub);
     });
   });
 
-  describe('scheduleStatsReporter', () => {
+  describe('start', () => {
     it('Calls setInterval with updateStats to schedule repeated execution', () => {
-      scheduleStatsReporter();
+      Stats.start();
       clock.tick(300001);
       assert.calledOnce(ircWhoStub);
     });

@@ -1,17 +1,19 @@
-import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import * as user from '../commands/user';
-import { IRCClient } from '../clients/irc';
-import { ABClient } from '../clients/animebytes';
-import * as utils from '../utils';
-import { CustomFailure } from '../errors';
+import { expect } from 'chai';
 
-describe('User', () => {
+import { UserCommand } from '../commands/user.js';
+import { IRCClient } from '../clients/irc.js';
+import { ABClient } from '../clients/animebytes.js';
+import { Utils } from '../utils.js';
+import { CustomFailure } from '../errors.js';
+
+describe('UserCommand', () => {
   let sandbox: SinonSandbox;
   let hookStub: SinonStub;
 
   beforeEach(() => {
     sandbox = createSandbox();
+
     hookStub = sandbox.stub(IRCClient, 'addMessageHook');
   });
 
@@ -21,7 +23,7 @@ describe('User', () => {
 
   describe('listenForUser', () => {
     it('Calls addMessageHook on the IRC bot', () => {
-      user.listenForUser();
+      UserCommand.register();
       assert.calledOnce(hookStub);
     });
   });
@@ -32,12 +34,13 @@ describe('User', () => {
     let eventReply: SinonStub;
     let parseUserStub: SinonStub;
     let ircWhoisStub: SinonStub;
+
     beforeEach(() => {
-      user.listenForUser();
+      UserCommand.register();
       userCallback = hookStub.getCall(0).args[1];
       eventReply = sandbox.stub();
       ircWhoisStub = sandbox.stub(IRCClient, 'whois').resolves({ hostname: 'whatever' } as any);
-      parseUserStub = sandbox.stub(utils, 'parseUserHost').returns({ user: 'thing' } as any);
+      parseUserStub = sandbox.stub(Utils, 'parseUserHost').returns({ user: 'thing' } as any);
       callUser = sandbox.stub(ABClient, 'getUserInfo').resolves('reply');
     });
 
@@ -88,8 +91,9 @@ describe('User', () => {
     let callUser: SinonStub;
     let parseUserStub: SinonStub;
     let whoisStub: SinonStub;
+
     beforeEach(() => {
-      parseUserStub = sandbox.stub(utils, 'parseUserHost').returns({ user: 'thing' } as any);
+      parseUserStub = sandbox.stub(Utils, 'parseUserHost').returns({ user: 'thing' } as any);
       callUser = sandbox.stub(ABClient, 'getUserInfo').resolves('reply');
       whoisStub = sandbox.stub(IRCClient, 'whois').resolves({ hostname: 'hostname' } as any);
     });
@@ -97,7 +101,7 @@ describe('User', () => {
     it('Throws NotFound if whois call fails', async () => {
       whoisStub.throws(new Error());
       try {
-        await user.getUserInfoByIRCNick('nick');
+        await UserCommand.getUserInfoByIRCNick('nick');
       } catch (e) {
         assert.calledWithExactly(whoisStub, 'nick');
         assert.notCalled(parseUserStub);
@@ -109,7 +113,7 @@ describe('User', () => {
     it('Throws NotFound if parseUserHost fails', async () => {
       parseUserStub.throws(new Error());
       try {
-        await user.getUserInfoByIRCNick('nick');
+        await UserCommand.getUserInfoByIRCNick('nick');
       } catch (e) {
         assert.calledWithExactly(parseUserStub, 'hostname');
         return expect(e.code).to.equal('NotFound');
@@ -118,7 +122,7 @@ describe('User', () => {
     });
 
     it('Returns value from AB getUserInfo if successful', async () => {
-      expect(await user.getUserInfoByIRCNick('nick')).to.equal('reply');
+      expect(await UserCommand.getUserInfoByIRCNick('nick')).to.equal('reply');
       assert.calledWithExactly(callUser, 'thing');
     });
   });

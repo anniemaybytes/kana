@@ -1,11 +1,12 @@
 import { expect } from 'chai';
-import * as utils from '../utils';
-import { CustomFailure } from '../errors';
+
+import { Utils } from '../utils.js';
+import { CustomFailure } from '../errors.js';
 
 describe('Utils', () => {
   describe('parseUserHost', () => {
     it('Returns user and rank for a well formed hostname', () => {
-      expect(utils.parseUserHost('username.LameUser.AnimeBytes')).to.deep.equal({ user: 'username', rank: 'LameUser' });
+      expect(Utils.parseUserHost('username.LameUser.AnimeBytes')).to.deep.equal({ user: 'username', rank: 'LameUser' });
     });
 
     it('Throws InvalidABUser with invalid hostnames', () => {
@@ -17,9 +18,10 @@ describe('Utils', () => {
         '127.0.0.1',
         'extra.user.PowerUser.AnimeBytes',
       ];
+
       invalidHostnames.forEach((hostName) => {
         try {
-          utils.parseUserHost(hostName);
+          Utils.parseUserHost(hostName);
         } catch (e) {
           expect(e).to.be.instanceOf(CustomFailure);
           return expect(e.code).to.equal('InvalidABUser');

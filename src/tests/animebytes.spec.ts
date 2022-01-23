@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import { ABClient } from '../clients/animebytes';
+
+import { ABClient } from '../clients/animebytes.js';
 
 describe('ABClient', () => {
   let sandbox: SinonSandbox;

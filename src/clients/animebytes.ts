@@ -1,8 +1,10 @@
 import got from 'got';
-import { CustomFailure } from '../errors';
-import { UserAuthResponse, UserTimeDeltas } from '../types';
-import { getLogger } from '../logger';
-const logger = getLogger('AnimeBytesClient');
+
+import { CustomFailure } from '../errors.js';
+import { UserAuthResponse, UserTimeDeltas } from '../types.js';
+
+import { Logger } from '../logger.js';
+const logger = Logger.get('ABClient');
 
 const REQUEST_TIMEOUT_MS = 1000 * 30; // 30 seconds
 
@@ -11,7 +13,7 @@ export class ABClient {
     headers: { 'User-Agent': 'kana/2.0 (got [ABClient])' },
     followRedirect: false,
     throwHttpErrors: false,
-    timeout: REQUEST_TIMEOUT_MS,
+    timeout: { request: REQUEST_TIMEOUT_MS },
   });
   public static url = 'https://animebytes.tv';
   public static siteApiKey = process.env.SITE_API_KEY || '';

@@ -1,8 +1,9 @@
-import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import { CustomFailure } from '../errors';
-import { IRCClient } from '../clients/irc';
-import * as configuration from '../clients/configuration';
+import { expect } from 'chai';
+
+import { CustomFailure } from '../errors.js';
+import { IRCClient } from '../clients/irc.js';
+import { Configuration } from '../clients/configuration.js';
 
 describe('IRCClient', () => {
   let sandbox: SinonSandbox;
@@ -106,8 +107,8 @@ describe('IRCClient', () => {
         isIgnoredStub = sandbox.stub(IRCClient, 'isIgnoredUser').returns(false);
         isMeStub = sandbox.stub(IRCClient, 'isMe').returns(true);
         joinStub = sandbox.stub(IRCClient, 'joinRoom');
-        getChannelStub = sandbox.stub(configuration, 'getChannel').throws(new CustomFailure('NotFound', 'err'));
-        saveChannelStub = sandbox.stub(configuration, 'saveChannels');
+        getChannelStub = sandbox.stub(Configuration, 'getChannel').throws(new CustomFailure('NotFound', 'err'));
+        saveChannelStub = sandbox.stub(Configuration, 'saveChannels');
       });
 
       it('Ignores invites from ignored users', async () => {
@@ -226,9 +227,9 @@ describe('IRCClient', () => {
     let joinConfigChannelStub: SinonStub;
     let deleteChannelStub: SinonStub;
     beforeEach(() => {
-      getChannelStub = sandbox.stub(configuration, 'getChannel');
+      getChannelStub = sandbox.stub(Configuration, 'getChannel');
       joinConfigChannelStub = sandbox.stub(IRCClient, 'joinConfigChannel');
-      deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
+      deleteChannelStub = sandbox.stub(Configuration, 'deleteChannel');
     });
 
     it('Does not throw on exception', async () => {
@@ -260,7 +261,7 @@ describe('IRCClient', () => {
     beforeEach(() => {
       joinWithAdminRoomStub = sandbox.stub(IRCClient, 'joinRoomWithAdminIfNecessary');
       joinRoomStub = sandbox.stub(IRCClient, 'joinRoom');
-      deleteChannelStub = sandbox.stub(configuration, 'deleteChannel');
+      deleteChannelStub = sandbox.stub(Configuration, 'deleteChannel');
     });
 
     it('Calls joinRoom (with SAJOIN) for channels in saved config with join type', async () => {
@@ -297,7 +298,7 @@ describe('IRCClient', () => {
     let joinConfigChannelStub: SinonStub;
     beforeEach(() => {
       rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');
-      getChannelsStub = sandbox.stub(configuration, 'getAllChannels');
+      getChannelsStub = sandbox.stub(Configuration, 'getAllChannels');
       joinConfigChannelStub = sandbox.stub(IRCClient, 'joinConfigChannel');
     });
 

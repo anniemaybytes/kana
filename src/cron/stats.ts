@@ -1,39 +1,42 @@
-import { ABClient } from '../clients/animebytes';
-import { IRCClient } from '../clients/irc';
-import { parseUserHost } from '../utils';
-import { UserTimeDeltas } from '../types';
-import { getLogger } from '../logger';
-const logger = getLogger('StatsCron');
+import { ABClient } from '../clients/animebytes.js';
+import { IRCClient } from '../clients/irc.js';
+import { Utils } from '../utils.js';
+import { UserTimeDeltas } from '../types.js';
+
+import { Logger } from '../logger.js';
+const logger = Logger.get('Stats');
 
 const STATS_UPDATE_PERIOD_MS = 300000;
 const STATS_CHANNEL = '#animebytes';
-let interval: any = undefined;
 
-// Not intended to be called directly outside of this module, only exported for testing
-export async function updateStats() {
-  logger.debug('Starting stats collection');
-  try {
-    const onlineUsers: UserTimeDeltas = {};
-    (await IRCClient.who(STATS_CHANNEL)).forEach((whoResponse) => {
-      try {
-        parseUserHost(whoResponse.hostname); // Just to check if the user has a valid hostname
-        onlineUsers[Number(whoResponse.ident)] = { delta_time: Math.floor(STATS_UPDATE_PERIOD_MS / 1000) };
-      } catch {
-        logger.debug(`Invalid user ${whoResponse.nick} with host ${whoResponse.hostname} in ${STATS_CHANNEL}`);
-      }
-    });
-    await ABClient.postStats(onlineUsers);
-    logger.debug('Stats reporting complete');
-  } catch (e) {
-    logger.error('Unexpected error gathering/saving stats:', e);
+export class Stats {
+  private static interval: any = undefined;
+
+  public static async update() {
+    logger.debug('Starting stats collection');
+    try {
+      const onlineUsers: UserTimeDeltas = {};
+      (await IRCClient.who(STATS_CHANNEL)).forEach((whoResponse) => {
+        try {
+          Utils.parseUserHost(whoResponse.hostname); // Just to check if the user has a valid hostname
+          onlineUsers[Number(whoResponse.ident)] = { delta_time: Math.floor(STATS_UPDATE_PERIOD_MS / 1000) };
+        } catch {
+          logger.debug(`Invalid user ${whoResponse.nick} with host ${whoResponse.hostname} in ${STATS_CHANNEL}`);
+        }
+      });
+      await ABClient.postStats(onlineUsers);
+      logger.debug('Stats reporting complete');
+    } catch (e) {
+      logger.error('Unexpected error gathering/saving stats:', e);
+    }
   }
-}
 
-export function scheduleStatsReporter() {
-  interval = setInterval(updateStats, STATS_UPDATE_PERIOD_MS);
-  logger.info(`Now scheduled to report statistics every ${STATS_UPDATE_PERIOD_MS / 1000} seconds`);
-}
+  public static start() {
+    Stats.interval = setInterval(Stats.update, STATS_UPDATE_PERIOD_MS);
+    logger.info(`Now scheduled to report statistics every ${STATS_UPDATE_PERIOD_MS / 1000} seconds`);
+  }
 
-export function unscheduleStatsReporter() {
-  if (interval) clearInterval(interval);
+  public static shutDown() {
+    if (Stats.interval) clearInterval(Stats.interval);
+  }
 }

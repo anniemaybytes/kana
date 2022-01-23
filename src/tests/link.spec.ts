@@ -1,15 +1,17 @@
-import { expect } from 'chai';
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
-import * as link from '../commands/link';
-import { IRCClient } from '../clients/irc';
+import { expect } from 'chai';
 import streamBuffers from 'stream-buffers';
 
-describe('WebLinks', () => {
+import { LinkCommand } from '../commands/link.js';
+import { IRCClient } from '../clients/irc.js';
+
+describe('LinkCommand', () => {
   let sandbox: SinonSandbox;
   let hookStub: SinonStub;
 
   beforeEach(() => {
     sandbox = createSandbox();
+
     hookStub = sandbox.stub(IRCClient, 'addMessageHook');
   });
 
@@ -19,7 +21,7 @@ describe('WebLinks', () => {
 
   describe('addLinkWatcher', () => {
     it('Calls addMessageHook on the IRC bot', () => {
-      link.addLinkWatcher();
+      LinkCommand.register();
       assert.calledOnce(hookStub);
     });
   });
@@ -30,11 +32,11 @@ describe('WebLinks', () => {
     let gotStub: SinonStub;
     let fakeSocket: streamBuffers.ReadableStreamBuffer;
     beforeEach(() => {
-      link.addLinkWatcher();
+      LinkCommand.register();
       linkCallback = hookStub.getCall(0).args[1];
       eventReply = sandbox.stub();
       fakeSocket = new streamBuffers.ReadableStreamBuffer();
-      gotStub = sandbox.stub(link.got, 'stream').returns(fakeSocket as any);
+      gotStub = sandbox.stub(LinkCommand.got, 'stream').returns(fakeSocket as any);
     });
 
     it('Does not fetch or respond if a private message', async () => {
@@ -57,7 +59,7 @@ describe('WebLinks', () => {
     });
 
     it('Does not fetch or respond if link is an invalid URL', async () => {
-      const promise = linkCallback({ privateMessage: false, message: 'https://<url>', reply: eventReply });
+      const promise = linkCallback({ privateMessage: false, message: 'https://[bad*URL]', reply: eventReply });
       await promise;
       assert.notCalled(gotStub);
       assert.notCalled(eventReply);

@@ -1,15 +1,18 @@
 import * as irc from 'irc-framework';
-import { sleep } from '../utils';
 import { promisify } from 'util';
-import { getAllChannels, getChannel, saveChannels, deleteChannel } from './configuration';
-import { MessageEvent, WHOISResponse, WHOResponse, ChannelConfigOptions } from '../types';
-import { getLogger } from '../logger';
-const logger = getLogger('IRCClient');
+
+import { Utils } from '../utils.js';
+import { Configuration } from './configuration.js';
+import { MessageEvent, WHOISResponse, WHOResponse, ChannelConfigOptions } from '../types.js';
+
+import { Logger } from '../logger.js';
+const logger = Logger.get('IRCClient');
 
 const IGNORED_USERS: { [user: string]: boolean } = {};
 (process.env.IRC_IGNORE_USERS || '').split(',').forEach((user: string) => {
   IGNORED_USERS[user.toLowerCase()] = true;
 });
+
 const ircClient = new irc.Client({ auto_reconnect: false });
 ircClient.who[promisify.custom] = (target: string) =>
   new Promise((resolve, reject) => {
@@ -70,7 +73,7 @@ export class IRCClient {
           rejectUnauthorized: IRCClient.IRC_VERIFY_SSL,
         });
       }
-      await sleep(5000);
+      await Utils.sleep(5000);
     }
   }
 
@@ -85,7 +88,7 @@ export class IRCClient {
     IRCClient.registered = true;
     IRCClient.rawCommand('MODE', IRCClient.IRC_NICK, '+B');
     IRCClient.rawCommand('CHGHOST', IRCClient.IRC_NICK, 'bakus.dungeon');
-    const channels = await getAllChannels();
+    const channels = await Configuration.getAllChannels();
     for (const channel in channels) {
       await IRCClient.joinConfigChannel(channel, channels[channel]);
     }
@@ -115,7 +118,7 @@ export class IRCClient {
 
   public static async joinRoomWithAdminIfNecessary(channel: string) {
     return new Promise<void>((resolve, reject) => {
-      // Perform sajoin if regular join doesn't work within 2 seconds
+      // Perform SAJOIN if regular join doesn't work within 2 seconds
       const sajoinTimeout = setTimeout(() => IRCClient.rawCommand('SAJOIN', IRCClient.IRC_NICK, channel), 2000);
       // If joining takes longer than 10 seconds, consider it a failure
       const joinTimeout = setTimeout(() => reject(new Error(`Unable to join channel ${channel}`)), 10000);
@@ -148,7 +151,7 @@ export class IRCClient {
     } catch (e) {
       if (!configOpts.persist) {
         logger.warn(`Failed to join ${channel} with persistence set to false; removing from config`);
-        await deleteChannel(channel);
+        await Configuration.deleteChannel(channel);
       } else {
         logger.warn(`Failed to join ${channel} with persistence set to true; will not attempt again till reconnection`);
       }
@@ -158,12 +161,12 @@ export class IRCClient {
   public static async handleChannelLeave(channel: string) {
     logger.info(`Left channel ${channel}`);
     try {
-      const chanOpts = await getChannel(channel);
+      const chanOpts = await Configuration.getChannel(channel);
       if (chanOpts.persist) {
         await IRCClient.joinConfigChannel(channel, chanOpts);
       } else {
         logger.debug(`Removing channel ${channel} from config.`);
-        await deleteChannel(channel);
+        await Configuration.deleteChannel(channel);
       }
     } catch (e) {
       if (e.code === 'NotFoud') logger.warn(`Unexpected channel leave from unconfigured channel ${channel}`);
@@ -172,7 +175,7 @@ export class IRCClient {
   }
 
   public static async waitUntilRegistered() {
-    while (!IRCClient.registered) await sleep(100);
+    while (!IRCClient.registered) await Utils.sleep(100);
   }
 
   public static rawCommand(...command: string[]) {
@@ -251,9 +254,9 @@ ircClient.on('invite', async (event: any) => {
   await IRCClient.joinRoom(event.channel);
   // If we are here, we have joined the channel successfully, so save this to state (if it doesn't already exist)
   try {
-    await getChannel(event.channel);
+    await Configuration.getChannel(event.channel);
   } catch (e) {
-    if (e.code === 'NotFound') return saveChannels({ [event.channel]: { join: 'join', persist: false } });
+    if (e.code === 'NotFound') return Configuration.saveChannels({ [event.channel]: { join: 'join', persist: false } });
     logger.error(`Unexpected error fetching channel ${event.channel} from config`, e);
   }
 });

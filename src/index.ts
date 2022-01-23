@@ -1,43 +1,52 @@
-import 'source-map-support/register';
-import { getAllChannels } from './clients/configuration';
-import { IRCClient } from './clients/irc';
-import { echoListen, echoShutdown } from './listeners/echo';
-import { startWebhookServer, webhookShutdown } from './listeners/webhook';
-import { addCommands } from './commands';
-import { scheduleStatsReporter, unscheduleStatsReporter } from './cron/stats';
-import { getLogger } from './logger';
-const logger = getLogger('main');
+import 'source-map-support/register.js';
+
+import { Configuration } from './clients/configuration.js';
+import { IRCClient } from './clients/irc.js';
+import { Echo } from './listeners/echo.js';
+import { Webhook } from './listeners/webhook.js';
+import { Stats } from './cron/stats.js';
+import { EnterCommand } from './commands/enter.js';
+import { IdentifyCommand } from './commands/identify.js';
+import { LinkCommand } from './commands/link.js';
+import { UserCommand } from './commands/user.js';
+
+import { Logger } from './logger.js';
+const logger = Logger.get('main');
 
 async function main() {
   logger.info('Starting kana');
-  // Ensure channels configuration is valid first
-  await getAllChannels();
-  // Initialize and connect the actual irc bot
-  addCommands();
+
+  await Configuration.getAllChannels();
+  EnterCommand.register();
+  IdentifyCommand.register();
+  UserCommand.register();
+  LinkCommand.register();
+
   IRCClient.connect();
   await IRCClient.waitUntilRegistered();
-  // Start listening on the raw echo port
-  echoListen();
-  // Start listening for webhooks
-  startWebhookServer();
-  // Start the scheduled stats reporter
-  scheduleStatsReporter();
+
+  Echo.start();
+  Webhook.start();
+  Stats.start();
 }
 
 let stopSignalReceived = false;
-function shutdown() {
+function shutDown() {
   // If spamming a stop signal, exit without caring about properly shutting down everything
   if (stopSignalReceived) process.exit(1);
-  stopSignalReceived = true;
+
   logger.error('Signal to stop received, shutting down');
-  unscheduleStatsReporter();
-  echoShutdown();
-  webhookShutdown();
+  stopSignalReceived = true;
+
+  Stats.shutDown();
+  Echo.shutDown();
+  Webhook.shutDown();
   IRCClient.shutDown();
+
   process.exit(0);
 }
 
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutDown);
+process.on('SIGTERM', shutDown);
 
 main().catch((e) => logger.error('Unexpected fatal error:', e));
