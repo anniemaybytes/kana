@@ -37,7 +37,7 @@ export function listenForUser() {
       let userInfo = '';
       if (name.startsWith('@')) {
         // if prepending name with '@', explicitly lookup by irc nick
-        userInfo = await getUserInfoByIRCNick(name.substr(1));
+        userInfo = await getUserInfoByIRCNick(name.substring(1));
       } else {
         try {
           userInfo = await ABClient.getUserInfo(name); // try looking up provided name as AB username directly

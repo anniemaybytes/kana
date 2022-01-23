@@ -4,7 +4,7 @@ import { UserAuthResponse } from '../types';
 import { getLogger } from '../logger';
 const logger = getLogger('EnterCommand');
 
-const enterMatchRegex = /^(?:\s)*enter(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)+([^\s]+)(?:\s)*$/i;
+const enterMatchRegex = /^\s*ENTER\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*$/i;
 
 export function listenForEnterMsg() {
   IRCClient.addMessageHook(enterMatchRegex, async (event) => {

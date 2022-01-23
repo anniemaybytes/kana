@@ -68,7 +68,7 @@ function processTitle(title: string) {
     for (; i > 0; i--) {
       if (title[i].match(/\s/)) break;
     }
-    return `${title.substr(0, i || 50)}...`;
+    return `${title.substring(0, i || 50)}...`;
   } else {
     return title;
   }

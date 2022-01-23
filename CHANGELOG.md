@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v5.3.0
+### Changed
+- Replace usage of deprecated substr with substring
+- Remove unnecessary non-capturing groups in ENTER/IDENTIFY RegExp
+
 ## v5.2.0
 ### Fixed
 - Validate URLs before attempting to fetch link title
@@ -61,7 +66,6 @@ which would always pass due to typo
 (https://github.com/fb55/htmlparser2/issues/592)
 
 ## v2.7.2
-
 No changes; updated dependencies
 
 ## v2.7.1
