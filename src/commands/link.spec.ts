@@ -2,7 +2,7 @@ import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { expect } from 'chai';
 import streamBuffers from 'stream-buffers';
 
-import { LinkCommand } from '../commands/link.js';
+import { LinkCommand } from './link.js';
 import { IRCClient } from '../clients/irc.js';
 
 describe('LinkCommand', () => {

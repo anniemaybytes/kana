@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { Utils } from '../utils.js';
-import { CustomFailure } from '../errors.js';
+import { Utils } from './utils.js';
+import { CustomFailure } from './errors.js';
 
 describe('Utils', () => {
   describe('parseUserHost', () => {

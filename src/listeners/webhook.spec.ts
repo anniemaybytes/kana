@@ -1,6 +1,6 @@
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 
-import { Webhook } from '../listeners/webhook.js';
+import { Webhook } from './webhook.js';
 
 describe('WebhookServer', () => {
   let sandbox: SinonSandbox;

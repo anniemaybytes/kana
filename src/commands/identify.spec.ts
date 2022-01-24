@@ -1,7 +1,7 @@
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { expect } from 'chai';
 
-import { IdentifyCommand } from '../commands/identify.js';
+import { IdentifyCommand } from './identify.js';
 import { IRCClient } from '../clients/irc.js';
 import { ABClient } from '../clients/animebytes.js';
 

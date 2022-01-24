@@ -2,7 +2,7 @@ import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { expect } from 'chai';
 import net from 'net';
 
-import { Echo } from '../listeners/echo.js';
+import { Echo } from './echo.js';
 import { IRCClient } from '../clients/irc.js';
 
 describe('NetworkEcho', () => {

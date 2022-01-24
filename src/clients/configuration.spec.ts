@@ -4,7 +4,7 @@ import mock from 'mock-fs';
 import { expect } from 'chai';
 import { promisify } from 'util';
 
-import { Configuration } from '../clients/configuration.js';
+import { Configuration } from './configuration.js';
 
 const readFileAsync = promisify(fs.readFile).bind(fs);
 

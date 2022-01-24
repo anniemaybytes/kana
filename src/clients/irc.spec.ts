@@ -2,8 +2,8 @@ import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 import { expect } from 'chai';
 
 import { CustomFailure } from '../errors.js';
-import { IRCClient } from '../clients/irc.js';
-import { Configuration } from '../clients/configuration.js';
+import { IRCClient } from './irc.js';
+import { Configuration } from './configuration.js';
 
 describe('IRCClient', () => {
   let sandbox: SinonSandbox;
