@@ -216,42 +216,40 @@ describe('CIHook', () => {
   });
 
   describe('verify', () => {
-    describe('verifyDroneSig', () => {
-      let mockHttpSignature: any;
-      let resStub: any;
-      let reqStub: any;
-      let nextStub: any;
+    let mockHttpSignature: any;
+    let resStub: any;
+    let reqStub: any;
+    let nextStub: any;
 
-      beforeEach(() => {
-        resStub = {
-          status: sandbox.stub(),
-          send: sandbox.stub(),
-        };
-        resStub.status.returns(resStub);
+    beforeEach(() => {
+      resStub = {
+        status: sandbox.stub(),
+        send: sandbox.stub(),
+      };
+      resStub.status.returns(resStub);
 
-        reqStub = sandbox.stub();
-        nextStub = sandbox.stub();
+      reqStub = sandbox.stub();
+      nextStub = sandbox.stub();
 
-        mockHttpSignature = {
-          parseRequest: sandbox.stub().returns('thing'),
-          verifyHMAC: sandbox.stub().returns(true),
-        };
+      mockHttpSignature = {
+        parseRequest: sandbox.stub().returns('thing'),
+        verifyHMAC: sandbox.stub().returns(true),
+      };
 
-        process.env.GIT_WEBHOOK = 'testingKey';
-      });
+      process.env.GIT_WEBHOOK = 'testingKey';
+    });
 
-      it('Calls next function with valid signature', () => {
-        CIWebhook.verify(reqStub, resStub, nextStub, mockHttpSignature);
-        assert.calledOnce(nextStub);
-      });
+    it('Calls next function with valid signature', () => {
+      CIWebhook.verify(reqStub, resStub, nextStub, mockHttpSignature);
+      assert.calledOnce(nextStub);
+    });
 
-      it('Sends a 403 (bad signature provided) on invalid signature', () => {
-        mockHttpSignature.verifyHMAC.returns(false);
-        CIWebhook.verify(reqStub, resStub, nextStub, mockHttpSignature);
-        assert.calledWithExactly(resStub.status, 403);
-        assert.calledWithExactly(resStub.send, { success: false, error: 'bad signature provided' });
-        assert.notCalled(nextStub);
-      });
+    it('Sends a 403 (bad signature provided) on invalid signature', () => {
+      mockHttpSignature.verifyHMAC.returns(false);
+      CIWebhook.verify(reqStub, resStub, nextStub, mockHttpSignature);
+      assert.calledWithExactly(resStub.status, 403);
+      assert.calledWithExactly(resStub.send, { success: false, error: 'bad signature provided' });
+      assert.notCalled(nextStub);
     });
   });
 });
