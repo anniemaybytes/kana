@@ -7,7 +7,7 @@ import { Logger } from '../logger.js';
 const logger = Logger.get('UserCommand');
 
 export class UserCommand {
-  private static regex = /^!user(?:\s([^\s]+))?/i;
+  private static regex = /^!u(ser)?(?:\s([^\s]+))?/i;
 
   public static async getUserInfoByIRCNick(ircNick: string) {
     let ABUsername: string;
