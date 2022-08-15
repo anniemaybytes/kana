@@ -85,6 +85,7 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `GIT_WEBHOOK` - Secret key to authenticate Git and CI webhook endpoint
 - `HTTP_PORT` - Port on which bot will expose Express router, used by Git and CI webhook
 - `ECHO_PORT` - Port on which bot will listen for raw ECHO commands, there is no authentication here so use firewall
+- `ECHO_AUTH_KEY` - Secret key to authenticate Echo requests
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
 - `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 

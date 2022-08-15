@@ -14,6 +14,8 @@ describe('NetworkEcho', () => {
 
     sandbox.stub(IRCClient, 'message');
     ircMessageStub = IRCClient.message as any;
+
+    process.env.ECHO_AUTH_KEY = 'testingKey';
   });
 
   afterEach(() => {
@@ -24,21 +26,35 @@ describe('NetworkEcho', () => {
     it('Will parse a raw echo over a network socket, and send to the appropriate channel', () => {
       const socket = new net.Socket({});
       Echo.handle(socket);
-      socket.emit('data', 'channel1|%|mytext');
+      socket.emit('data', 'testingKey|%|channel1|%|mytext');
       assert.calledWithExactly(ircMessageStub, '#channel1', 'mytext');
+    });
+
+    it('Will ignore request without proper authentication', () => {
+      const socket = new net.Socket({});
+      Echo.handle(socket);
+      socket.emit('data', `wrongKey|%|channel1|%|sometext`);
+      assert.notCalled(ircMessageStub);
+    });
+
+    it('Will ignore improperly formatted request', () => {
+      const socket = new net.Socket({});
+      Echo.handle(socket);
+      socket.emit('data', `testingKey|%|`);
+      assert.notCalled(ircMessageStub);
     });
 
     it('Will send an emtpy message if not provided with a message', () => {
       const socket = new net.Socket({});
       Echo.handle(socket);
-      socket.emit('data', 'channel1|%|');
+      socket.emit('data', 'testingKey|%|channel1|%|');
       assert.calledWithExactly(ircMessageStub, '#channel1', '');
     });
 
     it('Will send the message to multiple channels if provided', () => {
       const socket = new net.Socket({});
       Echo.handle(socket);
-      socket.emit('data', 'channel1-channel2-channel3|%|hi');
+      socket.emit('data', 'testingKey|%|channel1-channel2-channel3|%|hi');
       assert.calledThrice(ircMessageStub);
       expect(ircMessageStub.getCall(0).args).to.deep.equal(['#channel1', 'hi']);
       expect(ircMessageStub.getCall(1).args).to.deep.equal(['#channel2', 'hi']);

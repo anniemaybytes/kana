@@ -1,4 +1,5 @@
 import net from 'net';
+import crypto from 'crypto';
 
 import { IRCClient } from '../clients/irc.js';
 import { Utils } from '../utils.js';
@@ -14,13 +15,40 @@ export class Echo {
   public static handle(socket: net.Socket) {
     socket.on('data', (data) => {
       const dataString = data.toString();
-      logger.trace(`Echo request: ${dataString}`);
-      const [channels, text] = dataString.split('|%|');
+      logger.trace(`ECHO request: ${dataString}`);
+
+      if (dataString.split('|%|').length !== 3) {
+        logger.debug(`Improperly formatted ECHO message from ${socket.remoteAddress}`);
+        socket.destroy();
+        return;
+      }
+
+      const [authKey, channels, text] = dataString.split('|%|');
+
+      if (
+        !crypto.timingSafeEqual(
+          crypto
+            .createHash('sha256')
+            .update(process.env.ECHO_AUTH_KEY || '')
+            .digest(),
+          crypto.createHash('sha256').update(authKey).digest()
+        )
+      ) {
+        logger.debug(`Bad ECHO auth from ${socket.remoteAddress}`);
+        socket.destroy();
+        return;
+      }
+
       const message = Utils.bbcode(text);
       channels.split('-').forEach((channel) => {
         IRCClient.message(`#${channel}`, message);
       });
       socket.end();
+    });
+
+    socket.on('error', (e) => {
+      logger.debug(`Catched error from ECHO socket: ${e}`);
+      socket.destroy();
     });
   }
 

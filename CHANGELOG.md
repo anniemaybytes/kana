@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v7.0.0
+### Added
+- Simple authentication scheme to Echo requests
+- Alias `!u` for `!user` command
+
+### Fixed
+- Gracefully handle errors from Echo socket
+
 ## v6.0.1
 ### Fixed
 - Node requires package.json to understand that its working with ESM
