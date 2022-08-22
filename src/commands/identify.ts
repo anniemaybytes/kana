@@ -6,7 +6,7 @@ import { Logger } from '../logger.js';
 const logger = Logger.get('IdentifyCommand');
 
 export class IdentifyCommand {
-  private static regex = /^\s*IDENTIFY\s+([^\s]+)\s+([^\s]+)\s*$/i;
+  private static regex = /^\s*IDENTIFY\s+(\S+)\s+(\S+)\s*$/i;
 
   public static register() {
     IRCClient.addMessageHook(IdentifyCommand.regex, async (event) => {

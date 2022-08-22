@@ -6,7 +6,7 @@ import { Logger } from '../logger.js';
 const logger = Logger.get('EnterCommand');
 
 export class EnterCommand {
-  private static regex = /^\s*ENTER\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*$/i;
+  private static regex = /^\s*ENTER\s+(\S+)\s+(\S+)\s+(\S+)\s*$/i;
 
   public static register() {
     IRCClient.addMessageHook(EnterCommand.regex, async (event) => {
