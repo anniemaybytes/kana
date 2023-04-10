@@ -38,6 +38,6 @@ export class Utils {
   }
 
   public static trimCommit(url: string) {
-    return url.replace(/([0-9a-f]{9})[0-9a-f]+/g, '$1');
+    return url.replace(/([0-9a-f]{10})[0-9a-f]+/g, '$1');
   }
 }

@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v8.1.0
+### Changed
+- Trim commit length to 10 characters instead of 9
+
 ## v8.0.0
 ### Changed
 - Bumped minimum supported Node version to v18.12.0

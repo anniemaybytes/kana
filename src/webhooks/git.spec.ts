@@ -91,7 +91,7 @@ describe('GitHook', () => {
       assert.calledWithExactly(
         sendMessageStub.getCall(1),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb7422\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)'
       );
       assert.calledOnce(resStub);
     });
@@ -122,12 +122,12 @@ describe('GitHook', () => {
       assert.calledWithExactly(
         sendMessageStub.getCall(1),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb7422\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)'
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(2),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br\u200B2: commit message2 (\x1fhttps://git.bogus/abfeb7422\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br\u200B2: commit message2 (\x1fhttps://git.bogus/abfeb74224\x1f)'
       );
       assert.calledWithExactly(sendMessageStub.getCall(3), 'testchannel', 'Entire diff: \x1fhttps://git.bogus/fullcompare\x1f');
       assert.calledOnce(resStub);
