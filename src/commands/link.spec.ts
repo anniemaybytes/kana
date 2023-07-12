@@ -137,13 +137,13 @@ describe('LinkCommand', () => {
       const promise = linkCallback({ privateMessage: false, message: 'https://some.cool.link', reply: eventReply });
       fakeSocket.emit('response', { statusCode: 200, headers: { 'content-type': 'text/html' }, request: fakeSocket });
       fakeSocket.put(
-        '<title>this is a veeery long title. Why would you put such a long title into your html? no one may ever know. Please do not do this</title>'
+        '<title>this is a veeery long title. Why would you put such a long title into your html? no one may ever know. Please do not do this</title>',
       );
       fakeSocket.stop();
       await promise;
       assert.calledWithExactly(
         eventReply,
-        'Link title: this is a veeery long title. Why would you put such a long title into your html? no one may ever...'
+        'Link title: this is a veeery long title. Why would you put such a long title into your html? no one may ever...',
       );
     });
 

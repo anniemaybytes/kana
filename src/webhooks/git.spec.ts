@@ -35,7 +35,7 @@ describe('GitHook', () => {
       await GitWebhook.handle(
         { body: { ref: 'branchname', commits: [] }, get: () => 'push' } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.notCalled(sendMessageStub);
       assert.calledOnce(resStub);
@@ -45,12 +45,12 @@ describe('GitHook', () => {
       await GitWebhook.handle(
         { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'delete' } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        '\x02u\u200Bs\u200Be\u200Br\x02 deleted branch \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02'
+        '\x02u\u200Bs\u200Be\u200Br\x02 deleted branch \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02',
       );
       assert.calledOnce(resStub);
     });
@@ -59,12 +59,12 @@ describe('GitHook', () => {
       await GitWebhook.handle(
         { body: { ref: 'branchname', sender: { login: 'user' }, ref_type: 'branch', repository: { name: 'repo' } }, get: () => 'create' } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        '\x02u\u200Bs\u200Be\u200Br\x02 created new branch \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02'
+        '\x02u\u200Bs\u200Be\u200Br\x02 created new branch \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02',
       );
       assert.calledOnce(resStub);
     });
@@ -81,17 +81,17 @@ describe('GitHook', () => {
           get: () => 'push',
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(0),
         'testchannel',
-        '\x02u\u200Bs\u200Be\u200Br\x02 pushed \x021\x02 commits to \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02:'
+        '\x02u\u200Bs\u200Be\u200Br\x02 pushed \x021\x02 commits to \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02:',
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(1),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)',
       );
       assert.calledOnce(resStub);
     });
@@ -112,22 +112,22 @@ describe('GitHook', () => {
           get: () => 'push',
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(0),
         'testchannel',
-        '\x02u\u200Bs\u200Be\u200Br\x02 pushed \x022\x02 commits to \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02:'
+        '\x02u\u200Bs\u200Be\u200Br\x02 pushed \x022\x02 commits to \x02b\u200Br\u200Ba\u200Bn\u200Bc\u200Bh\u200Bn\u200Ba\u200Bm\u200Be\x02 on \x02repo\x02:',
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(1),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br: commit message (\x1fhttps://git.bogus/bffeb74224\x1f)',
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(2),
         'testchannel',
-        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br\u200B2: commit message2 (\x1fhttps://git.bogus/abfeb74224\x1f)'
+        ' * g\u200Bi\u200Bt\u200Bu\u200Bs\u200Be\u200Br\u200B2: commit message2 (\x1fhttps://git.bogus/abfeb74224\x1f)',
       );
       assert.calledWithExactly(sendMessageStub.getCall(3), 'testchannel', 'Entire diff: \x1fhttps://git.bogus/fullcompare\x1f');
       assert.calledOnce(resStub);

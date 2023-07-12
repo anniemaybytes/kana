@@ -21,7 +21,7 @@ export class EnterCommand {
         authResponse = await ABClient.authUserForRooms(
           matches[2],
           matches[3],
-          matches[1].split(',').map((room) => room.trim().toLowerCase())
+          matches[1].split(',').map((room) => room.trim().toLowerCase()),
         );
       } catch (e) {
         logger.error('Error authing user', e);

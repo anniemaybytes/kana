@@ -51,8 +51,8 @@ export class GitWebhook {
       if (hook.commits.length > 0) {
         messages.push(
           `${Utils.bold(Utils.space(hook.sender.login))} pushed ${Utils.bold(hook.commits.length)} commits to ${Utils.bold(branch)} on ${Utils.bold(
-            hook.repository.name
-          )}:`
+            hook.repository.name,
+          )}:`,
         );
         for (let i = 0; i <= 10 && i < hook.commits.length; i++) {
           const commit = hook.commits[i];
@@ -62,11 +62,11 @@ export class GitWebhook {
       }
     } else if (eventType === 'create') {
       messages.push(
-        `${Utils.bold(Utils.space(hook.sender.login))} created new ${hook.ref_type} ${Utils.bold(branch)} on ${Utils.bold(hook.repository.name)}`
+        `${Utils.bold(Utils.space(hook.sender.login))} created new ${hook.ref_type} ${Utils.bold(branch)} on ${Utils.bold(hook.repository.name)}`,
       );
     } else if (eventType === 'delete') {
       messages.push(
-        `${Utils.bold(Utils.space(hook.sender.login))} deleted ${hook.ref_type} ${Utils.bold(branch)} on ${Utils.bold(hook.repository.name)}`
+        `${Utils.bold(Utils.space(hook.sender.login))} deleted ${hook.ref_type} ${Utils.bold(branch)} on ${Utils.bold(hook.repository.name)}`,
       );
     }
 

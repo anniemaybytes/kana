@@ -31,7 +31,7 @@ export class Echo {
             .createHash('sha256')
             .update(process.env.ECHO_AUTH_KEY || '')
             .digest(),
-          crypto.createHash('sha256').update(authKey).digest()
+          crypto.createHash('sha256').update(authKey).digest(),
         )
       ) {
         logger.debug(`Bad ECHO auth from ${socket.remoteAddress}`);

@@ -31,7 +31,7 @@ export class CIWebhook {
       if (hook.action === 'created') {
         const sender = hook.build.trigger === '@cron' ? 'Cron system' : Utils.space(hook.build.author_login);
         messages.push(
-          `CI: Build job #${hook.build.number} by ${Utils.bold(sender)} for ${Utils.bold(hook.repo.slug)} created (${Utils.underline(link)})`
+          `CI: Build job #${hook.build.number} by ${Utils.bold(sender)} for ${Utils.bold(hook.repo.slug)} created (${Utils.underline(link)})`,
         );
         if (
           hook.build.before &&

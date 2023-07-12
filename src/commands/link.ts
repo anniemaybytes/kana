@@ -40,7 +40,7 @@ export class LinkCommand {
             }
           },
         },
-        { decodeEntities: true }
+        { decodeEntities: true },
       );
       const stringDecoder = new StringDecoder();
       const end = () => {
@@ -118,7 +118,7 @@ export class LinkCommand {
                 resolve();
               });
           });
-        })
+        }),
       );
     });
   }

@@ -43,7 +43,7 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.notCalled(sendMessageStub);
       assert.calledOnce(resStub);
@@ -61,7 +61,7 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.notCalled(sendMessageStub);
       assert.calledOnce(resStub);
@@ -79,12 +79,12 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        'CI: Build job #123 for \x02repo\x02 completed succesfully (\x1fhttps://git.bogus/repo/123\x1f)'
+        'CI: Build job #123 for \x02repo\x02 completed succesfully (\x1fhttps://git.bogus/repo/123\x1f)',
       );
       assert.calledOnce(resStub);
     });
@@ -101,12 +101,12 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        'CI: Build job #123 for \x02repo\x02 was cancelled (\x1fhttps://git.bogus/repo/123\x1f)'
+        'CI: Build job #123 for \x02repo\x02 was cancelled (\x1fhttps://git.bogus/repo/123\x1f)',
       );
       assert.calledOnce(resStub);
     });
@@ -123,7 +123,7 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(sendMessageStub, 'testchannel', 'CI: Build job #123 for \x02repo\x02 failed (\x1fhttps://git.bogus/repo/123\x1f)');
       assert.calledOnce(resStub);
@@ -141,7 +141,7 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(sendMessageStub, 'testchannel', 'CI: Build job #123 for \x02repo\x02 errored (\x1fhttps://git.bogus/repo/123\x1f)');
       assert.calledOnce(resStub);
@@ -159,12 +159,12 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
+        'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)',
       );
       assert.calledOnce(resStub);
     });
@@ -181,12 +181,12 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub,
         'testchannel',
-        'CI: Build job #123 by \x02Cron system\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
+        'CI: Build job #123 by \x02Cron system\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)',
       );
       assert.calledOnce(resStub);
     });
@@ -203,12 +203,12 @@ describe('CIHook', () => {
           },
         } as any,
         { send: resStub } as any,
-        sandbox.stub() as any
+        sandbox.stub() as any,
       );
       assert.calledWithExactly(
         sendMessageStub.getCall(0),
         'testchannel',
-        'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)'
+        'CI: Build job #123 by \x02u\u200Bs\u200Be\u200Br\x02 for \x02repo\x02 created (\x1fhttps://git.bogus/repo/123\x1f)',
       );
       assert.calledWithExactly(sendMessageStub.getCall(1), 'testchannel', ' Changes staged: \x1fhttps://change-stage-url.whatever\x1f');
       assert.calledOnce(resStub);
