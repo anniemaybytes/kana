@@ -10,7 +10,7 @@ const STATS_UPDATE_PERIOD_MS = 300000;
 const STATS_CHANNEL = '#animebytes';
 
 export class Stats {
-  private static interval: any = undefined;
+  private static interval?: ReturnType<typeof setInterval> = undefined;
 
   public static async update() {
     logger.debug('Starting stats collection');

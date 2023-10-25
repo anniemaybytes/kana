@@ -140,7 +140,7 @@ describe('IRCClient', () => {
       });
 
       it('Does not save channel if join fails', async () => {
-        joinStub.throws(new Error('bad'));
+        joinStub.throws(new Error('Some message'));
         try {
           await inviteHandler({ channel: 'channel' });
         } catch (e) {
@@ -235,7 +235,7 @@ describe('IRCClient', () => {
     it('Does not throw on exception', async () => {
       getChannelStub.throws(new CustomFailure('NotFound'));
       await IRCClient.handleChannelLeave('chan');
-      getChannelStub.throws(new CustomFailure('random'));
+      getChannelStub.throws(new CustomFailure('Some message'));
       await IRCClient.handleChannelLeave('chan');
     });
 

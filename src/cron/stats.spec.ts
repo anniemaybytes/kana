@@ -39,7 +39,7 @@ describe('StatsCollector', () => {
     });
 
     it('Does not post stats if an error occurred', async () => {
-      ircWhoStub.throws('error');
+      ircWhoStub.throws(new Error());
       await Stats.update();
       assert.notCalled(ABStub);
     });
