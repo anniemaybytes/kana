@@ -65,7 +65,7 @@ steps:
             tags:
                 - "${DRONE_DEPLOY_TO}"
         commands:
-            - export PLUGIN_REPO=$DOCKER_REGISTRY/kana
+            - export PLUGIN_REPO=$DOCKER_REGISTRY/animebytes/kana
             - /usr/local/bin/dockerd-entrypoint.sh /bin/drone-docker
 
 trigger:
