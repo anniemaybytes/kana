@@ -1,10 +1,10 @@
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 
 import { IRCClient } from '../clients/irc.js';
-import { GitWebhook } from './git.js';
+import { GitWebhook } from './gitea.js';
 import { expect } from 'chai';
 
-describe('GitHook', () => {
+describe('GiteaHook', () => {
   let sandbox: SinonSandbox;
   let sendMessageStub: SinonStub;
   let resStub: SinonStub;

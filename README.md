@@ -17,19 +17,19 @@ Following commands are accessible:
 Additionally:
 
 - Will listen on every channel it joins and resolve `<title>` for links posted
-- Will listen for raw ECHO commands and forward them to specified channels. Format is `channel1-channel2|%|hello world`
-- Will listen for Gitea style webhook on `/git`. Suppported events are:
-  - push (maximum of 10 commits will be echo'ed in channel)
-  - create
-  - delete
-- Will listen for Drone CI webhook on `/ci`. Supported events are:
-  - created
-  - updated
-    - success
-    - killed
-    - failure
-    - error
-- Sends `WHO` to `#animebytes` every 5 minutes and transmits list of users back to remote endpoint at `https://animebytes.tv/api/irc/notifier`
+- Will listen for raw ECHO commands and forward them to specified channels
+- Will listen for Gitea style webhook on `/webhook/gitea`. Suppported events are:
+  - `push` (maximum of 10 commits will be echo'ed in channel)
+  - `create`
+  - `delete`
+- Will listen for Drone CI webhook on `/webhook/drone`. Supported events are:
+  - `created`
+  - `updated`
+    - `success`
+    - `killed`
+    - `failure`
+    - `error`
+- Sends `WHO` to `#animebytes` every 5 minutes and transmits list of users back to remote endpoint at `/api/irc/notifier`
 
 ## Installation
 
@@ -78,24 +78,40 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `IRC_REALNAME` - Realname to use when connecting to IRC server
 - `IRC_USERNAME` - Username to use when connecting to IRC server
 - `IRC_IGNORE_USERS` - List of user nicks to ignore messages from, delimited by `,`
-- `GIT_CHANNEL` - Channel used to echo messages received by Git webhook
 - `OPER_USERNAME` - Oper username
 - `OPER_PASS` - Oper password
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
-- `GIT_WEBHOOK` - Secret key to authenticate Git and CI webhook endpoint
-- `HTTP_PORT` - Port on which bot will expose Express router, used by Git and CI webhook
-- `ECHO_PORT` - Port on which bot will listen for raw ECHO commands, there is no authentication here so use firewall
+- `HTTP_BIND` - Hostname on which bot will expose Express router, used by Gitea and DroneCI webhook
+- `HTTP_PORT` - Port on which bot will expose Express router, used by Gitea and DroneCI webhook
+- `GIT_WEBHOOK` - Secret key to authenticate Gitea and DroneCI webhook endpoint
+- `GIT_CHANNEL` - Channel used to echo messages received by Gitea webhook
+- `ECHO_BIND` - Hostname on which bot will listen for raw ECHO commands
+- `ECHO_PORT` - Port on which bot will listen for raw ECHO commands
 - `ECHO_AUTH_KEY` - Secret key to authenticate Echo requests
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
 - `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 
-There should also be provided a `channels.json` file in the working directory of the bot with the following information:
+There should also be provided a `channels.json` file in the working directory of the bot with following schema:
 
 ```json
 {
-  "#channelName": {
-    "persist": true, // true or false (default); make it so that failure to join does not remove channel from state
-    "join": "auto" // "join", "sajoin" or "auto" (default) to have bot try JOIN and then SAJOIN
+  "$id": "channels.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "persist": {
+        "description": "Mark channel as persistent; bot wil retry this channel on failure instead of removing it from list",
+        "type": "boolean"
+      },
+      "join": {
+        "description": "What command should bot use to join channel; setting auto (default) will try JOIN followed by SAJOIN",
+        "type": "string",
+        "enum": ["auto", "join", "sajoin"]
+      }
+    }
   }
 }
 ```

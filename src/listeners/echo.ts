@@ -7,6 +7,7 @@ import { Utils } from '../utils.js';
 import { Logger } from '../logger.js';
 const logger = Logger.get('Echo');
 
+const LISTEN_BIND = process.env.ECHO_BIND || '::';
 const LISTEN_PORT = Number(process.env.ECHO_PORT) || 1234;
 
 export class Echo {
@@ -53,8 +54,8 @@ export class Echo {
   }
 
   public static start() {
-    Echo.server = net.createServer(Echo.handle).listen(LISTEN_PORT);
-    logger.info(`Listening for raw ECHO on port ${LISTEN_PORT}`);
+    Echo.server = net.createServer(Echo.handle).listen(LISTEN_PORT, LISTEN_BIND);
+    logger.info(`Listening for raw ECHO on port ${LISTEN_BIND}:${LISTEN_PORT}`);
   }
 
   public static shutDown() {

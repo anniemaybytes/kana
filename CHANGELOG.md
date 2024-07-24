@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v9.1.0
+### Changed
+- Use more compatible User-Agent for link fetcher
+
+## v9.0.0
+### Added
+- New `HTTP_BIND` and `ECHO_BIND` environment variables to control where bot listens for these events
+
+### Changed
+- Webhook URLs (`/ci` and `/git`) are now `/webhook/drone` and `/webhook/gitea`, respectively
+
+### Fixed
+- Webhooks not listening on IPv6 by default
+
 ## v8.1.0
 ### Changed
 - Trim commit length to 10 characters instead of 9

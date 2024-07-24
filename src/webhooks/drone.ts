@@ -5,7 +5,7 @@ import { IRCClient } from '../clients/irc.js';
 import { Utils } from '../utils.js';
 
 import { Logger } from '../logger.js';
-const logger = Logger.get('CIWebhook');
+const logger = Logger.get('DroneWebhook');
 
 export class CIWebhook {
   public static verify(req: Request, res: Response, next: NextFunction, imp: any /* for testing */ = httpSignature) {
@@ -21,7 +21,6 @@ export class CIWebhook {
 
   public static async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
     const REPORT_CHANNEL = process.env.GIT_CHANNEL || '';
-    logger.debug('CI Webhook Triggered');
     logger.trace(JSON.stringify(req.body));
 
     const hook = req.body;

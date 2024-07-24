@@ -15,7 +15,12 @@ export class LinkCommand {
   private static regex = /https?:\/\/[^#\s]+/gi;
 
   public static got = gotClient.extend({
-    headers: { 'Accept-Language': 'en-US,en;q=0.7', 'User-Agent': 'kana/2.0 (got [Link]) like Twitterbot/1.0' },
+    headers: {
+      'Accept-Language': 'en-US,en;q=0.7',
+      'X-Purpose': 'preview',
+      'User-Agent':
+        'Mozilla/5.0 (compatible; kana/2.0; +https://github.com/anniemaybytes/kana) facebookexternalhit/1.1 (like Facebot) Twitterbot/1.0',
+    },
     throwHttpErrors: false,
     timeout: { request: MAX_REQUEST_TIME_MS },
     retry: { limit: 0 },

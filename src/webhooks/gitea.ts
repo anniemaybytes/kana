@@ -5,7 +5,7 @@ import { IRCClient } from '../clients/irc.js';
 import { Utils } from '../utils.js';
 
 import { Logger } from '../logger.js';
-const logger = Logger.get('GitWebhook');
+const logger = Logger.get('GiteaWebhook');
 
 export class GitWebhook {
   public static verify(req: Request, res: Response, next: NextFunction) {
@@ -36,7 +36,6 @@ export class GitWebhook {
 
   public static async handle(req: Request, res: Response, next: NextFunction): Promise<void> {
     const REPORT_CHANNEL = process.env.GIT_CHANNEL || '';
-    logger.debug('Git Webhook Triggered');
     logger.trace(JSON.stringify(req.body));
 
     const hook = req.body;

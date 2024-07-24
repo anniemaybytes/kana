@@ -1,9 +1,9 @@
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 
 import { IRCClient } from '../clients/irc.js';
-import { CIWebhook } from './ci.js';
+import { CIWebhook } from './drone.js';
 
-describe('CIHook', () => {
+describe('DroneHook', () => {
   let sandbox: SinonSandbox;
 
   beforeEach(() => {
