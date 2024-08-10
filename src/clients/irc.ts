@@ -148,7 +148,7 @@ export class IRCClient {
       } else {
         logger.error(`Channel ${channel} in channels config has invalid join parameter '${configOpts.join}'; ignoring this channel`);
       }
-    } catch (e) {
+    } catch {
       if (!configOpts.persist) {
         logger.warn(`Failed to join ${channel} with persistence set to false; removing from config`);
         await Configuration.deleteChannel(channel);

@@ -14,7 +14,7 @@ export class UserCommand {
     try {
       const ircUserHostname = (await IRCClient.whois(ircNick)).hostname;
       ABUsername = Utils.parseUserHost(ircUserHostname).user;
-    } catch (e) {
+    } catch {
       throw new CustomFailure('NotFound'); // Any failure here should be considered as not found
     }
     return ABClient.getUserInfo(ABUsername);

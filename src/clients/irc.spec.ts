@@ -143,7 +143,7 @@ describe('IRCClient', () => {
         joinStub.throws(new Error('Some message'));
         try {
           await inviteHandler({ channel: 'channel' });
-        } catch (e) {
+        } catch {
           return assert.notCalled(saveChannelStub);
         }
         return expect.fail('Did not throw');
@@ -185,7 +185,7 @@ describe('IRCClient', () => {
       sandbox.replace(IRCClient, 'registered', false);
       try {
         IRCClient.checkIfRegistered();
-      } catch (e) {
+      } catch {
         return;
       }
       expect.fail('Did not throw');

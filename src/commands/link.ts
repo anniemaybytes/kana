@@ -102,7 +102,7 @@ export class LinkCommand {
           let url: URL;
           try {
             url = new URL(urlStr);
-          } catch (e) {
+          } catch {
             return;
           }
 

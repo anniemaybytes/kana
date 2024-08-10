@@ -68,7 +68,7 @@ docker run -d --restart=always --env-file=.env --user 1001:1001 -v ${PWD}/channe
 
 ## Configuration
 
-Configuration is stored in `.env` file in form of environment variables and you should load it before running. Below is list of required variables and their descriptions:
+Configuration is done using environment variables:
 
 - `IRC_SERVER` - IRC server to connect to
 - `IRC_PORT` - IRC port to connect to
@@ -80,6 +80,7 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `IRC_IGNORE_USERS` - List of user nicks to ignore messages from, delimited by `,`
 - `OPER_USERNAME` - Oper username
 - `OPER_PASS` - Oper password
+- `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
 - `HTTP_BIND` - Hostname on which bot will expose Express router, used by Gitea and DroneCI webhook
 - `HTTP_PORT` - Port on which bot will expose Express router, used by Gitea and DroneCI webhook
@@ -89,9 +90,8 @@ Configuration is stored in `.env` file in form of environment variables and you 
 - `ECHO_PORT` - Port on which bot will listen for raw ECHO commands
 - `ECHO_AUTH_KEY` - Secret key to authenticate Echo requests
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
-- `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 
-There should also be provided a `channels.json` file in the working directory of the bot with following schema:
+Additionally, `channels.json` file is used by bot to dynamically store list of channels it knows about:
 
 ```json
 {
@@ -102,18 +102,19 @@ There should also be provided a `channels.json` file in the working directory of
   "additionalProperties": {
     "type": "object",
     "properties": {
-      "persist": {
-        "description": "Mark channel as persistent; bot wil retry this channel on failure instead of removing it from list",
-        "type": "boolean"
-      },
       "join": {
         "description": "What command should bot use to join channel; setting auto (default) will try JOIN followed by SAJOIN",
         "type": "string",
         "enum": ["auto", "join", "sajoin"]
+      },
+      "persist": {
+        "description": "Mark channel as persistent; bot wil retry this channel on failure instead of removing it from list",
+        "type": "boolean"
       }
     }
   }
 }
 ```
 
-There can be as many channels in that json file as desired. Channels will automatically get added to that file if the bot is invited.
+You can pre-populate that file with list of channels that you want bot to always be on by creating new entry and 
+setting its `persistent` property to `true`.

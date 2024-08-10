@@ -49,7 +49,7 @@ describe('Configuration', () => {
       try {
         await Configuration.getAllChannels();
         expect.fail('did not throw');
-      } catch (e) {} // eslint-disable-line no-empty
+      } catch {} // eslint-disable-line no-empty
     });
   });
 
