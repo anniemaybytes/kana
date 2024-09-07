@@ -39,7 +39,7 @@ describe('EnterCommand', () => {
       eventReplyStub = sandbox.stub();
       authUserStub = sandbox.stub(ABClient, 'authUserForRooms').resolves({
         success: true,
-        uid: '1234',
+        uid: 1234,
         hostmask: 'user.class.AnimeBytes',
         channels: { room: true, badRoom: false },
       } as any);

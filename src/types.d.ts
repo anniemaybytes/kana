@@ -1,7 +1,7 @@
 export interface UserAuthResponse {
   success: boolean;
   error: string;
-  uid: string;
+  uid: number;
   hostmask: string;
   channels: {
     [room: string]: boolean;
