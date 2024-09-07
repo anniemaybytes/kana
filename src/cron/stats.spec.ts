@@ -35,7 +35,7 @@ describe('StatsCollector', () => {
       await Stats.update();
       assert.calledOnce(ircWhoStub);
       assert.calledOnce(ABStub);
-      expect(ABStub.getCall(0).args[0]['1234']?.delta_time).to.be.equal(300);
+      expect(ABStub.getCall(0).args[0]['1234']?.deltaTime).to.be.equal(300);
     });
 
     it('Does not post stats if an error occurred', async () => {

@@ -19,7 +19,7 @@ export class Stats {
       (await IRCClient.who(STATS_CHANNEL)).forEach((whoResponse) => {
         try {
           Utils.parseUserHost(whoResponse.hostname); // Just to check if the user has a valid hostname
-          onlineUsers[Number(whoResponse.ident)] = { delta_time: Math.floor(STATS_UPDATE_PERIOD_MS / 1000) };
+          onlineUsers[Number(whoResponse.ident)] = { deltaTime: Math.floor(STATS_UPDATE_PERIOD_MS / 1000) };
         } catch {
           logger.debug(`Invalid user ${whoResponse.nick} with host ${whoResponse.hostname} in ${STATS_CHANNEL}`);
         }

@@ -39,8 +39,8 @@ describe('EnterCommand', () => {
       eventReplyStub = sandbox.stub();
       authUserStub = sandbox.stub(ABClient, 'authUserForRooms').resolves({
         success: true,
-        id: 1234,
-        host: 'user.class.AnimeBytes',
+        uid: '1234',
+        hostmask: 'user.class.AnimeBytes',
         channels: { room: true, badRoom: false },
       } as any);
       rawCommandStub = sandbox.stub(IRCClient, 'rawCommand');

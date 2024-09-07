@@ -23,8 +23,8 @@ export class IdentifyCommand {
       }
       if (!authResponse.success) return event.reply(authResponse.error);
 
-      IRCClient.rawCommand('CHGIDENT', event.nick, authResponse.id.toString());
-      IRCClient.rawCommand('CHGHOST', event.nick, authResponse.host);
+      IRCClient.rawCommand('CHGIDENT', event.nick, authResponse.uid.toString());
+      IRCClient.rawCommand('CHGHOST', event.nick, authResponse.hostmask);
       event.reply(`Successfully identified as ${matches[1]}`);
     });
   }

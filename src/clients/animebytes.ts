@@ -22,12 +22,12 @@ export class ABClient {
     await ABClient.makeRequest('/api/irc/notifier', { stats: userTimeDeltas });
   }
 
-  public static async authUserForRooms(username: string, key: string, channels: string[]) {
-    return (await ABClient.makeRequest('/api/irc/auth_user', { username, key, channels })) as UserAuthResponse;
+  public static async authUserForRooms(username: string, ircKey: string, channels: string[]) {
+    return (await ABClient.makeRequest('/api/irc/authenticate', { username, ircKey, channels })) as UserAuthResponse;
   }
 
   public static async getUserInfo(username: string) {
-    const response = await ABClient.makeRequest('/api/irc/user_info', { username });
+    const response = await ABClient.makeRequest('/api/irc/info/user', { username });
     if (!response.success) throw new CustomFailure('NotFound', response.error);
     return response.message as string;
   }

@@ -28,7 +28,7 @@ describe('ABClient', () => {
     });
 
     it('Should call makeRequest with the correct converted body', async () => {
-      const params = { testUser: { delta_time: 123 } };
+      const params = { testUser: { deltaTime: 123 } };
       await ABClient.postStats(params);
       assert.calledOnce(makeRequestStub);
       expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({ stats: params });
@@ -45,13 +45,13 @@ describe('ABClient', () => {
     it('Should call makeRequest with the correct path', async () => {
       await ABClient.authUserForRooms('username', 'key', ['room1', 'room2']);
       assert.calledOnce(makeRequestStub);
-      expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/auth_user');
+      expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/authenticate');
     });
 
     it('Should call makeRequest with the correct converted body', async () => {
       await ABClient.authUserForRooms('username', 'key', ['room1', 'room2']);
       assert.calledOnce(makeRequestStub);
-      expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({ username: 'username', key: 'key', channels: ['room1', 'room2'] });
+      expect(makeRequestStub.getCall(0).args[1]).to.deep.equal({ username: 'username', ircKey: 'key', channels: ['room1', 'room2'] });
     });
 
     it('Should return the result of makeRequest', async () => {
@@ -69,7 +69,7 @@ describe('ABClient', () => {
     it('Should call makeRequest with the correct path', async () => {
       await ABClient.getUserInfo('username');
       assert.calledOnce(makeRequestStub);
-      expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/user_info');
+      expect(makeRequestStub.getCall(0).args[0]).to.equal('/api/irc/info/user');
     });
 
     it('Should call makeRequest with the correct converted body', async () => {

@@ -1,8 +1,8 @@
 export interface UserAuthResponse {
   success: boolean;
   error: string;
-  id: number;
-  host: string;
+  uid: string;
+  hostmask: string;
   channels: {
     [room: string]: boolean;
   };
@@ -10,7 +10,7 @@ export interface UserAuthResponse {
 
 export interface UserTimeDeltas {
   [userId: number]: {
-    delta_time: number;
+    deltaTime: number;
   };
 }
 
