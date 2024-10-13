@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 WORKDIR /app
 
 FROM base AS builder
@@ -6,7 +6,6 @@ COPY package.json .
 COPY yarn.lock .
 RUN yarn --frozen-lockfile --non-interactive
 COPY . .
-# Build and trim node_modules dependencies
 RUN yarn build && mv yarnclean .yarnclean && yarn --frozen-lockfile --non-interactive --production
 
 FROM base AS release

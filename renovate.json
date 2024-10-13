@@ -33,6 +33,13 @@
       "extends": [
         "schedule:weekends"
       ]
+    },
+    {
+      "matchPackageNames": [
+        "express",
+        "@types/express"
+      ],
+      "allowedVersions": "<5.0.0"
     }
   ]
 }
