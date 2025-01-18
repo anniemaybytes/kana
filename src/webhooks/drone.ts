@@ -32,12 +32,7 @@ export class CIWebhook {
         messages.push(
           `CI: Build job #${hook.build.number} by ${Utils.bold(sender)} for ${Utils.bold(hook.repo.slug)} created (${Utils.underline(link)})`,
         );
-        if (
-          hook.build.before &&
-          hook.build.link &&
-          hook.build.before !== '0000000000000000000000000000000000000000' &&
-          hook.build.trigger !== '@cron'
-        )
+        if (hook.build.link && hook.build.trigger !== '@cron')
           messages.push(` Changes staged: ${Utils.underline(Utils.trimCommit(hook.build.link))}`);
       } else if (hook.action === 'updated') {
         if (hook.build.status === 'success') {

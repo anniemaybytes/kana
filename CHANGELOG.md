@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## v10.1.0
+### Changed
+- Simplify logic check for creation event in `DroneWebhook`
+
 ## v10.0.0
 ### Changed
 - Bumped minimum supported Node version to v20.9.0
