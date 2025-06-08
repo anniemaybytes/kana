@@ -33,7 +33,7 @@ Additionally:
 
 ## Installation
 
-kana requires NodeJS v20.9 or later and [Yarn package manager](https://classic.yarnpkg.com/)
+kana requires NodeJS v22.11 or later and [Yarn package manager](https://classic.yarnpkg.com/)
 
 ```sh
 yarn && yarn build
