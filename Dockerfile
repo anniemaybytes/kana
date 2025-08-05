@@ -2,11 +2,13 @@ FROM node:22-alpine AS base
 WORKDIR /app
 
 FROM base AS builder
+RUN corepack enable
 COPY package.json .
-COPY yarn.lock .
-RUN yarn --frozen-lockfile --non-interactive
+COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN yarn build && mv yarnclean .yarnclean && yarn --frozen-lockfile --non-interactive --production
+RUN pnpm build && pnpm prune --prod
 
 FROM base AS release
 ENV NODE_ENV production

@@ -8,9 +8,10 @@ steps:
         image: node:22-alpine
         pull: always
         commands:
-            - yarn --frozen-lockfile --non-interactive
-            - yarn lint
-            - yarn build
+            - corepack enable
+            - pnpm install
+            - pnpm lint
+            - pnpm build
 
 trigger:
     ref:
@@ -30,8 +31,8 @@ steps:
         image: node:22-alpine
         pull: always
         commands:
-            - yarn --frozen-lockfile --non-interactive
-            - yarn test
+            - corepack enable
+            - pnpm install-test
 
 trigger:
     ref:
