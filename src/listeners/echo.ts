@@ -30,7 +30,7 @@ export class Echo {
         !crypto.timingSafeEqual(
           crypto
             .createHash('sha256')
-            .update(process.env.ECHO_AUTH_KEY || '')
+            .update(process.env.ECHO_SECRET || '')
             .digest(),
           crypto.createHash('sha256').update(authKey).digest(),
         )

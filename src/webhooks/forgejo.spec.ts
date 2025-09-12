@@ -1,10 +1,10 @@
 import { createSandbox, SinonSandbox, SinonStub, assert } from 'sinon';
 
 import { IRCClient } from '../clients/irc.js';
-import { GitWebhook } from './gitea.js';
+import { GitWebhook } from './forgejo.js';
 import { expect } from 'chai';
 
-describe('GiteaHook', () => {
+describe('ForgejoWebhook', () => {
   let sandbox: SinonSandbox;
   let sendMessageStub: SinonStub;
   let resStub: SinonStub;
@@ -153,13 +153,13 @@ describe('GiteaHook', () => {
       };
       nextStub = sandbox.stub();
 
-      process.env.GIT_WEBHOOK = 'testingKey';
+      process.env.GIT_SECRET = 'testingKey';
     });
 
-    it('Returns 403 (no signature provided) if missing X-Gitea-Signature header', () => {
+    it('Returns 403 (no signature provided) if missing X-Forgejo-Signature header', () => {
       reqStub.get.returns(undefined);
       GitWebhook.verify(reqStub, resStub, nextStub);
-      assert.calledWithExactly(reqStub.get, 'X-Gitea-Signature');
+      assert.calledWithExactly(reqStub.get, 'X-Forgejo-Signature');
       assert.calledWithExactly(resStub.status, 403);
       assert.calledWithExactly(resStub.send, { success: false, error: 'no signature provided' });
       assert.notCalled(nextStub);

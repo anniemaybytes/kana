@@ -15,7 +15,7 @@ describe('NetworkEcho', () => {
     sandbox.stub(IRCClient, 'message');
     ircMessageStub = IRCClient.message as any;
 
-    process.env.ECHO_AUTH_KEY = 'testingKey';
+    process.env.ECHO_SECRET = 'testingKey';
   });
 
   afterEach(() => {

@@ -1,8 +1,7 @@
 import express from 'express';
 import http from 'http';
 
-import { CIWebhook } from '../webhooks/drone.js';
-import { GitWebhook } from '../webhooks/gitea.js';
+import { GitWebhook } from '../webhooks/forgejo.js';
 
 import { Logger } from '../logger.js';
 const logger = Logger.get('Webhook');
@@ -16,8 +15,7 @@ export class Webhook {
   public static start(imp: any /* for testing */ = express) {
     const app = imp();
 
-    app.post(`/webhook/gitea`, express.raw({ type: 'application/json' }), GitWebhook.verify, GitWebhook.handle);
-    app.post(`/webhook/drone`, express.json(), CIWebhook.verify, CIWebhook.handle);
+    app.post(`/webhook/forgejo`, express.raw({ type: 'application/json' }), GitWebhook.verify, GitWebhook.handle);
 
     Webhook.server = app.listen(LISTEN_PORT, LISTEN_BIND);
     logger.info(`Listening for HTTP webhooks on ${LISTEN_BIND}:${LISTEN_PORT}`);

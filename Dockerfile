@@ -1,5 +1,9 @@
-FROM node:22-alpine AS base
+FROM node:22-slim AS base
 WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 FROM base AS builder
 RUN corepack enable

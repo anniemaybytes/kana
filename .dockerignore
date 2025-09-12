@@ -26,7 +26,7 @@ node_modules/
 # Built TS
 dist/
 
-# ide
+# IDEs
 .idea
 *.swp
 .vscode
@@ -36,3 +36,13 @@ dist/
 desktop.ini
 .direnv
 .env
+
+# Repository Metadata
+.gitignore
+.git
+.forgejo/
+.editorconfig
+renovate.json
+
+# Application/Config
+channels.json

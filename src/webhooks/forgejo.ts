@@ -5,30 +5,30 @@ import { IRCClient } from '../clients/irc.js';
 import { Utils } from '../utils.js';
 
 import { Logger } from '../logger.js';
-const logger = Logger.get('GiteaWebhook');
+const logger = Logger.get('ForgejoWebhook');
 
 export class GitWebhook {
   public static verify(req: Request, res: Response, next: NextFunction) {
     const bodyStr = req.body.toString('utf8');
     try {
-      const signature = req.get('X-Gitea-Signature');
+      const signature = req.get('X-Forgejo-Signature');
       if (!signature) return res.status(403).send({ success: false, error: 'no signature provided' });
-      logger.trace(`Gitea signature: ${signature}\nRequest body: ${bodyStr}`);
+      logger.trace(`Forgejo signature: ${signature}\nRequest body: ${bodyStr}`);
       const signatureBuf = Buffer.from(signature, 'hex');
       const generatedHmac = crypto
-        .createHmac('sha256', process.env.GIT_WEBHOOK || '')
+        .createHmac('sha256', process.env.GIT_SECRET || '')
         .update(req.body)
         .digest();
       // Caught and handled below
       if (!crypto.timingSafeEqual(signatureBuf, generatedHmac)) throw new Error('HMACs do not match');
     } catch (e) {
-      logger.debug(`Bad Gitea signature error: ${e}`);
+      logger.debug(`Bad Forgejo signature error: ${e}`);
       return res.status(403).send({ success: false, error: 'bad signature provided' });
     }
     try {
       req.body = JSON.parse(bodyStr);
     } catch (e) {
-      logger.debug(`Invalid JSON from Gitea: ${e}`);
+      logger.debug(`Invalid JSON from Forgejo: ${e}`);
       return res.status(400).send({ success: false, error: 'invalid json' });
     }
     return next();
@@ -39,8 +39,8 @@ export class GitWebhook {
     logger.trace(JSON.stringify(req.body));
 
     const hook = req.body;
-    const eventType = req.get('X-Gitea-Event') || '';
-    logger.debug(`Gitea event ${eventType}`);
+    const eventType = req.get('X-Forgejo-Event') || '';
+    logger.debug(`Forgejo event ${eventType}`);
     const messages = [];
 
     let branch = hook.ref?.replace('refs/heads/', '')?.replace('refs/tags/', '') || 'unknown';

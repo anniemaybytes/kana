@@ -12,23 +12,16 @@ kana listens for following IRC events:
 
 Following commands are accessible:
 
-- !user [username]
+- `!user [username]`
 
 Additionally:
 
-- Will listen on every channel it joins and resolve `<title>` for links posted
+- Will listen on every channel it joins and resolve user-readable title for links posted
 - Will listen for raw ECHO commands and forward them to specified channels
-- Will listen for Gitea style webhook on `/webhook/gitea`. Suppported events are:
+- Will listen for Forgejo webhooks on `/webhook/forgejo`. Suppported events are:
   - `push` (maximum of 10 commits will be echo'ed in channel)
   - `create`
   - `delete`
-- Will listen for Drone CI webhook on `/webhook/drone`. Supported events are:
-  - `created`
-  - `updated`
-    - `success`
-    - `killed`
-    - `failure`
-    - `error`
 - Sends `WHO` to `#animebytes` every 5 minutes and transmits list of users back to remote endpoint at `/api/irc/notifier`
 
 ## Installation
@@ -82,13 +75,13 @@ Configuration is done using environment variables:
 - `OPER_PASS` - Oper password
 - `IGNORE_OPER_FAILURE` - Set to 'true' to ignore the requirement of a successful OPER command (for testing and development)
 - `SITE_API_KEY` - API key to authenticate with site, used for sending back list of online users, fetching user stats via `!user` and `!dess`
-- `HTTP_BIND` - Hostname on which bot will expose Express router, used by Gitea and DroneCI webhook
-- `HTTP_PORT` - Port on which bot will expose Express router, used by Gitea and DroneCI webhook
-- `GIT_WEBHOOK` - Secret key to authenticate Gitea and DroneCI webhook endpoint
-- `GIT_CHANNEL` - Channel used to echo messages received by Gitea webhook
+- `HTTP_BIND` - Hostname on which bot will expose Express router, used by webhooks
+- `HTTP_PORT` - Port on which bot will expose Express router, used by webhooks
+- `GIT_SECRET` - Secret key to authenticate Forgejo webhook endpoint
+- `GIT_CHANNEL` - Channel used to echo messages received by Forgejo webhook
 - `ECHO_BIND` - Hostname on which bot will listen for raw ECHO commands
 - `ECHO_PORT` - Port on which bot will listen for raw ECHO commands
-- `ECHO_AUTH_KEY` - Secret key to authenticate Echo requests
+- `ECHO_SECRET` - Secret key to authenticate ECHO requests
 - `LOG_LEVEL` - One of the strings `trace`, `debug`, `info`, `warn`, or `error` to use as the log level
 
 Additionally, `channels.json` file is used by bot to dynamically store list of channels it knows about:
