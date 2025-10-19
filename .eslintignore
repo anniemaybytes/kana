@@ -1,7 +1,0 @@
-**/*.js
-
-# built artifacts
-dist/
-
-# package managers
-node_modules

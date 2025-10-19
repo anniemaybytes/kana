@@ -65,7 +65,6 @@ describe('NetworkEcho', () => {
   describe('start', () => {
     let mockCreateServer: SinonStub;
     beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       mockCreateServer = sandbox.stub(net, 'createServer').returns({ listen: () => {} } as any);
     });
     it('Calls createServer with to start listening on the raw socket', () => {
