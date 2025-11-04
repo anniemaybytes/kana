@@ -26,7 +26,7 @@ Additionally:
 
 ## Installation
 
-kana requires NodeJS v22.11 or later and [pnpm](https://pnpm.io/).
+kana requires NodeJS v24.11 or later and [pnpm](https://pnpm.io/).
 
 ```sh
 pnpm install && pnpm build
