@@ -1,5 +1,8 @@
 strictPeerDependencies: true
 strictDepBuilds: true
+
+blockExoticSubdeps: true
+
 onlyBuiltDependencies:
   - esbuild
 ignoredBuiltDependencies:
