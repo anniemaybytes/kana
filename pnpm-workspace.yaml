@@ -1,9 +1,21 @@
 strictPeerDependencies: true
 strictDepBuilds: true
 
+minimumReleaseAge: 4320
+trustPolicy: no-downgrade
 blockExoticSubdeps: true
 
-onlyBuiltDependencies:
-  - esbuild
-ignoredBuiltDependencies:
-  - core-js
+allowBuilds:
+  esbuild: true
+  core-js: false
+
+trustPolicyExclude:
+  - 'chokidar@4.0.3'
+
+overrides:
+  "irc-framework>lodash@<4.18.0": "^4.18.1"
+  "mocha>serialize-javascript@<7.0.5": "^7.0.5"
+
+auditConfig:
+  ignoreGhsas:
+    - GHSA-73rr-hh4g-fpgx
